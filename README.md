@@ -40,23 +40,13 @@ autonity-specific RPC namespace as well,
 ## Installation
 
 You need python >=3.7 with [pipx](https://pypa.github.io/pipx/)
-installed. If you have those, installation is simple:
-
-```
-pipx install git+https://github.com/autonity/autcli.git
-```
+installed. Clone the repo and `make install`.
 
 pipx will install autcli in a virtual environment, but provide `aut`
 as a console entry point that is globally available on your system
 like any other unix command. This achieves isolation without the user
 needing to know anything about python venv usage.. or python itself,
 for that matter.
-
-Upgrade `autcli`:
-
-```
-pipx upgrade git+https://github.com/autonity/autcli.git
-```
 
 ## Tests
 
