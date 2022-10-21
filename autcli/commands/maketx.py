@@ -1,161 +1,168 @@
 """
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
-from docopt import docopt
 from autcli.user import (
     get_account_transaction_count,
     get_block,
     get_latest_block_number,
 )
-from autcli.constants import UnixExitStatus
-from autcli.utils import to_checksum_address, to_json, parse_wei_representation
+from autcli.utils import parse_wei_representation, to_json
 from autcli import __version__
 from autcli import __file__
-from schema import Schema, SchemaError, And, Or, Use
-import sys
+
 from web3 import Web3
+from web3.types import TxParams, ChecksumAddress, Nonce
+from click import command, option, ClickException
+from typing import Optional
+
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-branches
 
 
-def aut_maketx(argv):
+@command()
+@option("--from", "-f", "from_str", help="address from which tx is sent.")
+@option("--to", "-t", "to_str", help="address to which tx is directed.")
+@option(
+    "--gas",
+    "-g",
+    required=True,
+    help="maximum gas units that can be consumed by the tx.",
+)
+@option(
+    "--gas-price",
+    "-p",
+    help="value per gas (legacy, use -F and -P instead).",
+)
+@option(
+    "--max-priority-fee-per-gas",
+    "-P",
+    help="maximum to pay per gas as tip to block proposer.",
+)
+@option(
+    "--max-fee-per-gas",
+    "-F",
+    help="maximum to pay per gas for the total fee of the tx.",
+)
+@option(
+    "--nonce",
+    "-n",
+    type=int,
+    help="tx nonce; query chain for account tx count if not given.",
+)
+@option(
+    "--value",
+    "-v",
+    help="value sent with tx (nb '7000000000' and '7gwei' are identical).",
+)
+@option(
+    "--data", "-d", help="compiled contract code OR method signature and parameters."
+)
+@option(
+    "--chain-id",
+    "-I",
+    type=int,
+    help="integer representing EIP155 chainId [default: 65010000].",
+)
+@option(
+    "--fee-factor",
+    type=float,
+    help="set maxFeePerGas to <last-basefee> x <fee-factor> [default: 2].",
+)
+@option(
+    "--legacy",
+    is_flag=True,
+    help="if set, tx type is 0x0 (pre-EIP1559), otherwise type is 0x2.",
+)
+@option(
+    "--debug",
+    is_flag=True,
+    help="if set, errors will print traceback along with exception msg.",
+)
+def maketx(
+    from_str: Optional[str],
+    to_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    nonce: Optional[int],
+    value: Optional[str],
+    data: Optional[str],
+    chain_id: Optional[int],
+    fee_factor: Optional[float],
+    legacy: bool,
+) -> None:
     """
-    Usage:
-      aut maketx -f ADR -t ADR -g INT -P WEI [-d HEX | -] [options]
-      aut maketx --legacy -f ADR -t ADR -g INT -p WEI [-d HEX | -] [options]
-
-    Options:
-      -f ADR --from=ADR                 address from which tx is sent.
-      -t ADR --to=ADR                   address to which tx is directed.
-      -g INT --gas=INT                  maximum gas units that can be consumed by the tx.
-      -p WEI --gasPrice=WEI             value per gas to (legacy, use -F and -P instead).
-      -P WEI --maxPriorityFeePerGas=WEI maximum willing to pay per gas as tip to block proposer.
-      -F WEI --maxFeePerGas=WEI         maximum willing to pay per gas for the total fee of the tx.
-      -n INT --nonce=INT                tx nonce; query chain for account tx count if not given.
-      -v WEI --value=WEI                value sent with tx (nb '7000000000' and '7gwei' are identical).
-      -d HEX --data=HEX                 compiled contract code OR method signature and parameters.
-      -I INT --chainId=INT              integer representing EIP155 chainId [default: 65010000].
-      --fee-factor NUM                  set maxFeePerGas to last block's basefee x NUM [default: 2].
-      --legacy                          if set, tx type is 0x0 (pre-EIP1559), otherwise type is 0x2.
-      --debug                           if set, errors will print traceback along with exception msg.
-      -h --help                         show this screen.
+    Create a transaction given the parameters passed in.
     """
-    try:
-        args = docopt(aut_maketx.__doc__, version=__version__, argv=argv)
-    except:
-        print(aut_maketx.__doc__)
-        return UnixExitStatus.CLI_INVALID_INVOCATION
-    if not args["--debug"]:
-        sys.tracebacklimit = 0
-    del args["maketx"]
-    s = Schema(
-        {
-            "--from": Use(
-                Web3.toChecksumAddress, error="-f, --from: not a valid address format"
-            ),
-            "--to": Use(
-                Web3.toChecksumAddress, error="-t, --to: not a valid address format"
-            ),
-            "--nonce": Or(
-                None,
-                And(lambda n: n.isnumeric(), lambda n: int(n) > 0),
-                error="invalid nonce",
-            ),
-            "--gas": And(
-                lambda n: n.isnumeric(), lambda n: int(n) > 0, error="invalid gas value"
-            ),
-            "--gasPrice": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-p, --gasPrice: cannot convert to integer",
-            ),
-            "--maxFeePerGas": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-F, --maxFeePerGas: cannot convert to integer",
-            ),
-            "--maxPriorityFeePerGas": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-P, --maxPriorityFeePerGas: cannot convert to integer",
-            ),
-            "--value": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-v, --value: cannot convert to integer",
-            ),
-            "--data": Or(None, Use(str)),
-            "--chainId": And(lambda n: n.isnumeric(), lambda n: int(n) > 0),
-            "--fee-factor": And(lambda n: n.isnumeric(), lambda n: float(n) > 0),
-            "--legacy": Or(True, False),
-            "--debug": Or(True, False),
-            "--help": Or(True, False),
-            "-": Or(True, False),
-        }
-    )
-    try:
-        args = s.validate(args)
-    except SchemaError as exc:
-        print(exc)
-        return UnixExitStatus.CLI_INVALID_OPTION_VALUE
 
-    if args["--nonce"] is None:
-        nonce = get_account_transaction_count(args["--from"])
+    from_addr = Web3.toChecksumAddress(from_str) if from_str else None
+    to_addr = Web3.toChecksumAddress(to_str) if to_str else None
+
+    tx: TxParams = {}
+
+    # Must have the nonce to put into the tx, or the from_addr to
+    # compute it from.
+
+    if not nonce:
+        if not from_addr:
+            raise ClickException("must specify either --nonce or --from")
+        nonce = get_account_transaction_count(from_addr)
+    tx["nonce"] = Nonce(nonce)
+
+    if from_addr:
+        tx["from"] = from_addr
+
+    if to_addr:
+        tx["to"] = to_addr
+
+    if gas:
+        tx["gas"] = parse_wei_representation(gas)
+
+    # Require either gas_price OR max_fee_per_gas, etc
+
+    if gas_price:
+        if fee_factor or fee_factor or max_fee_per_gas or max_priority_fee_per_gas:
+            raise ClickException("--gas-price cannot be used with other fee parameters")
+        tx["gasPrice"] = parse_wei_representation(gas_price)
     else:
-        nonce = int(args["--nonce"])
+        if max_fee_per_gas:
+            tx["maxFeePerGas"] = max_fee_per_gas
+        elif fee_factor:
+            block_number = get_latest_block_number()
+            block_data = get_block(block_number)
+            tx["maxFeePerGas"] = int(float(block_data["baseFeePerGas"]) * fee_factor)
+        else:
+            raise ClickException(
+                "must specify one of --max-fee-per-gas or --fee-factor"
+            )
 
-    args["--gas"] = int(args["--gas"])
+        if max_priority_fee_per_gas:
+            tx["maxPriorityFeePerGas"] = max_priority_fee_per_gas
 
-    if args["--gasPrice"] is not None:
-        args["--gasPrice"] = int(args["--gasPrice"])
+    # Value
 
-    args["--fee-factor"] = float(args["--fee-factor"])
+    if value:
+        tx["value"] = value
 
-    if args["--maxFeePerGas"] is None:
-        block_number = get_latest_block_number()
-        block_data = get_block(block_number)
-        max_fee_per_gas = float(block_data["baseFeePerGas"]) * args["--fee-factor"]
-        max_fee_per_gas = int(max_fee_per_gas)
-    else:
-        max_fee_per_gas = int(args["--maxFeePerGas"])
+    # Data
 
-    if args["--maxPriorityFeePerGas"] is not None:
-        args["--maxPriorityFeePerGas"] = int(args["--maxPriorityFeePerGas"])
+    if data:
+        tx["data"] = data
 
-    if args["--value"] is not None:
-        args["--value"] = int(args["--value"])
+    # Chain ID
 
-    args["--chainId"] = int(args["--chainId"])
+    if chain_id:
+        tx["chainId"] == chain_id
 
-    if args["-"]:
-        if args["--data"] is not None:
-            print("ignoring value passed to --data because data found on stdin.")
-        data = sys.stdin.read().splitlines()
-        data = data[0]
-        args["--data"] = data
+    # If the --legacy flag was given, explicitly set the type,
+    # otherwise have web3 determine it.
 
-    if args["--legacy"]:
-        erc2718_type = "0x0"
-    else:
-        erc2718_type = "0x2"
-
-    tx = {
-        "from": args["--from"],
-        "to": args["--to"],
-        "nonce": nonce,
-        "gas": args["--gas"],
-        "gasPrice": args["--gasPrice"],
-        "maxFeePerGas": max_fee_per_gas,
-        "maxPriorityFeePerGas": args["--maxPriorityFeePerGas"],
-        "value": args["--value"],
-        "data": args["--data"],
-        "chainId": args["--chainId"],
-        "type": erc2718_type,
-    }
-
-    tx = {k: v for k, v in tx.items() if v is not None}
+    if legacy:
+        tx["type"] = "0x0"
 
     print(to_json(tx))
-
-    return 0
 
 
 # Other Features Contemplated

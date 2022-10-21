@@ -1,14 +1,29 @@
-.PHONY: install lint format tests clean
+.PHONY: setup-dev install check check-lint check-format check-types format tests clean
+
+setup-dev:
+	pip install -e ../autonity.py[dev]
+	pip install -e .[dev]
 
 install:
 	pipx install . --force
 
-lint:
-	pipenv run pylint autcli
+check: check-lint check-format check-types
+
+check-lint:
+	pylint autcli
+	flake8 autcli
+
+check-format:
+	black --check autcli
+
+check-types:
+	mypy -p autcli -p tests
+
 
 format:
 	black autcli/*
 	black autcli/commands/*
+
 
 tests:
 	bash -c "source scripts/run_tests.sh"

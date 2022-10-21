@@ -1,14 +1,18 @@
 """
-Utility functions that are only meant to be called by other functions in this package. 
+Utility functions that are only meant to be called by other functions in this package.
 """
+
+from autcli.constants import Defaults, AutonDenoms
+
 import os
 import json
 import re
 from web3 import Web3
-from autcli.constants import Defaults, AutonDenoms
+from web3.types import Wei, ChecksumAddress, BlockIdentifier
+from typing import Dict, Any
 
 
-def w3_provider_type(identifier):
+def w3_provider_type(identifier: str) -> str:
     """
     Return the provider protocol type (https, ws, or IPC) of an
     endpoint described by string 'identifier'. If identifier isn't a
@@ -23,10 +27,11 @@ def w3_provider_type(identifier):
         return "ws"
     if re.match(regex_ipc, identifier) is not None:
         return "ipc"
-    return None
+
+    raise ValueError(f"unknown protocol identifier: {identifier}")
 
 
-def validate_w3_provider_type(identifier):
+def validate_w3_provider_type(identifier: str) -> str:
     """
     Take identifier for an http or ws URI, or an IPC filepath and
     check that it's valid. If it's valid, just return identifier,
@@ -40,7 +45,7 @@ def validate_w3_provider_type(identifier):
     return identifier
 
 
-def w3_provider_endpoint():
+def w3_provider_endpoint() -> str:
     """
     Return the identifier for the RPC provider endpoint. This will
     be the value of user's parent shell environment variable
@@ -58,7 +63,7 @@ def w3_provider_endpoint():
     return endpoint
 
 
-def w3_provider():
+def w3_provider() -> Web3:
     """
     Return a web3py provider object for the RPC identifier that
     w3_provider_endpoint returns.
@@ -71,10 +76,11 @@ def w3_provider():
         return Web3(Web3.WebsocketProvider(endpoint))
     if rpc_type == "ipc":
         return Web3(Web3.IPCProvider(endpoint))
-    return None
+
+    raise ValueError(f"unknown protocol identifier: {endpoint}")
 
 
-def w3_provider_is_connected(w3):
+def w3_provider_is_connected(w3: Web3) -> bool:
     """
     Take a web3py RPC provider object and return true if connected
     to the provider, otherwise throw exception.
@@ -88,7 +94,7 @@ def w3_provider_is_connected(w3):
     return True
 
 
-def parse_wei_representation(wei_str):
+def parse_wei_representation(wei_str: str) -> Wei:
     """
     Take a text representation of an integer with an optional
     denomination suffix (eg '2gwei' represents 2000000000
@@ -117,41 +123,45 @@ def parse_wei_representation(wei_str):
         raise Exception(
             f"{wei_str} is not a valid string representation of wei"
         ) from exc
-    return wei
+    return Wei(wei)
 
 
-def address_keyfile_dict(keystore_dir, degenerate_addr=False):
+def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
     """
     For directory 'keystore' that contains one or more keyfiles,
     return a dictionary with EIP55 checksum addresses as keys and
     keyfile path as value. If 'degenerate_addr', keys are addresses
     are all lower case and without the '0x' prefix.
     """
-    x = {}
+    addr_keyfile_dict: Dict[ChecksumAddress, str] = {}
     keyfile_list = os.listdir(keystore_dir)
     for fn in keyfile_list:
         keyfile_path = keystore_dir + "/" + fn
         keyfile = load_keyfile(keyfile_path)
         addr_lower = keyfile["address"]
-        if degenerate_addr:
-            x = {**x, **{addr_lower: keyfile_path}}
-        else:
-            addr_checksum = Web3.toChecksumAddress("0x" + addr_lower)
-            x = {**x, **{addr_checksum: keyfile_path}}
-    return x
+        addr_keyfile_dict[Web3.toChecksumAddress("0x" + addr_lower)] = keyfile_path
+
+    return addr_keyfile_dict
 
 
-def load_keyfile(keyfile_path):
+def degeneate_address_keyfile_dict(keystore_dir: str) -> Dict[str, str]:
+    """
+    Similar to address_keyfile_dict, but addresses (keys) are
+    lower case and without the '0x' prefix.
+    """
+    addr_keyfile_dict = address_keyfile_dict(keystore_dir)
+    return {k.lower().replace("0x", ""): v for k, v in addr_keyfile_dict.items()}
+
+
+def load_keyfile(keyfile_path: str) -> Dict[str, Any]:
     """
     Load a keyfile at keyfile_path and return its contents.
     """
     with open(keyfile_path, encoding="UTF-8") as keyfile:
-        kf = keyfile.read()
-    keyfile = json.loads(kf)
-    return keyfile
+        return json.load(keyfile)
 
 
-def to_checksum_address(address):
+def to_checksum_address(address: str) -> ChecksumAddress:
     """
     Take a blockchain address as string, convert the string into
     an EIP55 checksum address and return that.
@@ -160,41 +170,40 @@ def to_checksum_address(address):
     return checksum_address
 
 
-def to_json(data):
+def to_json(data: Dict[Any, Any]) -> str:
     """
     Take python data structure, return json formatted data.
     """
-    json_data = Web3.toJSON(data)
-    return json_data
+    return Web3.toJSON(data)
 
 
-def string_is_32byte_hash(x):
+def string_is_32byte_hash(hash_str: str) -> bool:
     """
     Test if string is valid, 0x-prefixed representation of a
     32-byte hash. If it is, return True, otherwise return False.
     """
-    if not x.startswith("0x"):
+    if not hash_str.startswith("0x"):
         return False
-    if not len(x) == 66:  # 66-2 = 64 hex digits = 32 bytes
+    if not len(hash_str) == 66:  # 66-2 = 64 hex digits = 32 bytes
         return False
     try:
-        int(x, 16)
+        int(hash_str, 16)
         return True
-    except:
+    except Exception:  # pylint: disable=broad-except
         return False
 
 
-def validate_32byte_hash_string(x):
+def validate_32byte_hash_string(hash_str: str) -> str:
     """
     If string represents a valid 32-byte hash, just return it,
     otherwise raise exception.
     """
-    if not string_is_32byte_hash(x):
-        raise Exception(f"{x} is not a 32-byte hash")
-    return x
+    if not string_is_32byte_hash(hash_str):
+        raise Exception(f"{hash_str} is not a 32-byte hash")
+    return hash_str
 
 
-def validate_block_identifier(x):
+def validate_block_identifier(block_id: BlockIdentifier) -> BlockIdentifier:
     """
     If string represents a valid block identifier, just return it,
     otherwise raise exception. A valid block identifier is either a
@@ -202,10 +211,18 @@ def validate_block_identifier(x):
     number. Note that 'validity' here does not mean that the block
     exists, we're just testing that the _format_ of x is valid.
     """
-    if string_is_32byte_hash(x):
-        return x
-    try:
-        block_number = int(x)
-        return block_number
-    except ValueError as exc:
-        raise Exception(f"{x} is neither a 32-byte hash nor an integer") from exc
+
+    if isinstance(block_id, int):
+        return block_id
+
+    if isinstance(block_id, str):
+        if string_is_32byte_hash(block_id):
+            return block_id
+
+        # Attempt to parse as in int
+        try:
+            return int(block_id)
+        except ValueError:
+            pass
+
+    raise ValueError(f"{str(block_id)} is neither a 32-byte hash nor an integer")

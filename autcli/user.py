@@ -10,8 +10,22 @@ functions meant to be called in that.
 
 from autcli.utils import address_keyfile_dict, w3_provider
 
+from web3.types import (
+    ChecksumAddress,
+    Wei,
+    BlockIdentifier,
+    BlockData,
+    TxReceipt,
+    TxParams,
+    SignedTx,
+    HexBytes,
+)
+from typing import Dict, List, Tuple, Optional, Any, cast
 
-def get_account_stats(accounts, tag=None):
+
+def get_account_stats(
+    accounts: List[ChecksumAddress], tag: Optional[str] = None
+) -> Dict[ChecksumAddress, Tuple[int, Wei]]:
     """
     For a list of accounts, return a dictionary with accounts as keys
     and list of transaction count and balance (in that order) as
@@ -21,18 +35,18 @@ def get_account_stats(accounts, tag=None):
     eth_getTransactionCount.
     """
     w3 = w3_provider()
-    stats = {}
+    stats: Dict[ChecksumAddress, Tuple[int, Wei]] = {}
     for acct in accounts:
         txcount = w3.eth.get_transaction_count(acct)
         if tag is None:
             balance = w3.eth.get_balance(acct)
         else:
             balance = w3.eth.get_balance(acct, tag)
-        stats[acct] = [txcount, balance]
+        stats[acct] = (txcount, balance)
     return stats
 
 
-def get_account_transaction_count(account):
+def get_account_transaction_count(account: ChecksumAddress) -> int:
     """
     Return the transaction count of 'account'. Uses web3 method getTransactionCount.
     """
@@ -41,10 +55,13 @@ def get_account_transaction_count(account):
     return transaction_count
 
 
-def get_node_stats():
+def get_node_stats() -> Any:
     """
     Return a dictionary with results for a bunch of of nullary EIP1474 RPC methods.
     """
+
+    # TODO: types
+
     w3 = w3_provider()
     stats = {
         "eth_accounts": w3.eth.accounts,
@@ -62,7 +79,7 @@ def get_node_stats():
     return stats
 
 
-def get_latest_block_number():
+def get_latest_block_number() -> int:
     """
     Returns the block height of the latest block.
     """
@@ -71,7 +88,7 @@ def get_latest_block_number():
     return block_number
 
 
-def get_block(identifier):
+def get_block(identifier: BlockIdentifier) -> BlockData:
     """
     Returns a dictionary of block data for the block identified by
     'identifier', which is either a block number/height or string
@@ -82,7 +99,7 @@ def get_block(identifier):
     return block_data
 
 
-def get_transaction_receipt(tx_hash, wait_timeout=0):
+def get_transaction_receipt(tx_hash: HexBytes, wait_timeout: int = 0) -> TxReceipt:
     """
     Returns a dictionary with the tx receipt for the transaction
     identified by 'tx_hash'. If 'wait_timeout' is non-zero, wait that
@@ -99,7 +116,7 @@ def get_transaction_receipt(tx_hash, wait_timeout=0):
     return tx_receipt
 
 
-def client_signtx(tx, keystore_dir, keyfile_passphrase):
+def client_signtx(tx: TxParams, keystore_dir: str, keyfile_passphrase: str) -> SignedTx:
     """
     Sign the transaction data contained in dictionary 'tx' with a
     local keyfile in 'keystore_dir' and return raw signed tx
@@ -109,15 +126,18 @@ def client_signtx(tx, keystore_dir, keyfile_passphrase):
     """
     w3 = w3_provider()
     keyfiles = address_keyfile_dict(keystore_dir, degenerate_addr=True)
-    keyfile_path = keyfiles[tx["from"].replace("0x", "").lower()]
+    from_addr = cast(ChecksumAddress, tx["from"])
+    keyfile_path = keyfiles[from_addr.replace("0x", "").lower()]
     with open(keyfile_path, encoding="UTF-8") as keyfile:
         encrypted_key = keyfile.read()
-        private_key = w3.eth.account.decrypt(encrypted_key, keyfile_passphrase)
+        private_key = w3.eth.account.decrypt(
+            encrypted_key, keyfile_passphrase
+        )  # type: ignore
     tx_raw = w3.eth.account.signTransaction(tx, private_key)
     return tx_raw
 
 
-def server_signtx(tx):
+def server_signtx(tx: TxParams) -> SignedTx:
     """
     Sign the transaction data contained in dictionary 'tx' by
     sending that data via web3 RPC call eth_signTransaction. The
@@ -133,11 +153,11 @@ def server_signtx(tx):
     return tx_raw
 
 
-def sendtx(tx_raw):
+def sendtx(tx_raw: bytes) -> HexBytes:
     """
     Send raw signed tx bytes provided by 'tx_raw' to an RPC server
     to be validated and included in the blockchain.
     """
     w3 = w3_provider()
-    tx_hash = w3.eth.send_raw_transaction(tx_raw)
+    tx_hash = w3.eth.send_raw_transaction(tx_raw)  # type: ignore
     return tx_hash
