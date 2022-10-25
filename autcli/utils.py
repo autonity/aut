@@ -5,11 +5,12 @@ Utility functions that are only meant to be called by other functions in this pa
 from autcli.constants import Defaults, AutonDenoms
 
 import os
+import sys
 import json
 import re
 from web3 import Web3
 from web3.types import Wei, ChecksumAddress, BlockIdentifier
-from typing import Dict, Any
+from typing import Generator, Dict, Any, IO
 
 
 def w3_provider_type(identifier: str) -> str:
@@ -105,7 +106,9 @@ def parse_wei_representation(wei_str: str) -> Wei:
     """
     wei_str = wei_str.lower()
     try:
-        if wei_str.endswith("kwei"):
+        if wei_str.endswith("wei"):
+            wei = int(wei_str[:-3])
+        elif wei_str.endswith("kwei"):
             wei = int(wei_str[:-4]) * AutonDenoms.KWEI_VALUE_IN_WEI
         elif wei_str.endswith("mwei"):
             wei = int(wei_str[:-4]) * AutonDenoms.MWEI_VALUE_IN_WEI
@@ -117,6 +120,8 @@ def parse_wei_representation(wei_str: str) -> Wei:
             wei = int(wei_str[:-6]) * AutonDenoms.FINNEY_VALUE_IN_WEI
         elif wei_str.endswith("auton"):
             wei = int(wei_str[:-5]) * AutonDenoms.AUTON_VALUE_IN_WEI
+        elif wei_str.endswith("aut"):
+            wei = int(wei_str[:-3]) * AutonDenoms.AUTON_VALUE_IN_WEI
         else:
             wei = int(wei_str)
     except Exception as exc:
@@ -226,3 +231,15 @@ def validate_block_identifier(block_id: BlockIdentifier) -> BlockIdentifier:
             pass
 
     raise ValueError(f"{str(block_id)} is neither a 32-byte hash nor an integer")
+
+
+def load_from_file_or_stdin(filename: str) -> str:
+    """
+    Open a file and return the stream, where '-' represents stdin.
+    """
+
+    if filename == "-":
+        return sys.stdin.read()
+
+    with open(filename, "r", encoding="utf8") as in_f:
+        return in_f.read()

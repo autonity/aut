@@ -1,85 +1,56 @@
 """
 Code that is executed when 'aut signtx..' is invoked on the command-line.
 """
-from docopt import docopt
+
+from autcli.utils import load_from_file_or_stdin, to_json
+from autonity.utils.tx import sign_tx
+
 import os
-import sys
 import json
 from getpass import getpass
-from autcli.constants import UnixExitStatus
-from autcli.user import client_signtx, server_signtx
-from autcli import __version__
-from autcli import __file__
-from schema import Schema, SchemaError, Or, Use
+from click import command, option, argument
+from typing import Dict, Optional, Any, cast
+
+KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
+
+# help="File containing unsigned transaction, or '-' for stdin",
 
 
-def aut_signtx(argv):
-    """Usage:
-      aut signtx --client-sign [--keystore DIR] [options]
-      aut signtx --server-sign [options]
-
-    Signing options:
-      --client-sign   client-sign the transaction data using a local KEYFILE.
-      --server-sign   server-sign the transaction data using node account via RPC.
-      --keystore DIR  local keystore directory [default: ~/.autonity/keystore].
-
-    Other options:
-      --debug         if set, errors will print traceback as well as exception.
-      -h --help       show this screen.
-
-    USE --server-sign ONLY IF YOU CONTROL YOUR RPC ENDPOINT AND UNDERSTAND THE SECURITY
-    IMPLICATIONS OF HOSTING ACCOUNTS ON A NODE. The recommended approach is to sign your
-    tx's locally with --client-sign.
-
-    When using --client-sign, aut will first try to read the keyfile password from
-    environment variable 'KEYFILEPWD' (set it like 'export KEYFILEPWD=<password>'), and
-    if that's not defined it will prompt you for it.
+@command()
+@option("--key-file", "-k", required=True, help="Encrypted private key file")
+@option("--password", "-p", help="Password for key file (or use env var 'KEYFILEPWD')")
+@argument(
+    "tx-file",
+    required=True,
+)
+def signtx(key_file: str, password: Optional[str], tx_file: str) -> None:
     """
-    try:
-        args = docopt(aut_signtx.__doc__, version=__version__, argv=argv)
-    except:
-        print(aut_signtx.__doc__)
-        return UnixExitStatus.CLI_INVALID_INVOCATION
-    if not args["--debug"]:
-        sys.tracebacklimit = 0
-    del args["signtx"]
-    s = Schema(
-        {
-            "--client-sign": Or(True, False),
-            "--server-sign": Or(True, False),
-            "--keystore": Or(None, Use(os.path.expanduser)),
-            "--debug": Or(True, False),
-            "--help": Or(True, False),
-        }
-    )
-    try:
-        args = s.validate(args)
-    except SchemaError as exc:
-        print(exc.code)
-        return UnixExitStatus.CLI_INVALID_OPTION_VALUE
+    Sign a transaction using the given keyfile.
 
-    txs = sys.stdin.read().splitlines()
-    for tx in txs:
-        tx = json.loads(tx)
-        if args["--client-sign"]:
-            keyfile_pass = os.getenv("KEYFILEPWD")
-            if keyfile_pass is None:
-                try:
-                    acct = tx["from"]
-                    keyfile_pass = getpass(
-                        "Environment variable KEYFILEPWD is not set."
-                        + "Consider doing 'export KEYFILEPWD=<password>'."
-                        + f"\nEnter passphrase for {acct} (or CTRL-d to exit): "
-                    )
-                except EOFError:
-                    print("\n")
-                    return None
-            tx_signed = client_signtx(tx, args["--keystore"], keyfile_pass)
-            print(tx_signed.rawTransaction.hex())
-        elif args["--server-sign"]:
-            tx_signed = server_signtx(tx)
-            print(tx_signed.hex())
-    return 0
+    If password is not given, the env variable 'KEYFILEPWD' is used.
+    If that is not set, the user is prompted.
+    """
+
+    # Read tx
+    tx = json.loads(load_from_file_or_stdin(tx_file))
+
+    # Read password
+    if password is None:
+        password = os.getenv(KEYFILE_PASSWORD_ENV_VAR)
+        if password is None:
+            password = getpass(
+                "KEYFILEPWD env var not set (consider using 'KEYFILEPWD').\n"
+                + f"Enter passphrase for {key_file} (or CTRL-d to exit): "
+            )
+
+    # Read keyfile
+    with open(key_file, encoding="ascii") as key_f:
+        encrypted_key = json.load(key_f)
+
+    # Sign the tx:
+    signed_tx = sign_tx(tx, encrypted_key, password)
+
+    print(to_json(cast(Dict[Any, Any], signed_tx._asdict())))
 
 
 # Other Features Contemplated

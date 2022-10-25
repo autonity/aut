@@ -11,9 +11,9 @@ from autcli import __version__
 from autcli import __file__
 
 from web3 import Web3
-from web3.types import TxParams, ChecksumAddress, Nonce
+from web3.types import TxParams, Nonce, Wei, HexStr
 from click import command, option, ClickException
-from typing import Optional
+from typing import Dict, Optional, Any, cast
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
@@ -74,11 +74,6 @@ from typing import Optional
     is_flag=True,
     help="if set, tx type is 0x0 (pre-EIP1559), otherwise type is 0x2.",
 )
-@option(
-    "--debug",
-    is_flag=True,
-    help="if set, errors will print traceback along with exception msg.",
-)
 def maketx(
     from_str: Optional[str],
     to_str: Optional[str],
@@ -132,7 +127,9 @@ def maketx(
         elif fee_factor:
             block_number = get_latest_block_number()
             block_data = get_block(block_number)
-            tx["maxFeePerGas"] = int(float(block_data["baseFeePerGas"]) * fee_factor)
+            tx["maxFeePerGas"] = Wei(
+                int(float(block_data["baseFeePerGas"]) * fee_factor)
+            )
         else:
             raise ClickException(
                 "must specify one of --max-fee-per-gas or --fee-factor"
@@ -140,29 +137,33 @@ def maketx(
 
         if max_priority_fee_per_gas:
             tx["maxPriorityFeePerGas"] = max_priority_fee_per_gas
+        else:
+            tx["maxPriorityFeePerGas"] = tx["maxFeePerGas"]
 
     # Value
 
     if value:
-        tx["value"] = value
+        tx["value"] = parse_wei_representation(value)
+    elif not data:
+        raise ClickException("Empty tx (neither value or data given)")
 
     # Data
 
     if data:
-        tx["data"] = data
+        tx["data"] = HexStr(data)
 
     # Chain ID
 
     if chain_id:
-        tx["chainId"] == chain_id
+        tx["chainId"] = chain_id
 
     # If the --legacy flag was given, explicitly set the type,
     # otherwise have web3 determine it.
 
     if legacy:
-        tx["type"] = "0x0"
+        tx["type"] = HexStr("0x0")
 
-    print(to_json(tx))
+    print(to_json(cast(Dict[Any, Any], tx)))
 
 
 # Other Features Contemplated

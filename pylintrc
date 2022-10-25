@@ -4,7 +4,7 @@ disable=
     wrong-import-order,
     too-few-public-methods,
 
-good-names=f,fn,h,kf,p,s,tx,w3,x  # what's the issue with single-name vars?!
+good-names=f,fn,h,kf,p,s,tx,w3,x,tx  # what's the issue with single-name vars?!
 
 [REPORTS]
 output-format=text

@@ -42,11 +42,14 @@ from schema import Schema, SchemaError, Or
 
 @group()
 def aut() -> None:
-    print("AUT")
+    """
+    Command line interface to Autonity functionality.
+    """
     pass
 
 
 aut.add_command(maketx.maketx)
+aut.add_command(signtx.signtx)
 
 
 # def cli():
