@@ -8,7 +8,8 @@ If aut implements an ipyothon 'console mode', perhaps these are the
 functions meant to be called in that.
 """
 
-from autcli.utils import address_keyfile_dict, w3_provider
+from autcli.utils import w3_provider
+
 
 from web3.types import (
     ChecksumAddress,
@@ -20,7 +21,7 @@ from web3.types import (
     SignedTx,
     HexBytes,
 )
-from typing import Dict, List, Tuple, Optional, Any, cast
+from typing import Dict, List, Tuple, Optional, Any
 
 
 def get_account_stats(
@@ -44,15 +45,6 @@ def get_account_stats(
             balance = w3.eth.get_balance(acct, tag)
         stats[acct] = (txcount, balance)
     return stats
-
-
-def get_account_transaction_count(account: ChecksumAddress) -> int:
-    """
-    Return the transaction count of 'account'. Uses web3 method getTransactionCount.
-    """
-    w3 = w3_provider()
-    transaction_count = w3.eth.get_transaction_count(account)
-    return transaction_count
 
 
 def get_node_stats() -> Any:
@@ -116,25 +108,7 @@ def get_transaction_receipt(tx_hash: HexBytes, wait_timeout: int = 0) -> TxRecei
     return tx_receipt
 
 
-def client_signtx(tx: TxParams, keystore_dir: str, keyfile_passphrase: str) -> SignedTx:
-    """
-    Sign the transaction data contained in dictionary 'tx' with a
-    local keyfile in 'keystore_dir' and return raw signed tx
-    bytes. Keyfiles are protected by a passphrase, so
-    'keyfile_passphrase' is needed to decrypt the private_key
-    contained in the file.
-    """
-    w3 = w3_provider()
-    keyfiles = address_keyfile_dict(keystore_dir, degenerate_addr=True)
-    from_addr = cast(ChecksumAddress, tx["from"])
-    keyfile_path = keyfiles[from_addr.replace("0x", "").lower()]
-    with open(keyfile_path, encoding="UTF-8") as keyfile:
-        encrypted_key = keyfile.read()
-        private_key = w3.eth.account.decrypt(
-            encrypted_key, keyfile_passphrase
-        )  # type: ignore
-    tx_raw = w3.eth.account.signTransaction(tx, private_key)
-    return tx_raw
+# TODO: support this?
 
 
 def server_signtx(tx: TxParams) -> SignedTx:
@@ -149,15 +123,6 @@ def server_signtx(tx: TxParams) -> SignedTx:
     RPC server.
     """
     w3 = w3_provider()
-    tx_raw = w3.eth.sign_transaction(tx)
+    # TODO: this seems wrong somehow ...
+    tx_raw = w3.eth.sign_transaction(tx["rawTransansaction"])  # type: ignore
     return tx_raw
-
-
-def sendtx(tx_raw: bytes) -> HexBytes:
-    """
-    Send raw signed tx bytes provided by 'tx_raw' to an RPC server
-    to be validated and included in the blockchain.
-    """
-    w3 = w3_provider()
-    tx_hash = w3.eth.send_raw_transaction(tx_raw)  # type: ignore
-    return tx_hash

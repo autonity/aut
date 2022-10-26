@@ -2,7 +2,8 @@
 Utility functions that are only meant to be called by other functions in this package.
 """
 
-from autcli.constants import Defaults, AutonDenoms
+from autcli.config import get_rpc_endpoint
+from autcli.constants import AutonDenoms
 
 import os
 import sys
@@ -10,7 +11,7 @@ import json
 import re
 from web3 import Web3
 from web3.types import Wei, ChecksumAddress, BlockIdentifier
-from typing import Generator, Dict, Any, IO
+from typing import Dict, Optional, Any
 
 
 def w3_provider_type(identifier: str) -> str:
@@ -46,30 +47,28 @@ def validate_w3_provider_type(identifier: str) -> str:
     return identifier
 
 
-def w3_provider_endpoint() -> str:
-    """
-    Return the identifier for the RPC provider endpoint. This will
-    be the value of user's parent shell environment variable
-    WEB3_PROVIDER, if that exists, otherwise the DEFAULT_RPC_ENDPOINT
-    constant defined in this package.
+# def w3_provider_endpoint() -> str:
+#     """
+#     Return the identifier for the RPC provider endpoint. This will
+#     be the value of user's parent shell environment variable
+#     WEB3_PROVIDER, if that exists, otherwise the DEFAULT_RPC_ENDPOINT
+#     constant defined in this package.
 
-    In the first case, the shell variable value is first validated and
-    an exception thrown if it's not valid.
-    """
-    identifier = os.getenv("WEB3_PROVIDER")
-    if identifier is not None:
-        endpoint = validate_w3_provider_type(identifier)
-    else:
-        endpoint = Defaults.DEFAULT_RPC_ENDPOINT
-    return endpoint
+#     In the first case, the shell variable value is first validated and
+#     an exception thrown if it's not valid.
+#     """
+#     identifier = os.getenv("WEB3_PROVIDER")
+#     if identifier is not None:
+#         endpoint = validate_w3_provider_type(identifier)
+#     else:
+#         endpoint = Defaults.DEFAULT_RPC_ENDPOINT
+#     return endpoint
 
 
-def w3_provider() -> Web3:
+def web3_from_endpoint(endpoint: str) -> Web3:
     """
-    Return a web3py provider object for the RPC identifier that
-    w3_provider_endpoint returns.
+    Given an RPC endpoint URL, create a Web3 object.
     """
-    endpoint = w3_provider_endpoint()
     rpc_type = w3_provider_type(endpoint)
     if rpc_type == "http":
         return Web3(Web3.HTTPProvider(endpoint))
@@ -81,18 +80,45 @@ def w3_provider() -> Web3:
     raise ValueError(f"unknown protocol identifier: {endpoint}")
 
 
+def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> Web3:
+    """
+    Construct a Web3 from a cli argument.  CLI argument is not
+    present, fall back to env vars and config files.
+
+    Used for the common pattern of initializing a Web3, only if
+    required to compute parameter values not given on the command line
+    (e.g. maketx command may have to connect to a node to compute gas
+    parameters, nonces, chainID, etc unless these are all explicitly
+    available.
+    """
+    if w3 is None:
+        return web3_from_endpoint(get_rpc_endpoint(endpoint_arg))
+
+    return w3
+
+
+# TODO: remove
+def w3_provider() -> Web3:
+    """
+    Return a web3py provider object for the RPC identifier that
+    w3_provider_endpoint returns.
+    """
+    return Web3()  # web3_from_endpoint(w3_provider_endpoint())
+
+
 def w3_provider_is_connected(w3: Web3) -> bool:
     """
     Take a web3py RPC provider object and return true if connected
     to the provider, otherwise throw exception.
     """
-    identifier = w3_provider_endpoint()
+    # identifier = w3_provider_endpoint()
     if not w3.isConnected():
-        raise Exception(
-            f"{identifier} is not connected, "
-            + "export WEB3_PROVIDER environment variable to a working provider."
-        )
+        raise OSError("Web3 is not connected")
+
     return True
+
+
+# TODO: mode to autonity.py
 
 
 def parse_wei_representation(wei_str: str) -> Wei:

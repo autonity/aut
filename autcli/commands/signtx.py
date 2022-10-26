@@ -3,17 +3,14 @@ Code that is executed when 'aut signtx..' is invoked on the command-line.
 """
 
 from autcli.utils import load_from_file_or_stdin, to_json
+from autcli.config import get_keyfile_password
+
 from autonity.utils.tx import sign_tx
 
-import os
+import sys
 import json
-from getpass import getpass
 from click import command, option, argument
 from typing import Dict, Optional, Any, cast
-
-KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
-
-# help="File containing unsigned transaction, or '-' for stdin",
 
 
 @command()
@@ -25,7 +22,8 @@ KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
 )
 def signtx(key_file: str, password: Optional[str], tx_file: str) -> None:
     """
-    Sign a transaction using the given keyfile.
+    Sign a transaction using the given keyfile.  Use '-' to read from
+    stdin instead of a file.
 
     If password is not given, the env variable 'KEYFILEPWD' is used.
     If that is not set, the user is prompted.
@@ -34,18 +32,12 @@ def signtx(key_file: str, password: Optional[str], tx_file: str) -> None:
     # Read tx
     tx = json.loads(load_from_file_or_stdin(tx_file))
 
-    # Read password
-    if password is None:
-        password = os.getenv(KEYFILE_PASSWORD_ENV_VAR)
-        if password is None:
-            password = getpass(
-                "KEYFILEPWD env var not set (consider using 'KEYFILEPWD').\n"
-                + f"Enter passphrase for {key_file} (or CTRL-d to exit): "
-            )
-
     # Read keyfile
     with open(key_file, encoding="ascii") as key_f:
         encrypted_key = json.load(key_f)
+
+    # Read password
+    password = get_keyfile_password(password)
 
     # Sign the tx:
     signed_tx = sign_tx(tx, encrypted_key, password)

@@ -1,12 +1,7 @@
 """
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
-from autcli.user import (
-    get_account_transaction_count,
-    get_block,
-    get_latest_block_number,
-)
-from autcli.utils import parse_wei_representation, to_json
+from autcli.utils import parse_wei_representation, to_json, web3_from_endpoint_arg
 from autcli import __version__
 from autcli import __file__
 
@@ -21,6 +16,7 @@ from typing import Dict, Optional, Any, cast
 
 
 @command()
+@option("--rpc-endpoint", "-r", help="RPC endpoint (defaults to WEB3_ENDPOINT env var")
 @option("--from", "-f", "from_str", help="address from which tx is sent.")
 @option("--to", "-t", "to_str", help="address to which tx is directed.")
 @option(
@@ -62,7 +58,7 @@ from typing import Dict, Optional, Any, cast
     "--chain-id",
     "-I",
     type=int,
-    help="integer representing EIP155 chainId [default: 65010000].",
+    help="integer representing EIP155 chainId.",
 )
 @option(
     "--fee-factor",
@@ -75,6 +71,7 @@ from typing import Dict, Optional, Any, cast
     help="if set, tx type is 0x0 (pre-EIP1559), otherwise type is 0x2.",
 )
 def maketx(
+    rpc_endpoint: Optional[str],
     from_str: Optional[str],
     to_str: Optional[str],
     gas: Optional[str],
@@ -92,6 +89,9 @@ def maketx(
     Create a transaction given the parameters passed in.
     """
 
+    # Potentially used in multiple places, so avoid re-initializing.
+    w3: Optional[Web3] = None
+
     from_addr = Web3.toChecksumAddress(from_str) if from_str else None
     to_addr = Web3.toChecksumAddress(to_str) if to_str else None
 
@@ -103,14 +103,16 @@ def maketx(
     if not nonce:
         if not from_addr:
             raise ClickException("must specify either --nonce or --from")
-        nonce = get_account_transaction_count(from_addr)
+
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        nonce = w3.eth.get_transaction_count(from_addr)
     tx["nonce"] = Nonce(nonce)
 
     if from_addr:
-        tx["from"] = from_addr
+        tx["from"] = Web3.toChecksumAddress(from_addr)
 
     if to_addr:
-        tx["to"] = to_addr
+        tx["to"] = Web3.toChecksumAddress(to_addr)
 
     if gas:
         tx["gas"] = parse_wei_representation(gas)
@@ -123,12 +125,13 @@ def maketx(
         tx["gasPrice"] = parse_wei_representation(gas_price)
     else:
         if max_fee_per_gas:
-            tx["maxFeePerGas"] = max_fee_per_gas
+            tx["maxFeePerGas"] = str(max_fee_per_gas)
         elif fee_factor:
-            block_number = get_latest_block_number()
-            block_data = get_block(block_number)
-            tx["maxFeePerGas"] = Wei(
-                int(float(block_data["baseFeePerGas"]) * fee_factor)
+            w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+            block_number = w3.eth.block_number
+            block_data = w3.eth.get_block(block_number)
+            tx["maxFeePerGas"] = str(
+                Wei(int(float(block_data["baseFeePerGas"]) * fee_factor))
             )
         else:
             raise ClickException(
@@ -136,7 +139,7 @@ def maketx(
             )
 
         if max_priority_fee_per_gas:
-            tx["maxPriorityFeePerGas"] = max_priority_fee_per_gas
+            tx["maxPriorityFeePerGas"] = str(max_priority_fee_per_gas)
         else:
             tx["maxPriorityFeePerGas"] = tx["maxFeePerGas"]
 
@@ -156,6 +159,9 @@ def maketx(
 
     if chain_id:
         tx["chainId"] = chain_id
+    else:
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        tx["chainId"] = w3.eth.chain_id
 
     # If the --legacy flag was given, explicitly set the type,
     # otherwise have web3 determine it.
