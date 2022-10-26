@@ -37,7 +37,6 @@ def aut() -> None:
     """
     Command line interface to Autonity functionality.
     """
-    pass
 
 
 aut.add_command(maketx.maketx)

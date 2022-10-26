@@ -1,3 +1,7 @@
+"""
+Test util functions
+"""
+
 from autcli.utils import parse_wei_representation
 from autcli.constants import AutonDenoms
 
@@ -5,7 +9,14 @@ from unittest import TestCase
 
 
 class TestUtils(TestCase):
+    """
+    Test util functions
+    """
+
     def test_wei_parser(self) -> None:
+        """
+        Test Wei parser
+        """
         self.assertEqual(1, parse_wei_representation("1"))
         self.assertEqual(1, parse_wei_representation("1wei"))
         self.assertEqual(

@@ -2,8 +2,6 @@
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
 from autcli.utils import parse_wei_representation, to_json, web3_from_endpoint_arg
-from autcli import __version__
-from autcli import __file__
 
 from web3 import Web3
 from web3.types import TxParams, Nonce, Wei, HexStr

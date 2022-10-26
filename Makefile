@@ -7,14 +7,14 @@ setup:
 install:
 	pipx install . --force
 
-check: check-lint check-format check-types
+check: check-types check-lint check-format
 
 check-lint:
-	pylint autcli
-	flake8 autcli
+	pylint autcli tests
+	flake8 autcli tests
 
 check-format:
-	black --check autcli
+	black --check autcli tests
 
 check-types:
 	mypy -p autcli -p tests

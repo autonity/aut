@@ -7,7 +7,6 @@ from autcli.config import get_keyfile_password
 
 from autonity.utils.tx import sign_tx
 
-import sys
 import json
 from click import command, option, argument
 from typing import Dict, Optional, Any, cast

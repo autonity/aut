@@ -17,7 +17,9 @@
 #             autcli.main.aut(['maketx','--foobar'])
 #         self.assertEqual(cm.exception.code, 64)
 #         with self.assertRaises(SystemExit) as cm:
-#             autcli.main.aut(['maketx','-f','0xfoobar','-t','0x6C874d2c048A9D6943BAe1b1c364BF4AF9454c42','-g','21000','-P',"2gwei"])
+#             autcli.main.aut(
+#               ['maketx','-f','0xfoobar','-t','0x6C874d2c048A9D6943BAe1b1c364BF4AF9454c42',
+#                '-g','21000','-P',"2gwei"])
 #         self.assertEqual(cm.exception.code, 65)
 #     def test_signtx(self):
 #         with self.assertRaises(SystemExit) as cm:
