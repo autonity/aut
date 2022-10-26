@@ -1,4 +1,4 @@
-.PHONY: setup-dev install check check-lint check-format check-types format tests clean
+.PHONY: setup-dev install check check-lint check-format check-types check-tests format tests clean
 
 setup-dev:
 	pip install -e ../autonity.py[dev]
@@ -19,14 +19,15 @@ check-format:
 check-types:
 	mypy -p autcli -p tests
 
+check-tests tests:
+	python -m unittest discover tests
 
 format:
 	black autcli/*
 	black autcli/commands/*
 
-
-tests:
-	bash -c "source scripts/run_tests.sh"
+# tests:
+# 	# bash -c "source scripts/run_tests.sh"
 
 clean:
 	rm -Rf autcli.egg-info/ build/ .pytest_cache autcli/__pycache__ autcli/commands/__pycache__ tests/__pycache__
