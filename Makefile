@@ -1,7 +1,7 @@
 .PHONY: tests
 
 setup:
-	pip install -e ../autonity.py[dev]
+	pip install -e external/autonity.py[dev]
 	pip install -e .[dev]
 
 install:
