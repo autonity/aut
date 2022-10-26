@@ -104,11 +104,10 @@ def parse_wei_representation(wei_str: str) -> Wei:
     If no suffix is provided, just coerce the string into an
     integer. If integer coercion fails, throw an exception.
     """
+
     wei_str = wei_str.lower()
     try:
-        if wei_str.endswith("wei"):
-            wei = int(wei_str[:-3])
-        elif wei_str.endswith("kwei"):
+        if wei_str.endswith("kwei"):
             wei = int(wei_str[:-4]) * AutonDenoms.KWEI_VALUE_IN_WEI
         elif wei_str.endswith("mwei"):
             wei = int(wei_str[:-4]) * AutonDenoms.MWEI_VALUE_IN_WEI
@@ -122,6 +121,8 @@ def parse_wei_representation(wei_str: str) -> Wei:
             wei = int(wei_str[:-5]) * AutonDenoms.AUTON_VALUE_IN_WEI
         elif wei_str.endswith("aut"):
             wei = int(wei_str[:-3]) * AutonDenoms.AUTON_VALUE_IN_WEI
+        elif wei_str.endswith("wei"):
+            wei = int(wei_str[:-3])
         else:
             wei = int(wei_str)
     except Exception as exc:
