@@ -1,0 +1,25 @@
+# Build actions for every push
+
+name: onpush
+
+on:
+  push:
+
+jobs:
+  check:
+    runs-on: ubuntu-20.04
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        token: ${{ secrets.AUTONITY_PY_ACCESS_TOKEN }}
+        submodules: recursive
+    - uses: actions/setup-python@v2
+      with:
+        python-version: 3.9
+    - name: Install and check
+      run: |
+        python -m venv env
+        . env/bin/activate
+        make
+        make check
