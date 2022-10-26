@@ -21,6 +21,10 @@ dependencies = [
   "click==8.1.3",
 ]
 
+[tool.setuptools.packages.find]
+where = [ "." ]
+exclude = [ "tests", "external" ]
+
 [project.optional-dependencies]
 "dev" = [
   "mypy==0.982",
