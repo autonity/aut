@@ -3,7 +3,7 @@ Code that is executed when 'aut sendtx..' is invoked on the command-line.
 """
 
 from autcli.config import get_rpc_endpoint
-from autcli.utils import load_from_file_or_stdin, web3_from_endpoint
+from autcli.utils import load_from_file_or_stdin, web3_from_endpoint_arg
 
 from autonity.utils.tx import send_tx
 
@@ -24,6 +24,6 @@ def sendtx(tx_file: str, rpc_endpoint: str) -> None:
     """
 
     signed_tx = SignedTransaction(**json.loads(load_from_file_or_stdin(tx_file)))
-    w3 = web3_from_endpoint(get_rpc_endpoint(rpc_endpoint))
+    w3 = web3_from_endpoint_arg(get_rpc_endpoint(rpc_endpoint))
     tx_hash = send_tx(w3, signed_tx)
     print(Web3.toHex(tx_hash))

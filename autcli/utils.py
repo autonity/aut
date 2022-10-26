@@ -5,79 +5,14 @@ Utility functions that are only meant to be called by other functions in this pa
 from autcli.config import get_rpc_endpoint
 from autcli.constants import AutonDenoms
 
+from autonity.utils.web3 import create_web3_for_endpoint
+
 import os
 import sys
 import json
-import re
 from web3 import Web3
 from web3.types import Wei, ChecksumAddress, BlockIdentifier
 from typing import Dict, Optional, Any
-
-
-def w3_provider_type(identifier: str) -> str:
-    """
-    Return the provider protocol type (https, ws, or IPC) of an
-    endpoint described by string 'identifier'. If identifier isn't a
-    valid format of one of these three types, return None.
-    """
-    regex_http = re.compile(r"^(?:http)s?://")
-    regex_ws = re.compile(r"^(?:ws)s?://")
-    regex_ipc = re.compile("([^ !$`&*()+]|(\\[ !$`&*()+]))+\\.ipc")
-    if re.match(regex_http, identifier) is not None:
-        return "http"
-    if re.match(regex_ws, identifier) is not None:
-        return "ws"
-    if re.match(regex_ipc, identifier) is not None:
-        return "ipc"
-
-    raise ValueError(f"unknown protocol identifier: {identifier}")
-
-
-def validate_w3_provider_type(identifier: str) -> str:
-    """
-    Take identifier for an http or ws URI, or an IPC filepath and
-    check that it's valid. If it's valid, just return identifier,
-    otherwise raise exception.
-    """
-    rpc_type = w3_provider_type(identifier)
-    if rpc_type is None:
-        raise Exception(
-            "rpc identifier must be an http|ws URI or a filesystem path to an IPC socket."
-        )
-    return identifier
-
-
-# def w3_provider_endpoint() -> str:
-#     """
-#     Return the identifier for the RPC provider endpoint. This will
-#     be the value of user's parent shell environment variable
-#     WEB3_PROVIDER, if that exists, otherwise the DEFAULT_RPC_ENDPOINT
-#     constant defined in this package.
-
-#     In the first case, the shell variable value is first validated and
-#     an exception thrown if it's not valid.
-#     """
-#     identifier = os.getenv("WEB3_PROVIDER")
-#     if identifier is not None:
-#         endpoint = validate_w3_provider_type(identifier)
-#     else:
-#         endpoint = Defaults.DEFAULT_RPC_ENDPOINT
-#     return endpoint
-
-
-def web3_from_endpoint(endpoint: str) -> Web3:
-    """
-    Given an RPC endpoint URL, create a Web3 object.
-    """
-    rpc_type = w3_provider_type(endpoint)
-    if rpc_type == "http":
-        return Web3(Web3.HTTPProvider(endpoint))
-    if rpc_type == "ws":
-        return Web3(Web3.WebsocketProvider(endpoint))
-    if rpc_type == "ipc":
-        return Web3(Web3.IPCProvider(endpoint))
-
-    raise ValueError(f"unknown protocol identifier: {endpoint}")
 
 
 def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> Web3:
@@ -85,14 +20,17 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     Construct a Web3 from a cli argument.  CLI argument is not
     present, fall back to env vars and config files.
 
-    Used for the common pattern of initializing a Web3, only if
+    Used for the common pattern of initializing a Web3 on-demand, as
     required to compute parameter values not given on the command line
-    (e.g. maketx command may have to connect to a node to compute gas
-    parameters, nonces, chainID, etc unless these are all explicitly
-    available.
+    For example, see the `maketx` command which may or may not connect
+    to a node to compute one or more of: gas parameters, nonce,
+    chainID, etc.  If multiple of these must be computed, we should
+    avoid creating multiple connections.  Conversely, if all of these
+    values are given on the command line, no connected web3 object is
+    required.
     """
     if w3 is None:
-        return web3_from_endpoint(get_rpc_endpoint(endpoint_arg))
+        return create_web3_for_endpoint(get_rpc_endpoint(endpoint_arg))
 
     return w3
 
