@@ -3,18 +3,18 @@ Code that is executed when 'aut signtx..' is invoked on the command-line.
 """
 
 from autcli.utils import load_from_file_or_stdin, to_json
+from autcli.options import keyfile_and_password_options
 from autcli.config import get_keyfile_password
 
 from autonity.utils.tx import sign_tx
 
 import json
-from click import command, option, argument
+from click import command, argument
 from typing import Dict, Optional, Any, cast
 
 
 @command()
-@option("--key-file", "-k", required=True, help="Encrypted private key file")
-@option("--password", "-p", help="Password for key file (or use env var 'KEYFILEPWD')")
+@keyfile_and_password_options(True)
 @argument(
     "tx-file",
     required=True,

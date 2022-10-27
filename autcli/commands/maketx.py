@@ -1,6 +1,8 @@
 """
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
+
+from autcli.options import rpc_endpoint_option
 from autcli.utils import parse_wei_representation, to_json, web3_from_endpoint_arg
 
 from web3 import Web3
@@ -13,8 +15,11 @@ from typing import Dict, Optional, Any, cast
 # pylint: disable=too-many-branches
 
 
+# @option("--rpc-endpoint", "-r", help="RPC endpoint (defaults to WEB3_ENDPOINT env var")
+
+
 @command()
-@option("--rpc-endpoint", "-r", help="RPC endpoint (defaults to WEB3_ENDPOINT env var")
+@rpc_endpoint_option
 @option("--from", "-f", "from_str", help="address from which tx is sent.")
 @option("--to", "-t", "to_str", help="address to which tx is directed.")
 @option(
