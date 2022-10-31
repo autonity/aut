@@ -6,10 +6,10 @@ from autcli.config import get_rpc_endpoint
 from autcli.constants import AutonDenoms
 
 from autonity.utils.web3 import create_web3_for_endpoint
+from autonity.utils.keyfile import load_keyfile
 
 import os
 import sys
-import json
 from web3 import Web3
 from web3.types import Wei, ChecksumAddress, BlockIdentifier
 from typing import Dict, Optional, Any
@@ -54,9 +54,6 @@ def w3_provider_is_connected(w3: Web3) -> bool:
         raise OSError("Web3 is not connected")
 
     return True
-
-
-# TODO: mode to autonity.py
 
 
 def parse_wei_representation(wei_str: str) -> Wei:
@@ -121,14 +118,6 @@ def degeneate_address_keyfile_dict(keystore_dir: str) -> Dict[str, str]:
     """
     addr_keyfile_dict = address_keyfile_dict(keystore_dir)
     return {k.lower().replace("0x", ""): v for k, v in addr_keyfile_dict.items()}
-
-
-def load_keyfile(keyfile_path: str) -> Dict[str, Any]:
-    """
-    Load a keyfile at keyfile_path and return its contents.
-    """
-    with open(keyfile_path, encoding="UTF-8") as keyfile:
-        return json.load(keyfile)
 
 
 def to_checksum_address(address: str) -> ChecksumAddress:
