@@ -27,7 +27,7 @@ endpoint is different, or you are using websockets or IPC, you need to
 define it in your shell like 'export WEB3_PROVIDER=<your-endpoint>`.
 """
 
-from autcli.commands import maketx, signtx, sendtx
+from autcli.commands import maketx, signtx, sendtx, waittx
 
 from click import group
 
@@ -42,3 +42,4 @@ def aut() -> None:
 aut.add_command(maketx.maketx)
 aut.add_command(signtx.signtx)
 aut.add_command(sendtx.sendtx)
+aut.add_command(waittx.waittx)

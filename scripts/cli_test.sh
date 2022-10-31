@@ -35,7 +35,8 @@ pushd _test_data
     # Send the transaction
     aut sendtx test_tx.signed > test_tx.hash
 
-    # TODO: Wait for transaction
+    # Wait for transaction
+    aut waittx `cat test_tx.hash`
 
     # TODO: check Alice and Bob's new balances
 
