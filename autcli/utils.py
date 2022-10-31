@@ -10,9 +10,10 @@ from autonity.utils.keyfile import load_keyfile
 
 import os
 import sys
+from click import ClickException
 from web3 import Web3
-from web3.types import Wei, ChecksumAddress, BlockIdentifier
-from typing import Dict, Mapping, Optional, TypeVar, Any, cast
+from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes
+from typing import Dict, Mapping, Optional, Union, TypeVar, Any, cast
 
 
 # Intended to "value" types
@@ -171,7 +172,7 @@ def validate_32byte_hash_string(hash_str: str) -> str:
     return hash_str
 
 
-def validate_block_identifier(block_id: BlockIdentifier) -> BlockIdentifier:
+def validate_block_identifier(block_id: Union[str, int]) -> BlockIdentifier:
     """
     If string represents a valid block identifier, just return it,
     otherwise raise exception. A valid block identifier is either a
@@ -184,16 +185,17 @@ def validate_block_identifier(block_id: BlockIdentifier) -> BlockIdentifier:
         return block_id
 
     if isinstance(block_id, str):
-        if string_is_32byte_hash(block_id):
-            return block_id
+        if block_id in ["latest", "earliest", "pending"]:
+            return cast(BlockIdentifier, block_id)
 
-        # Attempt to parse as in int
         try:
             return int(block_id)
         except ValueError:
             pass
 
-    raise ValueError(f"{str(block_id)} is neither a 32-byte hash nor an integer")
+        return HexBytes(block_id)
+
+    raise ClickException(f"failed parsing block identifier: {block_id}")
 
 
 def load_from_file_or_stdin(filename: str) -> str:

@@ -10,22 +10,20 @@ functions meant to be called in that.
 
 from autcli.utils import w3_provider
 
-
+from web3 import Web3
 from web3.types import (
     ChecksumAddress,
     Wei,
     BlockIdentifier,
     BlockData,
-    TxReceipt,
     TxParams,
     SignedTx,
-    HexBytes,
 )
 from typing import Dict, List, Tuple, Optional, Any
 
 
 def get_account_stats(
-    accounts: List[ChecksumAddress], tag: Optional[str] = None
+    w3: Web3, accounts: List[ChecksumAddress], tag: Optional[str] = None
 ) -> Dict[ChecksumAddress, Tuple[int, Wei]]:
     """
     For a list of accounts, return a dictionary with accounts as keys
@@ -35,7 +33,6 @@ def get_account_stats(
     tag. The underlying RPC methods are eth_getBalance and
     eth_getTransactionCount.
     """
-    w3 = w3_provider()
     stats: Dict[ChecksumAddress, Tuple[int, Wei]] = {}
     for acct in accounts:
         txcount = w3.eth.get_transaction_count(acct)
@@ -47,14 +44,15 @@ def get_account_stats(
     return stats
 
 
-def get_node_stats() -> Any:
+# TODO: Properly typed object.
+# TODO: Move to autonity.py
+
+
+def get_node_stats(w3: Web3) -> Any:
     """
     Return a dictionary with results for a bunch of of nullary EIP1474 RPC methods.
     """
 
-    # TODO: types
-
-    w3 = w3_provider()
     stats = {
         "eth_accounts": w3.eth.accounts,
         "eth_blockNumber": w3.eth.block_number,
@@ -71,41 +69,17 @@ def get_node_stats() -> Any:
     return stats
 
 
-def get_latest_block_number() -> int:
-    """
-    Returns the block height of the latest block.
-    """
-    w3 = w3_provider()
-    block_number = w3.eth.block_number
-    return block_number
+# TODO: Move to autonity.py
 
 
-def get_block(identifier: BlockIdentifier) -> BlockData:
+def get_block(w3: Web3, identifier: BlockIdentifier) -> BlockData:
     """
     Returns a dictionary of block data for the block identified by
     'identifier', which is either a block number/height or string
     representation of a 32 byte block hash.
     """
-    w3 = w3_provider()
     block_data = w3.eth.get_block(identifier)
     return block_data
-
-
-def get_transaction_receipt(tx_hash: HexBytes, wait_timeout: int = 0) -> TxReceipt:
-    """
-    Returns a dictionary with the tx receipt for the transaction
-    identified by 'tx_hash'. If 'wait_timeout' is non-zero, wait that
-    many seconds before returning a 'transactionNotFound' response,
-    which is a useful feature as the tx hash is returned as soon as
-    the RPC node gets the tx, but the receipt is not available until
-    the tx has been mined.
-    """
-    w3 = w3_provider()
-    if wait_timeout > 0:
-        tx_receipt = w3.eth.wait_for_transaction_receipt(tx_hash, wait_timeout)
-    else:
-        tx_receipt = w3.eth.get_transaction_receipt(tx_hash)
-    return tx_receipt
 
 
 # TODO: support this?

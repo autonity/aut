@@ -46,7 +46,7 @@ def get_rpc_endpoint(endpoint: Optional[str]) -> str:
         endpoint = os.getenv(WEB3_ENDPOINT_ENV_VAR)
         if endpoint is None:
             raise ClickException(
-                f"rpc end-point not given (use cmd line param or {WEB3_ENDPOINT_ENV_VAR} env var"
+                f"No RPC endpoint given (use --rpc-endpoint or {WEB3_ENDPOINT_ENV_VAR} env var)"
             )
 
     return endpoint

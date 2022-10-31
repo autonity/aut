@@ -3,7 +3,8 @@ The waittx command.
 """
 
 from autcli.options import rpc_endpoint_option
-from autcli.utils import web3_from_endpoint_arg, to_json
+from autcli.utils import web3_from_endpoint_arg, to_json, validate_32byte_hash_string
+
 
 from autonity.utils.tx import wait_for_tx
 
@@ -34,7 +35,7 @@ def waittx(
     Timeouts also result in a non-zero exit code.
     """
 
-    hash_bytes = HexBytes(tx_hash)
+    hash_bytes = HexBytes(validate_32byte_hash_string(tx_hash))
 
     try:
         w3 = web3_from_endpoint_arg(None, rpc_endpoint)
