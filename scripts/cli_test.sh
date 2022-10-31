@@ -27,13 +27,13 @@ pushd _test_data
         --from ${ALICE} \
         --to ${BOB} \
         --value '1wei' \
-        --gas 3000000 --gas-price 1000000000 > test.tx
+        --gas 3000000 --gas-price 1000000000 > test_tx
 
     # Sign the tx using Alices private key
-    KEYFILEPWD=alice aut signtx --key-file ${ALICE_KEYFILE} test.tx > test.signed.tx
+    KEYFILEPWD=alice aut signtx --key-file ${ALICE_KEYFILE} test_tx > test_tx.signed
 
     # Send the transaction
-    aut sendtx test.signed.tx
+    aut sendtx test_tx.signed > test_tx.hash
 
     # TODO: Wait for transaction
 

@@ -8,14 +8,11 @@ from autcli.utils import parse_wei_representation, to_json, web3_from_endpoint_a
 from web3 import Web3
 from web3.types import TxParams, Nonce, Wei, HexStr
 from click import command, option, ClickException
-from typing import Dict, Optional, Any, cast
+from typing import Optional
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-branches
-
-
-# @option("--rpc-endpoint", "-r", help="RPC endpoint (defaults to WEB3_ENDPOINT env var")
 
 
 @command()
@@ -172,7 +169,7 @@ def maketx(
     if legacy:
         tx["type"] = HexStr("0x0")
 
-    print(to_json(cast(Dict[Any, Any], tx)))
+    print(to_json(tx))
 
 
 # Other Features Contemplated

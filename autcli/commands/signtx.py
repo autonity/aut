@@ -10,7 +10,7 @@ from autonity.utils.tx import sign_tx
 
 import json
 from click import command, argument
-from typing import Dict, Optional, Any, cast
+from typing import Optional
 
 
 @command()
@@ -41,7 +41,7 @@ def signtx(key_file: str, password: Optional[str], tx_file: str) -> None:
     # Sign the tx:
     signed_tx = sign_tx(tx, encrypted_key, password)
 
-    print(to_json(cast(Dict[Any, Any], signed_tx._asdict())))
+    print(to_json(signed_tx._asdict()))
 
 
 # Other Features Contemplated

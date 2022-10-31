@@ -12,7 +12,11 @@ import os
 import sys
 from web3 import Web3
 from web3.types import Wei, ChecksumAddress, BlockIdentifier
-from typing import Dict, Optional, Any
+from typing import Dict, Mapping, Optional, TypeVar, Any, cast
+
+
+# Intended to "value" types
+V = TypeVar("V")
 
 
 def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> Web3:
@@ -20,14 +24,16 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     Construct a Web3 from a cli argument.  CLI argument is not
     present, fall back to env vars and config files.
 
-    Used for the common pattern of initializing a Web3 on-demand, as
-    required to compute parameter values not given on the command line
-    For example, see the `maketx` command which may or may not connect
-    to a node to compute one or more of: gas parameters, nonce,
-    chainID, etc.  If multiple of these must be computed, we should
-    avoid creating multiple connections.  Conversely, if all of these
-    values are given on the command line, no connected web3 object is
-    required.
+    Can also be used to implement the common pattern of initializing a
+    Web3 "on-demand", for example to compute values only if they are
+    not given on the command line, but ensure only one Web3 connection
+    is created.
+
+    See the `maketx` command which may or may not connect to a node to
+    compute one or more of: gas parameters, nonce, chainID, etc.  If
+    multiple of these must be computed, we should avoid creating
+    multiple connections.  Conversely, if all of these values are
+    given on the command line, no connected web3 object is required.
     """
     if w3 is None:
         return create_web3_for_endpoint(get_rpc_endpoint(endpoint_arg))
@@ -129,11 +135,14 @@ def to_checksum_address(address: str) -> ChecksumAddress:
     return checksum_address
 
 
-def to_json(data: Dict[Any, Any]) -> str:
+def to_json(data: Mapping[str, V]) -> str:
     """
     Take python data structure, return json formatted data.
+
+    Note, the `Mapping[K, V]` type allows all `TypedDict` types
+    (`TxParams`, `SignedTx`, etc) to be passed in.
     """
-    return Web3.toJSON(data)
+    return Web3.toJSON(cast(Dict[Any, Any], data))
 
 
 def string_is_32byte_hash(hash_str: str) -> bool:
