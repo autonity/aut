@@ -1,4 +1,4 @@
-.PHONY: setup-dev install check check-lint check-format check-types check-tests format tests clean
+.PHONY: tests
 
 setup:
 	pip install -e ../autonity.py[dev]
