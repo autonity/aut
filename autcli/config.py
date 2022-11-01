@@ -8,8 +8,26 @@ from getpass import getpass
 from typing import Optional
 
 
+DEFAULT_KEYFILE_DIRECTORY = "~/.autonity/keystore"
+KEYFILE_DIRECTORY_ENV_VAR = "~/.autonity/keystore"
 KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
 WEB3_ENDPOINT_ENV_VAR = "WEB3_ENDPOINT"
+
+
+def get_keystore_directory(keystore_directory: Optional[str]) -> str:
+    """
+    Get the keystore directory.  In order, use the command-line
+    parameter, falling back to the env var then config file, and finally to
+    DEFAULT_KEYFILE_DIRECTORY.
+    """
+    if keystore_directory is None:
+        keystore_directory = os.getenv(KEYFILE_DIRECTORY_ENV_VAR)
+        if keystore_directory is None:
+            # TODO: read from config file
+            keystore_directory = DEFAULT_KEYFILE_DIRECTORY
+
+    assert keystore_directory is not None
+    return keystore_directory
 
 
 def get_keyfile_password(

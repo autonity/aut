@@ -19,8 +19,16 @@ CAROL=0x6813Eb9362372EEF6200f3b1dbC3f819671cBA69
 mkdir -p _test_data
 pushd _test_data
 
-    # TODO: Get Alice and Bob's balances
-    # aut balance ${ALICE}
+    # Basic key handling
+
+    mkdir -p keystore
+    cp ../tests/data/alice.key keystore
+    cp ../tests/data/bob.key keystore
+    aut list accounts --keystore keystore > accounts
+    [ 2 == $(wc -l < accounts) ] || (echo "unexpected number of accounts"; exit 1)
+
+    # List account info
+    aut get account --stdin < accounts
 
     # Tiny send tx from 1 to 2
     aut maketx \
