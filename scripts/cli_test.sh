@@ -30,6 +30,10 @@ pushd _test_data
     # List account info
     aut get account --stdin < accounts
 
+    # Get Alice and Bob's balances
+    alice_balance_orig=`aut get balance $ALICE`
+    bob_balance_orig=`aut get balance $BOB`
+
     # Tiny send tx from 1 to 2
     aut maketx \
         --from ${ALICE} \
@@ -46,6 +50,9 @@ pushd _test_data
     # Wait for transaction
     aut waittx `cat test_tx.hash`
 
-    # TODO: check Alice and Bob's new balances
+    # Check Bob's new balances is 1 greater than the starting balance
+    bob_balance_new=`aut get balance $BOB`
+    [ "${bob_balance_new}" == "$((${bob_balance_orig} + 1))" ] || (
+        echo "Unexpected balance change"; exit 1)
 
     popd

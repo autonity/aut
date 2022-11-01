@@ -2,13 +2,16 @@
 The aut get command group
 """
 
+from autonity import Autonity
+from autonity.erc20 import ERC20
+
 from autcli.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
 from autcli.options import rpc_endpoint_option
 from autcli.user import get_account_stats, get_node_stats, get_block
 
 import sys
 from web3 import Web3
-from click import group, command, option, argument
+from click import group, command, option, argument, ClickException
 from typing import List, Optional
 
 
@@ -83,6 +86,38 @@ def account(
         print(f"{acct} {act_stats[0]} {act_stats[1]}")
 
 
+@command()
+@rpc_endpoint_option
+@option("--new", is_flag=True, help="print the Newton (NTN) balance instead of Auton")
+@option("--token", help="print the balance of the ERC20 token at the given address")
+@argument("account_str", metavar="ACCOUNT", nargs=1)
+def balance(
+    rpc_endpoint: Optional[str], account_str: str, new: bool, token: Optional[str]
+) -> None:
+    """
+    Print the current balance of the given account.
+    """
+    account_addr = Web3.toChecksumAddress(account_str)
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+
+    if new:
+        if token:
+            raise ClickException(
+                "cannot use --new and --token <addr> arguments together"
+            )
+
+        autonity = Autonity(w3)
+        print(autonity.balance_of(account_addr))
+
+    elif token:
+        token_contract = ERC20(w3, Web3.toChecksumAddress(token))
+        print(token_contract.balance_of(account_addr))
+
+    else:
+        print(w3.eth.get_balance(account_addr))
+
+
 get.add_command(stats)
 get.add_command(block)
 get.add_command(account)
+get.add_command(balance)
