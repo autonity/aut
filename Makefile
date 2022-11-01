@@ -1,6 +1,6 @@
 .PHONY: setup-dev install check check-lint check-format check-types check-tests format tests clean
 
-setup-dev:
+setup:
 	pip install -e ../autonity.py[dev]
 	pip install -e .[dev]
 
