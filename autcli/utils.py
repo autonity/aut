@@ -5,6 +5,7 @@ Utility functions that are only meant to be called by other functions in this pa
 from autcli.config import get_rpc_endpoint
 from autcli.constants import AutonDenoms
 
+from autonity import Autonity
 from autonity.utils.web3 import create_web3_for_endpoint
 from autonity.utils.keyfile import load_keyfile
 
@@ -208,3 +209,28 @@ def load_from_file_or_stdin(filename: str) -> str:
 
     with open(filename, "r", encoding="utf8") as in_f:
         return in_f.read()
+
+
+def newton_or_token_to_address(
+    ntn: bool, token: Optional[str]
+) -> Optional[ChecksumAddress]:
+    """
+    Intended to be used in conjunction with the `newton_or_token`
+    decorator which adds command line parameters.  Takes the parameter
+    values and returns the address of the ERC20 contract to use.
+    Doesn't instantiate the ERC20, since we may not have a Web3 object
+    (and don't want to create one before validating all cli parameters.)
+    """
+
+    if ntn:
+        if token:
+            raise ClickException(
+                "cannot use --new and --token <addr> arguments together"
+            )
+
+        return Autonity.address()
+
+    if token:
+        return Web3.toChecksumAddress(token)
+
+    return None

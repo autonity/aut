@@ -2,16 +2,20 @@
 The aut get command group
 """
 
-from autonity import Autonity
-from autonity.erc20 import ERC20
-
-from autcli.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
-from autcli.options import rpc_endpoint_option
+from autcli.utils import (
+    to_json,
+    validate_block_identifier,
+    web3_from_endpoint_arg,
+    newton_or_token_to_address,
+)
+from autcli.options import rpc_endpoint_option, newton_or_token_option
 from autcli.user import get_account_stats, get_node_stats, get_block
+
+from autonity.erc20 import ERC20
 
 import sys
 from web3 import Web3
-from click import group, command, option, argument, ClickException
+from click import group, command, option, argument
 from typing import List, Optional
 
 
@@ -88,32 +92,24 @@ def account(
 
 @command()
 @rpc_endpoint_option
-@option("--new", is_flag=True, help="print the Newton (NTN) balance instead of Auton")
-@option("--token", help="print the balance of the ERC20 token at the given address")
+@newton_or_token_option
 @argument("account_str", metavar="ACCOUNT", nargs=1)
 def balance(
-    rpc_endpoint: Optional[str], account_str: str, new: bool, token: Optional[str]
+    rpc_endpoint: Optional[str], account_str: str, ntn: bool, token: Optional[str]
 ) -> None:
     """
     Print the current balance of the given account.
     """
     account_addr = Web3.toChecksumAddress(account_str)
+    token_addresss = newton_or_token_to_address(ntn, token)
+
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
 
     # TODO: support printing in other denominations (AUT / units based
     # on num decimals of token).
 
-    if new:
-        if token:
-            raise ClickException(
-                "cannot use --new and --token <addr> arguments together"
-            )
-
-        autonity = Autonity(w3)
-        print(autonity.balance_of(account_addr))
-
-    elif token:
-        token_contract = ERC20(w3, Web3.toChecksumAddress(token))
+    if token_addresss is not None:
+        token_contract = ERC20(w3, token_addresss)
         print(token_contract.balance_of(account_addr))
 
     else:
