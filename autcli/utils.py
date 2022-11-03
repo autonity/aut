@@ -11,6 +11,7 @@ from autonity.utils.keyfile import load_keyfile
 
 import os
 import sys
+import json
 from decimal import Decimal
 from click import ClickException
 from web3 import Web3
@@ -141,14 +142,17 @@ def to_checksum_address(address: str) -> ChecksumAddress:
     return checksum_address
 
 
-def to_json(data: Mapping[str, V]) -> str:
+def to_json(data: Mapping[str, V], pretty=False) -> str:
     """
     Take python data structure, return json formatted data.
 
     Note, the `Mapping[K, V]` type allows all `TypedDict` types
     (`TxParams`, `SignedTx`, etc) to be passed in.
     """
-    return Web3.toJSON(cast(Dict[Any, Any], data))
+    if pretty:
+        return json.dumps(cast(Dict[Any, Any], data), indent=2)
+    else:
+        return Web3.toJSON(cast(Dict[Any, Any], data))
 
 
 def string_is_32byte_hash(hash_str: str) -> bool:
