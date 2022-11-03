@@ -35,7 +35,7 @@ def stats(rpc_endpoint: Optional[str]) -> None:
     """
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     node_stats = get_node_stats(w3)
-    print(to_json(node_stats))
+    print(to_json(node_stats, pretty=True))
 
 
 @command()
