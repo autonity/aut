@@ -12,6 +12,7 @@ from typing import Optional
 
 DEFAULT_KEYFILE_DIRECTORY = "~/.autonity/keystore"
 KEYFILE_DIRECTORY_ENV_VAR = "~/.autonity/keystore"
+KEYFILE_ENV_VAR = "KEYFILE"
 KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
 WEB3_ENDPOINT_ENV_VAR = "WEB3_ENDPOINT"
 
@@ -31,6 +32,23 @@ def get_keystore_directory(keystore_directory: Optional[str]) -> str:
 
     assert keystore_directory is not None
     return keystore_directory
+
+
+def get_keyfile(keyfile: Optional[str]) -> str:
+    """
+    Get the keyfile configuration.
+    """
+    if keyfile is None:
+        keyfile = os.getenv(KEYFILE_ENV_VAR)
+        if keyfile is None:
+            keyfile = get_config_file().get_path("keyfile")
+            if keyfile is None:
+                raise ClickException(
+                    f"No keyfile specified (use --key-file, {KEYFILE_ENV_VAR} env var "
+                    f"or {CONFIG_FILE_NAME})"
+                )
+
+    return keyfile
 
 
 def get_keyfile_password(

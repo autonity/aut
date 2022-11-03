@@ -35,6 +35,7 @@ pushd _test_data
 
     echo '[aut]' > .autrc
     echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
+    echo 'keyfile = keystore/alice.key' >> .autrc
 
     # Get Alice and Bob's balances
     alice_balance_orig=`aut get balance $ALICE`
@@ -45,14 +46,17 @@ pushd _test_data
     # NTN).
     aut --verbose maketx \
         --ntn \
-        --from ${ALICE} \
-        --to ${BOB} \
+        --from ${BOB} \
+        --to ${ALICE} \
         --value '0.002kwei' \
         --gas 1000000 \
         --gas-price 1000000000 \
         --nonce 12 > test_ntn_tx
 
-    # TODO: Sign and send the above when we can fund dummy accounts with NTN
+    # Sign the tx using Bobs private key
+    KEYFILEPWD=bob aut --verbose signtx --key-file keystore/bob.key test_ntn_tx > test_ntn_tx.signed
+
+    # TODO: Send the above when we can fund dummy accounts with NTN
 
     # Tiny send tx from 1 to 2
     aut --verbose maketx \
@@ -61,8 +65,8 @@ pushd _test_data
         --value '0.001kwei' \
         --gas-price 1000000000 > test_tx
 
-    # Sign the tx using Alices private key
-    KEYFILEPWD=alice aut signtx --key-file ${ALICE_KEYFILE} test_tx > test_tx.signed
+    # Sign the tx using Alices private key (taken from the .autrc file)
+    KEYFILEPWD=alice aut --verbose signtx test_tx > test_tx.signed
 
     # Send the transaction
     aut sendtx test_tx.signed > test_tx.hash

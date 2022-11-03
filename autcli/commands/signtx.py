@@ -4,7 +4,8 @@ Code that is executed when 'aut signtx..' is invoked on the command-line.
 
 from autcli.utils import load_from_file_or_stdin, to_json
 from autcli.options import keyfile_and_password_options
-from autcli.config import get_keyfile_password
+from autcli.logging import log
+from autcli import config
 
 from autonity.utils.tx import sign_tx
 
@@ -14,12 +15,12 @@ from typing import Optional
 
 
 @command()
-@keyfile_and_password_options(True)
+@keyfile_and_password_options()
 @argument(
     "tx-file",
     required=True,
 )
-def signtx(key_file: str, password: Optional[str], tx_file: str) -> None:
+def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> None:
     """
     Sign a transaction using the given keyfile.  Use '-' to read from
     stdin instead of a file.
@@ -32,11 +33,13 @@ def signtx(key_file: str, password: Optional[str], tx_file: str) -> None:
     tx = json.loads(load_from_file_or_stdin(tx_file))
 
     # Read keyfile
+    key_file = config.get_keyfile(key_file)
+    log(f"using key file: {key_file}")
     with open(key_file, encoding="ascii") as key_f:
         encrypted_key = json.load(key_f)
 
     # Read password
-    password = get_keyfile_password(password)
+    password = config.get_keyfile_password(password)
 
     # Sign the tx:
     signed_tx = sign_tx(tx, encrypted_key, password)
