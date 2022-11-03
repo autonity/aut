@@ -100,6 +100,9 @@ def balance(
     account_addr = Web3.toChecksumAddress(account_str)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
 
+    # TODO: support printing in other denominations (AUT / units based
+    # on num decimals of token).
+
     if new:
         if token:
             raise ClickException(
