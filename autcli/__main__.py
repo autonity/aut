@@ -2,7 +2,15 @@
 Autonity RPC Client
 """
 
-from autcli.commands import maketx, signtx, sendtx, waittx, get, list as list_group
+from autcli.commands import (
+    maketx,
+    signtx,
+    sendtx,
+    waittx,
+    get,
+    list as list_group,
+    autonity,
+)
 from autcli.logging import enable_logging
 
 from click import group, option
@@ -25,3 +33,4 @@ aut.add_command(sendtx.sendtx)
 aut.add_command(waittx.waittx)
 aut.add_command(get.get)
 aut.add_command(list_group.list_group)
+aut.add_command(autonity.autonity)

@@ -142,7 +142,7 @@ def to_checksum_address(address: str) -> ChecksumAddress:
     return checksum_address
 
 
-def to_json(data: Mapping[str, V], pretty=False) -> str:
+def to_json(data: Mapping[str, V], pretty: bool = False) -> str:
     """
     Take python data structure, return json formatted data.
 
@@ -151,8 +151,8 @@ def to_json(data: Mapping[str, V], pretty=False) -> str:
     """
     if pretty:
         return json.dumps(cast(Dict[Any, Any], data), indent=2)
-    else:
-        return Web3.toJSON(cast(Dict[Any, Any], data))
+
+    return Web3.toJSON(cast(Dict[Any, Any], data))
 
 
 def string_is_32byte_hash(hash_str: str) -> bool:

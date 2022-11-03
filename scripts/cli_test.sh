@@ -32,10 +32,7 @@ pushd _test_data
 
     # Remove WEB3_ENDPOINT env var and set up a configuration file instead
     unset WEB3_ENDPOINT
-
-    echo '[aut]' > .autrc
-    echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
-    echo 'keyfile = keystore/alice.key' >> .autrc
+    ../scripts/setup_config_file.sh
 
     # Get Alice and Bob's balances
     alice_balance_orig=`aut get balance $ALICE`
