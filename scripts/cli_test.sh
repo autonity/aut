@@ -30,6 +30,12 @@ pushd _test_data
     # List account info
     aut get account --stdin < accounts
 
+    # Remove WEB3_ENDPOINT env var and set up a configuration file instead
+    unset WEB3_ENDPOINT
+
+    echo '[aut]' > .autrc
+    echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
+
     # Get Alice and Bob's balances
     alice_balance_orig=`aut get balance $ALICE`
     bob_balance_orig=`aut get balance $BOB`
@@ -37,7 +43,7 @@ pushd _test_data
     # Fake NTN transfer transaction.  Specify everything, to avoid
     # web3.py querying the node (which fails if ALICE has insufficient
     # NTN).
-    aut maketx \
+    aut --verbose maketx \
         --ntn \
         --from ${ALICE} \
         --to ${BOB} \
@@ -49,7 +55,7 @@ pushd _test_data
     # TODO: Sign and send the above when we can fund dummy accounts with NTN
 
     # Tiny send tx from 1 to 2
-    aut maketx \
+    aut --verbose maketx \
         --from ${ALICE} \
         --to ${BOB} \
         --value '0.001kwei' \

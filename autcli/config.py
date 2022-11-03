@@ -2,6 +2,8 @@
 Configuration-related code
 """
 
+from autcli.config_file import get_config_file, CONFIG_FILE_NAME
+
 import os
 from click import ClickException
 from getpass import getpass
@@ -23,8 +25,9 @@ def get_keystore_directory(keystore_directory: Optional[str]) -> str:
     if keystore_directory is None:
         keystore_directory = os.getenv(KEYFILE_DIRECTORY_ENV_VAR)
         if keystore_directory is None:
-            # TODO: read from config file
-            keystore_directory = DEFAULT_KEYFILE_DIRECTORY
+            keystore_directory = get_config_file().get_path("keystore")
+            if keystore_directory is None:
+                keystore_directory = DEFAULT_KEYFILE_DIRECTORY
 
     assert keystore_directory is not None
     return keystore_directory
@@ -63,8 +66,11 @@ def get_rpc_endpoint(endpoint: Optional[str]) -> str:
     if endpoint is None:
         endpoint = os.getenv(WEB3_ENDPOINT_ENV_VAR)
         if endpoint is None:
-            raise ClickException(
-                f"No RPC endpoint given (use --rpc-endpoint or {WEB3_ENDPOINT_ENV_VAR} env var)"
-            )
+            endpoint = get_config_file().get("rpc_endpoint")
+            if endpoint is None:
+                raise ClickException(
+                    f"No RPC endpoint given (use --rpc-endpoint, {WEB3_ENDPOINT_ENV_VAR}"
+                    f"env var or {CONFIG_FILE_NAME})"
+                )
 
     return endpoint
