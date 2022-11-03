@@ -34,19 +34,28 @@ def get_keystore_directory(keystore_directory: Optional[str]) -> str:
     return keystore_directory
 
 
-def get_keyfile(keyfile: Optional[str]) -> str:
+def get_keyfile_optional(keyfile: Optional[str]) -> Optional[str]:
     """
-    Get the keyfile configuration.
+    Get the keyfile configuration if available.
     """
     if keyfile is None:
         keyfile = os.getenv(KEYFILE_ENV_VAR)
         if keyfile is None:
             keyfile = get_config_file().get_path("keyfile")
-            if keyfile is None:
-                raise ClickException(
-                    f"No keyfile specified (use --key-file, {KEYFILE_ENV_VAR} env var "
-                    f"or {CONFIG_FILE_NAME})"
-                )
+
+    return keyfile
+
+
+def get_keyfile(keyfile: Optional[str]) -> str:
+    """
+    Get the keyfile configuration, raising a Click error if not given.
+    """
+    keyfile = get_keyfile_optional(keyfile)
+    if keyfile is None:
+        raise ClickException(
+            f"No keyfile specified (use --key-file, {KEYFILE_ENV_VAR} env var "
+            f"or {CONFIG_FILE_NAME})"
+        )
 
     return keyfile
 

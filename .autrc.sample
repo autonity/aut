@@ -1,6 +1,6 @@
 [aut]
 rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/
 keystore = path_to_keystore
+keyfile = path_to_keyfile
 # address =
-# keyfile = path_to_keyfile
 # chain_id =

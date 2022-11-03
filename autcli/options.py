@@ -17,6 +17,21 @@ rpc_endpoint_option: Decorator = option(
 )
 
 
+def keyfile_option(required: bool = False) -> Decorator:
+    """
+    Options: --key-file.  If `required` is True, --key-file is
+    required.
+    """
+
+    def decorator(fn: Func) -> Func:
+        fn = option(
+            "--key-file", "-k", required=required, help="Encrypted private key file"
+        )(fn)
+        return fn
+
+    return decorator
+
+
 def keyfile_and_password_options(required: bool = False) -> Decorator:
     """
     Options: --key-file and --password.  If `required` is True,
@@ -24,9 +39,7 @@ def keyfile_and_password_options(required: bool = False) -> Decorator:
     """
 
     def decorator(fn: Func) -> Func:
-        fn = option(
-            "--key-file", "-k", required=required, help="Encrypted private key file"
-        )(fn)
+        fn = keyfile_option(required)(fn)
         fn = option(
             "--password",
             "-p",

@@ -2,18 +2,21 @@
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
 
-from autcli.options import rpc_endpoint_option, newton_or_token_option
+from autcli.logging import log
+from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
 from autcli.utils import (
     parse_wei_representation,
     to_json,
     web3_from_endpoint_arg,
     newton_or_token_to_address,
 )
+from autcli import config
 
 from autonity.erc20 import ERC20
+from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
 
 from web3 import Web3
-from web3.types import TxParams, Nonce, Wei, HexStr
+from web3.types import TxParams, Nonce, Wei, HexStr, ChecksumAddress
 from click import command, option, ClickException
 from typing import Optional
 
@@ -26,7 +29,13 @@ from typing import Optional
 @command()
 @rpc_endpoint_option
 @newton_or_token_option
-@option("--from", "-f", "from_str", help="address from which tx is sent.")
+@keyfile_option()
+@option(
+    "--from",
+    "-f",
+    "from_str",
+    help="address from which tx is sent (extracted from keyfile if not given).",
+)
 @option("--to", "-t", "to_str", help="address to which tx is directed.")
 @option(
     "--gas",
@@ -82,6 +91,7 @@ def maketx(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
+    key_file: Optional[str],
     from_str: Optional[str],
     to_str: Optional[str],
     gas: Optional[str],
@@ -104,7 +114,22 @@ def maketx(
     # Potentially used in multiple places, so avoid re-initializing.
     w3: Optional[Web3] = None
 
-    from_addr = Web3.toChecksumAddress(from_str) if from_str else None
+    # If from_str is not set, take the address from a keyfile instead
+    # (if given)
+    if from_str:
+        from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
+    else:
+        log("no from-addr given.  attempting to extract from keyfile")
+        key_file = config.get_keyfile_optional(key_file)
+        if key_file:
+            key_data = load_keyfile(key_file)
+            from_addr = get_address_from_keyfile(key_data)
+            log(f"got keyfile: {key_file}, address: {from_addr}")
+        else:
+            log("no keyfile.  empty from-addr")
+            from_addr = None
+    log(f"from_addr: {from_addr}")
+
     to_addr = Web3.toChecksumAddress(to_str) if to_str else None
 
     if to_addr is None:

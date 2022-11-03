@@ -58,9 +58,9 @@ pushd _test_data
 
     # TODO: Send the above when we can fund dummy accounts with NTN
 
-    # Tiny send tx from 1 to 2
+    # Tiny send tx from Alice to Bob.  Extract Alice's address from
+    # the keyfile given in .autrc
     aut --verbose maketx \
-        --from ${ALICE} \
         --to ${BOB} \
         --value '0.001kwei' \
         --gas-price 1000000000 > test_tx
