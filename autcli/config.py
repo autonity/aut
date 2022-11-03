@@ -3,6 +3,7 @@ Configuration-related code
 """
 
 from autcli.config_file import get_config_file, CONFIG_FILE_NAME
+from autcli.logging import log
 
 import os
 from click import ClickException
@@ -99,5 +100,11 @@ def get_rpc_endpoint(endpoint: Optional[str]) -> str:
                     f"No RPC endpoint given (use --rpc-endpoint, {WEB3_ENDPOINT_ENV_VAR}"
                     f"env var or {CONFIG_FILE_NAME})"
                 )
+
+            log(f"endpoint from config file: {endpoint}")
+        else:
+            log(f"endpoint from env var: {endpoint}")
+    else:
+        log(f"endpoint from command line: {endpoint}")
 
     return endpoint
