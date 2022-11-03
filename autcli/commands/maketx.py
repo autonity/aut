@@ -22,7 +22,6 @@ from typing import Optional
 @option(
     "--gas",
     "-g",
-    required=True,
     help="maximum gas units that can be consumed by the tx.",
 )
 @option(
@@ -168,6 +167,12 @@ def maketx(
 
     if legacy:
         tx["type"] = HexStr("0x0")
+
+    if gas:
+        tx["gas"] = parse_wei_representation(gas)
+    else:
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        tx["gas"] = w3.eth.estimateGas(tx)
 
     print(to_json(tx))
 

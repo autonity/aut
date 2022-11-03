@@ -39,7 +39,7 @@ pushd _test_data
         --from ${ALICE} \
         --to ${BOB} \
         --value '1wei' \
-        --gas 3000000 --gas-price 1000000000 > test_tx
+        --gas-price 1000000000 > test_tx
 
     # Sign the tx using Alices private key
     KEYFILEPWD=alice aut signtx --key-file ${ALICE_KEYFILE} test_tx > test_tx.signed
