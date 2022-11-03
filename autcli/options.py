@@ -13,7 +13,10 @@ Decorator = Callable[[Func], Func]
 
 # an --rpc-endpoint, -r <url> option
 rpc_endpoint_option: Decorator = option(
-    "--rpc-endpoint", "-r", help="RPC endpoint (defaults to WEB3_ENDPOINT env var"
+    "--rpc-endpoint",
+    "-r",
+    metavar="URL",
+    help="RPC endpoint (defaults to WEB3_ENDPOINT env var",
 )
 
 
@@ -55,10 +58,8 @@ def newton_or_token_option(fn: Func) -> Func:
     Adds the --ntn and --token flags, allowing the user to specify
     that a transfer should use an ERC20 token.
     """
+    fn = option("--ntn", is_flag=True, help="Use Newton (NTN) instead of Auton")(fn)
     fn = option(
-        "--ntn", is_flag=True, help="print the Newton (NTN) balance instead of Auton"
-    )(fn)
-    fn = option(
-        "--token", help="print the balance of the ERC20 token at the given address"
+        "--token", metavar="TOKEN-ADDR", help="Use the ERC20 token at the given address"
     )(fn)
     return fn

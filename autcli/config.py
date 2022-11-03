@@ -12,7 +12,7 @@ from typing import Optional
 
 
 DEFAULT_KEYFILE_DIRECTORY = "~/.autonity/keystore"
-KEYFILE_DIRECTORY_ENV_VAR = "~/.autonity/keystore"
+KEYFILE_DIRECTORY_ENV_VAR = "KEYFILEDIR"
 KEYFILE_ENV_VAR = "KEYFILE"
 KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
 WEB3_ENDPOINT_ENV_VAR = "WEB3_ENDPOINT"
@@ -75,7 +75,7 @@ def get_keyfile_password(
         password = os.getenv(KEYFILE_PASSWORD_ENV_VAR)
         if password is None:
             password = getpass(
-                "KEYFILEPWD env var not set (consider using 'KEYFILEPWD').\n"
+                "(consider using '{KEYFILE_PASSWORD_ENV_VAR}' env var).\n"
                 + "Enter passphrase "
                 + ("" if key_file is None else f"for {key_file} ")
                 + "(or CTRL-d to exit): "
