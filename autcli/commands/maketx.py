@@ -2,8 +2,15 @@
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
 
-from autcli.options import rpc_endpoint_option
-from autcli.utils import parse_wei_representation, to_json, web3_from_endpoint_arg
+from autcli.options import rpc_endpoint_option, newton_or_token_option
+from autcli.utils import (
+    parse_wei_representation,
+    to_json,
+    web3_from_endpoint_arg,
+    newton_or_token_to_address,
+)
+
+from autonity.erc20 import ERC20
 
 from web3 import Web3
 from web3.types import TxParams, Nonce, Wei, HexStr
@@ -13,10 +20,12 @@ from typing import Optional
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 
 
 @command()
 @rpc_endpoint_option
+@newton_or_token_option
 @option("--from", "-f", "from_str", help="address from which tx is sent.")
 @option("--to", "-t", "to_str", help="address to which tx is directed.")
 @option(
@@ -71,6 +80,8 @@ from typing import Optional
 )
 def maketx(
     rpc_endpoint: Optional[str],
+    ntn: bool,
+    token: Optional[str],
     from_str: Optional[str],
     to_str: Optional[str],
     gas: Optional[str],
@@ -88,13 +99,75 @@ def maketx(
     Create a transaction given the parameters passed in.
     """
 
+    # TODO: function is too big.  break into smaller pieces.
+
     # Potentially used in multiple places, so avoid re-initializing.
     w3: Optional[Web3] = None
 
     from_addr = Web3.toChecksumAddress(from_str) if from_str else None
     to_addr = Web3.toChecksumAddress(to_str) if to_str else None
 
-    tx: TxParams = {}
+    if to_addr is None:
+        raise ClickException(
+            "to-address must be specified.  (contract deployment not yet supported)"
+        )
+
+    token_addresss = newton_or_token_to_address(ntn, token)
+
+    tx: TxParams
+
+    if token_addresss:
+        # Create TxParams using the contract call.  We must have a
+        # from-address and value, and data should be set.
+        if from_addr is None:
+            raise ClickException("from-address required for token transfers")
+        if not value:
+            raise ClickException("value is required for token transfers")
+        if data:
+            raise ClickException("data cannot be set for token transfers")
+
+        # TODO: check contract for number of decimals.  For now, use
+        # the auton denominations everywhere.
+
+        # TODO: this currently requires a Web3 connection in order to
+        # estimate gas, gas price, nonce, and chainId .  At least for
+        # NTN, this should all be known and we should be able to do
+        # this offline.
+
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        tx = ERC20(w3, token_addresss).transfer(
+            from_addr,
+            to_addr,
+            parse_wei_representation(value),
+            Wei(int(gas)) if gas else Wei(0),
+            Wei(int(gas_price)) if gas_price else Wei(0),
+            Nonce(nonce) if nonce else Nonce(0),
+        )
+
+    else:
+
+        # Create a simple tx with optional data
+        tx = {}
+        if from_addr:
+            tx["from"] = Web3.toChecksumAddress(from_addr)
+
+        if to_addr:
+            tx["to"] = Web3.toChecksumAddress(to_addr)
+
+        if value:
+            tx["value"] = parse_wei_representation(value)
+        elif not data:
+            raise ClickException("Empty tx (neither value or data given)")
+
+        if gas:
+            tx["gas"] = parse_wei_representation(gas)
+        else:
+            w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+            tx["gas"] = w3.eth.estimateGas(tx)
+
+        # Data
+        if data:
+            tx["data"] = HexStr(data)
 
     # Must have the nonce to put into the tx, or the from_addr to
     # compute it from.
@@ -106,15 +179,6 @@ def maketx(
         w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
         nonce = w3.eth.get_transaction_count(from_addr)
     tx["nonce"] = Nonce(nonce)
-
-    if from_addr:
-        tx["from"] = Web3.toChecksumAddress(from_addr)
-
-    if to_addr:
-        tx["to"] = Web3.toChecksumAddress(to_addr)
-
-    if gas:
-        tx["gas"] = parse_wei_representation(gas)
 
     # Require either gas_price OR max_fee_per_gas, etc
 
@@ -142,18 +206,6 @@ def maketx(
         else:
             tx["maxPriorityFeePerGas"] = tx["maxFeePerGas"]
 
-    # Value
-
-    if value:
-        tx["value"] = parse_wei_representation(value)
-    elif not data:
-        raise ClickException("Empty tx (neither value or data given)")
-
-    # Data
-
-    if data:
-        tx["data"] = HexStr(data)
-
     # Chain ID
 
     if chain_id:
@@ -167,12 +219,6 @@ def maketx(
 
     if legacy:
         tx["type"] = HexStr("0x0")
-
-    if gas:
-        tx["gas"] = parse_wei_representation(gas)
-    else:
-        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-        tx["gas"] = w3.eth.estimateGas(tx)
 
     print(to_json(tx))
 

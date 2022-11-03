@@ -34,11 +34,25 @@ pushd _test_data
     alice_balance_orig=`aut get balance $ALICE`
     bob_balance_orig=`aut get balance $BOB`
 
+    # Fake NTN transfer transaction.  Specify everything, to avoid
+    # web3.py querying the node (which fails if ALICE has insufficient
+    # NTN).
+    aut maketx \
+        --ntn \
+        --from ${ALICE} \
+        --to ${BOB} \
+        --value '0.002kwei' \
+        --gas 1000000 \
+        --gas-price 1000000000 \
+        --nonce 12 > test_ntn_tx
+
+    # TODO: Sign and send the above when we can fund dummy accounts with NTN
+
     # Tiny send tx from 1 to 2
     aut maketx \
         --from ${ALICE} \
         --to ${BOB} \
-        --value '1wei' \
+        --value '0.001kwei' \
         --gas-price 1000000000 > test_tx
 
     # Sign the tx using Alices private key
