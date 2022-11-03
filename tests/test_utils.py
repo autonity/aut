@@ -40,3 +40,9 @@ class TestUtils(TestCase):
         self.assertEqual(
             AutonDenoms.AUTON_VALUE_IN_WEI, parse_wei_representation("1aut")
         )
+
+        # Fractional parts
+        self.assertEqual(200, parse_wei_representation("0.2kwei"))
+        self.assertEqual(
+            AutonDenoms.FINNEY_VALUE_IN_WEI * 500, parse_wei_representation("0.5auton")
+        )

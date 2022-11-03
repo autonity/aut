@@ -11,6 +11,7 @@ from autonity.utils.keyfile import load_keyfile
 
 import os
 import sys
+from decimal import Decimal
 from click import ClickException
 from web3 import Web3
 from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes
@@ -74,24 +75,27 @@ def parse_wei_representation(wei_str: str) -> Wei:
     integer. If integer coercion fails, throw an exception.
     """
 
+    def _parse_numerical_part(numerical_part: str, denomination: int) -> int:
+        return int(Decimal(numerical_part) * denomination)
+
     wei_str = wei_str.lower()
     try:
         if wei_str.endswith("kwei"):
-            wei = int(wei_str[:-4]) * AutonDenoms.KWEI_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-4], AutonDenoms.KWEI_VALUE_IN_WEI)
         elif wei_str.endswith("mwei"):
-            wei = int(wei_str[:-4]) * AutonDenoms.MWEI_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-4], AutonDenoms.MWEI_VALUE_IN_WEI)
         elif wei_str.endswith("gwei"):
-            wei = int(wei_str[:-4]) * AutonDenoms.GWEI_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-4], AutonDenoms.GWEI_VALUE_IN_WEI)
         elif wei_str.endswith("szabo"):
-            wei = int(wei_str[:-5]) * AutonDenoms.SZABO_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-5], AutonDenoms.SZABO_VALUE_IN_WEI)
         elif wei_str.endswith("finney"):
-            wei = int(wei_str[:-6]) * AutonDenoms.FINNEY_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-6], AutonDenoms.FINNEY_VALUE_IN_WEI)
         elif wei_str.endswith("auton"):
-            wei = int(wei_str[:-5]) * AutonDenoms.AUTON_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-5], AutonDenoms.AUTON_VALUE_IN_WEI)
         elif wei_str.endswith("aut"):
-            wei = int(wei_str[:-3]) * AutonDenoms.AUTON_VALUE_IN_WEI
+            wei = _parse_numerical_part(wei_str[:-3], AutonDenoms.AUTON_VALUE_IN_WEI)
         elif wei_str.endswith("wei"):
-            wei = int(wei_str[:-3])
+            wei = _parse_numerical_part(wei_str[:-3], 1)
         else:
             wei = int(wei_str)
     except Exception as exc:
