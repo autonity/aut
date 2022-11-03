@@ -7,7 +7,7 @@ setup:
 install:
 	pipx install . --force
 
-check: check-types check-lint check-format
+check: check-types check-lint check-format check-tests
 
 check-lint:
 	pylint autcli tests
