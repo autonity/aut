@@ -35,7 +35,6 @@ exclude = [ "tests", "external" ]
 ]
 
 [project.scripts]
-aut_ = "autcli.__main__:cli"
 aut = "autcli.__main__:aut"
 
 [project.urls]
