@@ -1,0 +1,6 @@
+[flake8]
+max-line-length=88
+# See: https://github.com/PyCQA/flake8-bugbear#opinionated-warnings
+select = C,E,F,W,B,B950
+extend-ignore = E203, E501, W503
+exclude = .git,__pycache__,.ipynb_checkpoints

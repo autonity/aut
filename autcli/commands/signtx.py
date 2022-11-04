@@ -1,85 +1,50 @@
 """
 Code that is executed when 'aut signtx..' is invoked on the command-line.
 """
-from docopt import docopt
-import os
-import sys
+
+from autcli.utils import load_from_file_or_stdin, to_json
+from autcli.options import keyfile_and_password_options
+from autcli.logging import log
+from autcli import config
+
+from autonity.utils.tx import sign_tx
+
 import json
-from getpass import getpass
-from autcli.constants import UnixExitStatus
-from autcli.user import client_signtx, server_signtx
-from autcli import __version__
-from autcli import __file__
-from schema import Schema, SchemaError, Or, Use
+from click import command, argument
+from typing import Optional
 
 
-def aut_signtx(argv):
-    """Usage:
-      aut signtx --client-sign [--keystore DIR] [options]
-      aut signtx --server-sign [options]
-
-    Signing options:
-      --client-sign   client-sign the transaction data using a local KEYFILE.
-      --server-sign   server-sign the transaction data using node account via RPC.
-      --keystore DIR  local keystore directory [default: ~/.autonity/keystore].
-
-    Other options:
-      --debug         if set, errors will print traceback as well as exception.
-      -h --help       show this screen.
-
-    USE --server-sign ONLY IF YOU CONTROL YOUR RPC ENDPOINT AND UNDERSTAND THE SECURITY
-    IMPLICATIONS OF HOSTING ACCOUNTS ON A NODE. The recommended approach is to sign your
-    tx's locally with --client-sign.
-
-    When using --client-sign, aut will first try to read the keyfile password from
-    environment variable 'KEYFILEPWD' (set it like 'export KEYFILEPWD=<password>'), and
-    if that's not defined it will prompt you for it.
+@command()
+@keyfile_and_password_options()
+@argument(
+    "tx-file",
+    required=True,
+)
+def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> None:
     """
-    try:
-        args = docopt(aut_signtx.__doc__, version=__version__, argv=argv)
-    except:
-        print(aut_signtx.__doc__)
-        return UnixExitStatus.CLI_INVALID_INVOCATION
-    if not args["--debug"]:
-        sys.tracebacklimit = 0
-    del args["signtx"]
-    s = Schema(
-        {
-            "--client-sign": Or(True, False),
-            "--server-sign": Or(True, False),
-            "--keystore": Or(None, Use(os.path.expanduser)),
-            "--debug": Or(True, False),
-            "--help": Or(True, False),
-        }
-    )
-    try:
-        args = s.validate(args)
-    except SchemaError as exc:
-        print(exc.code)
-        return UnixExitStatus.CLI_INVALID_OPTION_VALUE
+    Sign a transaction using the given keyfile.  Use '-' to read from
+    stdin instead of a file.
 
-    txs = sys.stdin.read().splitlines()
-    for tx in txs:
-        tx = json.loads(tx)
-        if args["--client-sign"]:
-            keyfile_pass = os.getenv("KEYFILEPWD")
-            if keyfile_pass is None:
-                try:
-                    acct = tx["from"]
-                    keyfile_pass = getpass(
-                        "Environment variable KEYFILEPWD is not set."
-                        + "Consider doing 'export KEYFILEPWD=<password>'."
-                        + f"\nEnter passphrase for {acct} (or CTRL-d to exit): "
-                    )
-                except EOFError:
-                    print("\n")
-                    return None
-            tx_signed = client_signtx(tx, args["--keystore"], keyfile_pass)
-            print(tx_signed.rawTransaction.hex())
-        elif args["--server-sign"]:
-            tx_signed = server_signtx(tx)
-            print(tx_signed.hex())
-    return 0
+    If password is not given, the env variable 'KEYFILEPWD' is used.
+    If that is not set, the user is prompted.
+    """
+
+    # Read tx
+    tx = json.loads(load_from_file_or_stdin(tx_file))
+
+    # Read keyfile
+    key_file = config.get_keyfile(key_file)
+    log(f"using key file: {key_file}")
+    with open(key_file, encoding="ascii") as key_f:
+        encrypted_key = json.load(key_f)
+
+    # Read password
+    password = config.get_keyfile_password(password)
+
+    # Sign the tx:
+    signed_tx = sign_tx(tx, encrypted_key, password)
+
+    print(to_json(signed_tx._asdict()))
 
 
 # Other Features Contemplated

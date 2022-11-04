@@ -1,161 +1,251 @@
 """
 Code that is executed when 'aut maketx..' is invoked on the command-line.
 """
-from docopt import docopt
-from autcli.user import (
-    get_account_transaction_count,
-    get_block,
-    get_latest_block_number,
+
+from autcli.logging import log
+from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
+from autcli.utils import (
+    parse_wei_representation,
+    to_json,
+    web3_from_endpoint_arg,
+    newton_or_token_to_address,
 )
-from autcli.constants import UnixExitStatus
-from autcli.utils import to_checksum_address, to_json, parse_wei_representation
-from autcli import __version__
-from autcli import __file__
-from schema import Schema, SchemaError, And, Or, Use
-import sys
+from autcli import config
+
+from autonity.erc20 import ERC20
+from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
+
 from web3 import Web3
+from web3.types import TxParams, Nonce, Wei, HexStr, ChecksumAddress
+from click import command, option, ClickException
+from typing import Optional
+
+# pylint: disable=too-many-locals
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-branches
+# pylint: disable=too-many-statements
 
 
-def aut_maketx(argv):
+@command()
+@rpc_endpoint_option
+@newton_or_token_option
+@keyfile_option()
+@option(
+    "--from",
+    "-f",
+    "from_str",
+    help="address from which tx is sent (extracted from keyfile if not given).",
+)
+@option("--to", "-t", "to_str", help="address to which tx is directed.")
+@option(
+    "--gas",
+    "-g",
+    help="maximum gas units that can be consumed by the tx.",
+)
+@option(
+    "--gas-price",
+    "-p",
+    help="value per gas (legacy, use -F and -P instead).",
+)
+@option(
+    "--max-priority-fee-per-gas",
+    "-P",
+    help="maximum to pay per gas as tip to block proposer.",
+)
+@option(
+    "--max-fee-per-gas",
+    "-F",
+    help="maximum to pay per gas for the total fee of the tx.",
+)
+@option(
+    "--nonce",
+    "-n",
+    type=int,
+    help="tx nonce; query chain for account tx count if not given.",
+)
+@option(
+    "--value",
+    "-v",
+    help="value sent with tx (nb '7000000000' and '7gwei' are identical).",
+)
+@option(
+    "--data", "-d", help="compiled contract code OR method signature and parameters."
+)
+@option(
+    "--chain-id",
+    "-I",
+    type=int,
+    help="integer representing EIP155 chainId.",
+)
+@option(
+    "--fee-factor",
+    type=float,
+    help="set maxFeePerGas to <last-basefee> x <fee-factor> [default: 2].",
+)
+@option(
+    "--legacy",
+    is_flag=True,
+    help="if set, tx type is 0x0 (pre-EIP1559), otherwise type is 0x2.",
+)
+def maketx(
+    rpc_endpoint: Optional[str],
+    ntn: bool,
+    token: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    to_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    nonce: Optional[int],
+    value: Optional[str],
+    data: Optional[str],
+    chain_id: Optional[int],
+    fee_factor: Optional[float],
+    legacy: bool,
+) -> None:
     """
-    Usage:
-      aut maketx -f ADR -t ADR -g INT -P WEI [-d HEX | -] [options]
-      aut maketx --legacy -f ADR -t ADR -g INT -p WEI [-d HEX | -] [options]
-
-    Options:
-      -f ADR --from=ADR                 address from which tx is sent.
-      -t ADR --to=ADR                   address to which tx is directed.
-      -g INT --gas=INT                  maximum gas units that can be consumed by the tx.
-      -p WEI --gasPrice=WEI             value per gas to (legacy, use -F and -P instead).
-      -P WEI --maxPriorityFeePerGas=WEI maximum willing to pay per gas as tip to block proposer.
-      -F WEI --maxFeePerGas=WEI         maximum willing to pay per gas for the total fee of the tx.
-      -n INT --nonce=INT                tx nonce; query chain for account tx count if not given.
-      -v WEI --value=WEI                value sent with tx (nb '7000000000' and '7gwei' are identical).
-      -d HEX --data=HEX                 compiled contract code OR method signature and parameters.
-      -I INT --chainId=INT              integer representing EIP155 chainId [default: 65010000].
-      --fee-factor NUM                  set maxFeePerGas to last block's basefee x NUM [default: 2].
-      --legacy                          if set, tx type is 0x0 (pre-EIP1559), otherwise type is 0x2.
-      --debug                           if set, errors will print traceback along with exception msg.
-      -h --help                         show this screen.
+    Create a transaction given the parameters passed in.
     """
-    try:
-        args = docopt(aut_maketx.__doc__, version=__version__, argv=argv)
-    except:
-        print(aut_maketx.__doc__)
-        return UnixExitStatus.CLI_INVALID_INVOCATION
-    if not args["--debug"]:
-        sys.tracebacklimit = 0
-    del args["maketx"]
-    s = Schema(
-        {
-            "--from": Use(
-                Web3.toChecksumAddress, error="-f, --from: not a valid address format"
-            ),
-            "--to": Use(
-                Web3.toChecksumAddress, error="-t, --to: not a valid address format"
-            ),
-            "--nonce": Or(
-                None,
-                And(lambda n: n.isnumeric(), lambda n: int(n) > 0),
-                error="invalid nonce",
-            ),
-            "--gas": And(
-                lambda n: n.isnumeric(), lambda n: int(n) > 0, error="invalid gas value"
-            ),
-            "--gasPrice": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-p, --gasPrice: cannot convert to integer",
-            ),
-            "--maxFeePerGas": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-F, --maxFeePerGas: cannot convert to integer",
-            ),
-            "--maxPriorityFeePerGas": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-P, --maxPriorityFeePerGas: cannot convert to integer",
-            ),
-            "--value": Or(
-                None,
-                Use(parse_wei_representation),
-                error="-v, --value: cannot convert to integer",
-            ),
-            "--data": Or(None, Use(str)),
-            "--chainId": And(lambda n: n.isnumeric(), lambda n: int(n) > 0),
-            "--fee-factor": And(lambda n: n.isnumeric(), lambda n: float(n) > 0),
-            "--legacy": Or(True, False),
-            "--debug": Or(True, False),
-            "--help": Or(True, False),
-            "-": Or(True, False),
-        }
-    )
-    try:
-        args = s.validate(args)
-    except SchemaError as exc:
-        print(exc)
-        return UnixExitStatus.CLI_INVALID_OPTION_VALUE
 
-    if args["--nonce"] is None:
-        nonce = get_account_transaction_count(args["--from"])
+    # TODO: function is too big.  break into smaller pieces.
+
+    # Potentially used in multiple places, so avoid re-initializing.
+    w3: Optional[Web3] = None
+
+    # If from_str is not set, take the address from a keyfile instead
+    # (if given)
+    if from_str:
+        from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
     else:
-        nonce = int(args["--nonce"])
+        log("no from-addr given.  attempting to extract from keyfile")
+        key_file = config.get_keyfile_optional(key_file)
+        if key_file:
+            key_data = load_keyfile(key_file)
+            from_addr = get_address_from_keyfile(key_data)
+            log(f"got keyfile: {key_file}, address: {from_addr}")
+        else:
+            log("no keyfile.  empty from-addr")
+            from_addr = None
+    log(f"from_addr: {from_addr}")
 
-    args["--gas"] = int(args["--gas"])
+    to_addr = Web3.toChecksumAddress(to_str) if to_str else None
 
-    if args["--gasPrice"] is not None:
-        args["--gasPrice"] = int(args["--gasPrice"])
+    if to_addr is None:
+        raise ClickException(
+            "to-address must be specified.  (contract deployment not yet supported)"
+        )
 
-    args["--fee-factor"] = float(args["--fee-factor"])
+    token_addresss = newton_or_token_to_address(ntn, token)
 
-    if args["--maxFeePerGas"] is None:
-        block_number = get_latest_block_number()
-        block_data = get_block(block_number)
-        max_fee_per_gas = float(block_data["baseFeePerGas"]) * args["--fee-factor"]
-        max_fee_per_gas = int(max_fee_per_gas)
+    tx: TxParams
+
+    if token_addresss:
+        # Create TxParams using the contract call.  We must have a
+        # from-address and value, and data should be set.
+        if from_addr is None:
+            raise ClickException("from-address required for token transfers")
+        if not value:
+            raise ClickException("value is required for token transfers")
+        if data:
+            raise ClickException("data cannot be set for token transfers")
+
+        # TODO: check contract for number of decimals.  For now, use
+        # the auton denominations everywhere.
+
+        # TODO: this currently requires a Web3 connection in order to
+        # estimate gas, gas price, nonce, and chainId .  At least for
+        # NTN, this should all be known and we should be able to do
+        # this offline.
+
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        tx = ERC20(w3, token_addresss).transfer(
+            from_addr,
+            to_addr,
+            parse_wei_representation(value),
+            Wei(int(gas)) if gas else Wei(0),
+            Wei(int(gas_price)) if gas_price else Wei(0),
+            Nonce(nonce) if nonce else Nonce(0),
+        )
+
     else:
-        max_fee_per_gas = int(args["--maxFeePerGas"])
 
-    if args["--maxPriorityFeePerGas"] is not None:
-        args["--maxPriorityFeePerGas"] = int(args["--maxPriorityFeePerGas"])
+        # Create a simple tx with optional data
+        tx = {}
+        if from_addr:
+            tx["from"] = Web3.toChecksumAddress(from_addr)
 
-    if args["--value"] is not None:
-        args["--value"] = int(args["--value"])
+        if to_addr:
+            tx["to"] = Web3.toChecksumAddress(to_addr)
 
-    args["--chainId"] = int(args["--chainId"])
+        if value:
+            tx["value"] = parse_wei_representation(value)
+        elif not data:
+            raise ClickException("Empty tx (neither value or data given)")
 
-    if args["-"]:
-        if args["--data"] is not None:
-            print("ignoring value passed to --data because data found on stdin.")
-        data = sys.stdin.read().splitlines()
-        data = data[0]
-        args["--data"] = data
+        if gas:
+            tx["gas"] = parse_wei_representation(gas)
+        else:
+            w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+            tx["gas"] = w3.eth.estimateGas(tx)
 
-    if args["--legacy"]:
-        erc2718_type = "0x0"
+        # Data
+        if data:
+            tx["data"] = HexStr(data)
+
+    # Must have the nonce to put into the tx, or the from_addr to
+    # compute it from.
+
+    if not nonce:
+        if not from_addr:
+            raise ClickException("must specify either --nonce or --from")
+
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        nonce = w3.eth.get_transaction_count(from_addr)
+    tx["nonce"] = Nonce(nonce)
+
+    # Require either gas_price OR max_fee_per_gas, etc
+
+    if gas_price:
+        if fee_factor or fee_factor or max_fee_per_gas or max_priority_fee_per_gas:
+            raise ClickException("--gas-price cannot be used with other fee parameters")
+        tx["gasPrice"] = parse_wei_representation(gas_price)
     else:
-        erc2718_type = "0x2"
+        if max_fee_per_gas:
+            tx["maxFeePerGas"] = str(max_fee_per_gas)
+        elif fee_factor:
+            w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+            block_number = w3.eth.block_number
+            block_data = w3.eth.get_block(block_number)
+            tx["maxFeePerGas"] = str(
+                Wei(int(float(block_data["baseFeePerGas"]) * fee_factor))
+            )
+        else:
+            raise ClickException(
+                "must specify one of --max-fee-per-gas or --fee-factor"
+            )
 
-    tx = {
-        "from": args["--from"],
-        "to": args["--to"],
-        "nonce": nonce,
-        "gas": args["--gas"],
-        "gasPrice": args["--gasPrice"],
-        "maxFeePerGas": max_fee_per_gas,
-        "maxPriorityFeePerGas": args["--maxPriorityFeePerGas"],
-        "value": args["--value"],
-        "data": args["--data"],
-        "chainId": args["--chainId"],
-        "type": erc2718_type,
-    }
+        if max_priority_fee_per_gas:
+            tx["maxPriorityFeePerGas"] = str(max_priority_fee_per_gas)
+        else:
+            tx["maxPriorityFeePerGas"] = tx["maxFeePerGas"]
 
-    tx = {k: v for k, v in tx.items() if v is not None}
+    # Chain ID
+
+    if chain_id:
+        tx["chainId"] = chain_id
+    else:
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        tx["chainId"] = w3.eth.chain_id
+
+    # If the --legacy flag was given, explicitly set the type,
+    # otherwise have web3 determine it.
+
+    if legacy:
+        tx["type"] = HexStr("0x0")
 
     print(to_json(tx))
-
-    return 0
 
 
 # Other Features Contemplated
