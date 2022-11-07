@@ -2,12 +2,13 @@
 Utility functions that are only meant to be called by other functions in this package.
 """
 
-from autcli.config import get_rpc_endpoint
+from autcli import config
 from autcli.constants import AutonDenoms
+from autcli.logging import log
 
 from autonity import Autonity
 from autonity.utils.web3 import create_web3_for_endpoint
-from autonity.utils.keyfile import load_keyfile
+from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
 
 import os
 import sys
@@ -40,9 +41,51 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     given on the command line, no connected web3 object is required.
     """
     if w3 is None:
-        return create_web3_for_endpoint(get_rpc_endpoint(endpoint_arg))
+        return create_web3_for_endpoint(config.get_rpc_endpoint(endpoint_arg))
 
     return w3
+
+
+def from_address_from_argument_optional(
+    from_str: Optional[str], key_file: Optional[str]
+) -> Optional[ChecksumAddress]:
+    """
+    Given an optional command line parameter, create an address,
+    falling back to the keyfile given in the config.  May be null if
+    neither is given.
+    """
+
+    # If from_str is not set, take the address from a keyfile instead
+    # (if given)
+    if from_str:
+        from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
+    else:
+        log("no from-addr given.  attempting to extract from keyfile")
+        key_file = config.get_keyfile_optional(key_file)
+        if key_file:
+            key_data = load_keyfile(key_file)
+            from_addr = get_address_from_keyfile(key_data)
+            log(f"got keyfile: {key_file}, address: {from_addr}")
+        else:
+            log("no keyfile.  empty from-addr")
+            from_addr = None
+    log(f"from_addr: {from_addr}")
+    return from_addr
+
+
+def from_address_from_argument(
+    from_str: Optional[str], key_file: Optional[str]
+) -> ChecksumAddress:
+    """
+    Given an optional command line parameter, create an address,
+    falling back to the keyfile given in the config.  Throws a
+    ClickException if the address cannot be determined.
+    """
+    from_addr = from_address_from_argument_optional(from_str, key_file)
+    if from_addr:
+        return from_addr
+
+    raise ClickException("from address or keyfile required")
 
 
 # TODO: remove

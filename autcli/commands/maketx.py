@@ -8,15 +8,14 @@ from autcli.utils import (
     parse_wei_representation,
     to_json,
     web3_from_endpoint_arg,
+    from_address_from_argument_optional,
     newton_or_token_to_address,
 )
-from autcli import config
 
 from autonity.erc20 import ERC20
-from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
 
 from web3 import Web3
-from web3.types import TxParams, Nonce, Wei, HexStr, ChecksumAddress
+from web3.types import TxParams, Nonce, Wei, HexStr
 from click import command, option, ClickException
 from typing import Optional
 
@@ -116,18 +115,7 @@ def maketx(
 
     # If from_str is not set, take the address from a keyfile instead
     # (if given)
-    if from_str:
-        from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
-    else:
-        log("no from-addr given.  attempting to extract from keyfile")
-        key_file = config.get_keyfile_optional(key_file)
-        if key_file:
-            key_data = load_keyfile(key_file)
-            from_addr = get_address_from_keyfile(key_data)
-            log(f"got keyfile: {key_file}, address: {from_addr}")
-        else:
-            log("no keyfile.  empty from-addr")
-            from_addr = None
+    from_addr = from_address_from_argument_optional(from_str, key_file)
     log(f"from_addr: {from_addr}")
 
     to_addr = Web3.toChecksumAddress(to_str) if to_str else None
