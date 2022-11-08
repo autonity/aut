@@ -23,10 +23,11 @@ from click import ClickException
 from web3 import Web3
 from web3.contract import ContractFunction
 from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
-from typing import Dict, Mapping, Optional, Union, TypeVar, Any, cast
+from typing import Dict, Mapping, Tuple, Optional, Union, TypeVar, Any, cast
 
 
 # pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 
 
 # Intended to represent "value" types
@@ -98,6 +99,8 @@ def from_address_from_argument(
 
 
 def create_tx_from_args(
+    w3: Optional[Web3],
+    rpc_endpoint: Optional[str],
     from_addr: Optional[ChecksumAddress] = None,
     to_addr: Optional[ChecksumAddress] = None,
     value: Optional[str] = None,
@@ -106,30 +109,42 @@ def create_tx_from_args(
     gas_price: Optional[str] = None,
     max_fee_per_gas: Optional[str] = None,
     max_priority_fee_per_gas: Optional[str] = None,
+    fee_factor: Optional[float] = None,
     nonce: Optional[int] = None,
     chain_id: Optional[int] = None,
-) -> TxParams:
+) -> Tuple[TxParams, Optional[Web3]]:
     """
     Convenience function to setup a TxParams object based on optional
     command-line parameters.
     """
 
+    if fee_factor:
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        block_number = w3.eth.block_number
+        block_data = w3.eth.get_block(block_number)
+        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
+
     try:
-        return create_transaction(
-            from_addr=from_addr,
-            to_addr=to_addr,
-            value=parse_wei_representation(value) if value else None,
-            data=HexBytes(data) if data else None,
-            gas=parse_wei_representation(gas) if gas else None,
-            gas_price=parse_wei_representation(gas_price) if gas_price else None,
-            max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
-            if max_fee_per_gas
-            else None,
-            max_priority_fee_per_gas=parse_wei_representation(max_priority_fee_per_gas)
-            if max_priority_fee_per_gas
-            else None,
-            nonce=Nonce(nonce) if nonce else None,
-            chain_id=chain_id,
+        return (
+            create_transaction(
+                from_addr=from_addr,
+                to_addr=to_addr,
+                value=parse_wei_representation(value) if value else None,
+                data=HexBytes(data) if data else None,
+                gas=parse_wei_representation(gas) if gas else None,
+                gas_price=parse_wei_representation(gas_price) if gas_price else None,
+                max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
+                if max_fee_per_gas
+                else None,
+                max_priority_fee_per_gas=parse_wei_representation(
+                    max_priority_fee_per_gas
+                )
+                if max_priority_fee_per_gas
+                else None,
+                nonce=Nonce(nonce) if nonce else None,
+                chain_id=chain_id,
+            ),
+            w3,
         )
     except ValueError as err:
         raise ClickException(err.args[0]) from err
@@ -160,6 +175,7 @@ def create_contract_tx_from_args(
     gas_price: Optional[str] = None,
     max_fee_per_gas: Optional[str] = None,
     max_priority_fee_per_gas: Optional[str] = None,
+    fee_factor: Optional[float] = None,
     nonce: Optional[int] = None,
     chain_id: Optional[int] = None,
 ) -> TxParams:
@@ -168,6 +184,14 @@ def create_contract_tx_from_args(
     command-line parameters.  There is not need to call
     `finalize_tx_from_args` on the result of this function.
     """
+
+    # TODO: abstract this calculation out
+
+    if fee_factor:
+        w3 = function.web3
+        block_number = w3.eth.block_number
+        block_data = w3.eth.get_block(block_number)
+        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
 
     try:
         return create_contract_function_transaction(
