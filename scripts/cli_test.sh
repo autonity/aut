@@ -77,3 +77,10 @@ pushd _test_data
         echo "Unexpected balance change"; exit 1)
 
     popd
+
+set +e
+set +x
+
+echo "--------------------------"
+echo "--  aut cli test passed --"
+echo "--------------------------"
