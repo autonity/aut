@@ -194,7 +194,7 @@ def create_contract_tx_from_args(
         max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
 
     try:
-        return create_contract_function_transaction(
+        tx = create_contract_function_transaction(
             function=function,
             from_addr=from_addr,
             value=parse_wei_representation(value) if value else None,
@@ -209,6 +209,8 @@ def create_contract_tx_from_args(
             nonce=Nonce(nonce) if nonce else None,
             chain_id=chain_id,
         )
+        return finalize_transaction(lambda: function.web3, tx, from_addr)
+
     except ValueError as err:
         raise ClickException(err.args[0]) from err
 
