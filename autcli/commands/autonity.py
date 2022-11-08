@@ -2,14 +2,29 @@
 The `autonity` command group.
 """
 
-from autcli.options import rpc_endpoint_option
-from autcli.utils import web3_from_endpoint_arg, to_json
+from autcli.config import get_validator_address
+from autcli.options import (
+    rpc_endpoint_option,
+    keyfile_option,
+    from_option,
+    tx_aux_options,
+)
+from autcli.utils import (
+    web3_from_endpoint_arg,
+    from_address_from_argument,
+    to_json,
+    create_contract_tx_from_args,
+    parse_wei_representation,
+)
 
 from autonity import Autonity
 
 from web3 import Web3
-from click import group, command, argument
+from click import group, command, option, argument
 from typing import Callable, Sequence, Optional, Any
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 
 
 @group()
@@ -165,3 +180,279 @@ def get_unbonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None
 
 
 autonity.add_command(get_unbonding_req)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@option(
+    "--validator",
+    "validator_addr_str",
+    help="Validator address (defaults to value in config file)",
+)
+@argument("amount-str", metavar="AMOUNT", nargs=1)
+def bond(
+    rpc_endpoint: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+    amount_str: str,
+) -> None:
+    """
+    Create a transaction which bonds an amount to a validator.
+    """
+    amount = parse_wei_representation(amount_str)
+    validator_addr = get_validator_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, key_file)
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+
+    tx = create_contract_tx_from_args(
+        function=aut.bond(validator_addr, amount),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+autonity.add_command(bond)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@option("--validator", help="Validator address (defaults to value in config file)")
+@argument("amount-str", metavar="AMOUNT", nargs=1)
+def unbond(
+    rpc_endpoint: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+    amount_str: str,
+) -> None:
+    """
+    Create a transaction to unbond some amount from a validator.
+    """
+    amount = parse_wei_representation(amount_str)
+    validator_addr = get_validator_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, key_file)
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+
+    tx = create_contract_tx_from_args(
+        function=aut.unbond(validator_addr, amount),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+autonity.add_command(unbond)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@argument("enode")
+def register_validator(
+    rpc_endpoint: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    enode: str,
+) -> None:
+    """
+    Create a transaction to register a validator
+    """
+    from_addr = from_address_from_argument(from_str, key_file)
+    # TODO: validate enode string?
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+    tx = create_contract_tx_from_args(
+        function=aut.register_validator(enode),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+autonity.add_command(register_validator)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@option("--validator", help="Validator address (defaults to value in config file)")
+def pause_validator(
+    rpc_endpoint: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+) -> None:
+    """
+    Create a transaction to pause the given validator.  See
+    `pauseValidator` on the Autonity contract.
+    """
+    validator_addr = get_validator_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, key_file)
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+
+    tx = create_contract_tx_from_args(
+        function=aut.pause_validator(validator_addr),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@option("--validator", help="Validator address (defaults to value in config file)")
+def activate_validator(
+    rpc_endpoint: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+) -> None:
+    """
+    Create a transaction to activate the given validator.  See
+    `activateValidator` on the Autonity contract.
+    """
+    validator_addr = get_validator_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, key_file)
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+
+    tx = create_contract_tx_from_args(
+        function=aut.activate_validator(validator_addr),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@option("--validator", help="Validator address (defaults to value in config file)")
+@argument("rate", type=float, nargs=1)
+def change_commissionrate(
+    rpc_endpoint: Optional[str],
+    key_file: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+    rate: float,
+) -> None:
+    """
+    Create a transaction to set the commission rate for the given
+    Validator.  See `changeCommissionRate` on the Autonity contract.
+    """
+    validator_addr = get_validator_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, key_file)
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+
+    decimal_places = aut.commission_rate_precision()
+    rate_int = int(rate * pow(10, decimal_places))
+
+    tx = create_contract_tx_from_args(
+        function=aut.change_commission_rate(validator_addr, rate_int),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))

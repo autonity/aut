@@ -5,9 +5,12 @@ Configuration-related code
 from autcli.config_file import get_config_file, CONFIG_FILE_NAME
 from autcli.logging import log
 
+from autonity.validator import ValidatorAddress
+
 import os
 from click import ClickException
 from getpass import getpass
+from web3 import Web3
 from typing import Optional
 
 
@@ -108,3 +111,16 @@ def get_rpc_endpoint(endpoint: Optional[str]) -> str:
         log(f"endpoint from command line: {endpoint}")
 
     return endpoint
+
+
+def get_validator_address(validator_addr_str: Optional[str]) -> ValidatorAddress:
+    """
+    Validator address to use, cli parameter falling back to any config file.
+    """
+
+    if not validator_addr_str:
+        validator_addr_str = get_config_file().get("validator")
+        if not validator_addr_str:
+            raise ClickException("no validator specified")
+
+    return ValidatorAddress(Web3.toChecksumAddress(validator_addr_str))

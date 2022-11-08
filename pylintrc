@@ -8,3 +8,6 @@ good-names=f,fn,h,kf,p,s,tx,w3,x,tx  # what's the issue with single-name vars?!
 
 [REPORTS]
 output-format=text
+
+[SIMILARITIES]
+min-similarity-lines=8
