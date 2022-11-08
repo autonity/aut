@@ -75,7 +75,7 @@ def get_keyfile_password(
         password = os.getenv(KEYFILE_PASSWORD_ENV_VAR)
         if password is None:
             password = getpass(
-                "(consider using '{KEYFILE_PASSWORD_ENV_VAR}' env var).\n"
+                f"(consider using '{KEYFILE_PASSWORD_ENV_VAR}' env var).\n"
                 + "Enter passphrase "
                 + ("" if key_file is None else f"for {key_file} ")
                 + "(or CTRL-d to exit): "
