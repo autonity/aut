@@ -5,6 +5,9 @@ Code that is executed when 'aut maketx..' is invoked on the command-line.
 from autcli.logging import log
 from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
 from autcli.utils import (
+    create_tx_from_args,
+    finalize_tx_from_args,
+    create_contract_tx_from_args,
     parse_wei_representation,
     to_json,
     web3_from_endpoint_arg,
@@ -15,7 +18,7 @@ from autcli.utils import (
 from autonity.erc20 import ERC20
 
 from web3 import Web3
-from web3.types import TxParams, Nonce, Wei, HexStr
+from web3.types import Wei, HexStr
 from click import command, option, ClickException
 from typing import Optional
 
@@ -65,6 +68,7 @@ from typing import Optional
 @option(
     "--value",
     "-v",
+    required=True,
     help="value sent with tx (nb '7000000000' and '7gwei' are identical).",
 )
 @option(
@@ -98,7 +102,7 @@ def maketx(
     max_priority_fee_per_gas: Optional[str],
     max_fee_per_gas: Optional[str],
     nonce: Optional[int],
-    value: Optional[str],
+    value: str,
     data: Optional[str],
     chain_id: Optional[int],
     fee_factor: Optional[float],
@@ -108,7 +112,11 @@ def maketx(
     Create a transaction given the parameters passed in.
     """
 
-    # TODO: function is too big.  break into smaller pieces.
+    # TODO: Add a flag which results in only unconnected Web3
+    # instances being created.  Callers who do not want to connect to
+    # a node will then receive an error if they do not specify some
+    # missing value (rather than having Web3.py silently connect for
+    # them).
 
     # Potentially used in multiple places, so avoid re-initializing.
     w3: Optional[Web3] = None
@@ -127,105 +135,62 @@ def maketx(
 
     token_addresss = newton_or_token_to_address(ntn, token)
 
-    tx: TxParams
+    # If --fee-factor was given, we must do some computation up-front
+
+    if fee_factor:
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        block_number = w3.eth.block_number
+        block_data = w3.eth.get_block(block_number)
+        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
+
+    # If this is a token call, fill in the "to" and "data" fields
+    # using the contract call.  Otherwise, for a plain AUT transfer,
+    # use create_transaction and finalize_transaction wrappers.
 
     if token_addresss:
-        # Create TxParams using the contract call.  We must have a
-        # from-address and value, and data should be set.
-        if from_addr is None:
-            raise ClickException("from-address required for token transfers")
-        if not value:
-            raise ClickException("value is required for token transfers")
-        if data:
-            raise ClickException("data cannot be set for token transfers")
 
-        # TODO: check contract for number of decimals.  For now, use
-        # the auton denominations everywhere.
-
-        # TODO: this currently requires a Web3 connection in order to
-        # estimate gas, gas price, nonce, and chainId .  At least for
-        # NTN, this should all be known and we should be able to do
-        # this offline.
+        if not from_addr:
+            raise ClickException("from address not given")
 
         w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-        tx = ERC20(w3, token_addresss).transfer(
-            from_addr,
-            to_addr,
-            parse_wei_representation(value),
-            Wei(int(gas)) if gas else Wei(0),
-            Wei(int(gas_price)) if gas_price else Wei(0),
-            Nonce(nonce) if nonce else Nonce(0),
+        function = ERC20(w3, token_addresss).transfer(
+            recipient=to_addr, amount=parse_wei_representation(value)
+        )
+        tx = create_contract_tx_from_args(
+            function=function,
+            from_addr=from_addr,
+            gas=gas,
+            gas_price=gas_price,
+            max_fee_per_gas=max_fee_per_gas,
+            max_priority_fee_per_gas=max_priority_fee_per_gas,
+            nonce=nonce,
+            chain_id=chain_id,
         )
 
     else:
 
-        # Create a simple tx with optional data
-        tx = {}
-        if from_addr:
-            tx["from"] = Web3.toChecksumAddress(from_addr)
+        if not from_addr:
+            raise ClickException("from address not given")
 
-        if to_addr:
-            tx["to"] = Web3.toChecksumAddress(to_addr)
-
-        if value:
-            tx["value"] = parse_wei_representation(value)
-        elif not data:
+        if not value and not data:
             raise ClickException("Empty tx (neither value or data given)")
 
-        if gas:
-            tx["gas"] = parse_wei_representation(gas)
-        else:
-            w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-            tx["gas"] = w3.eth.estimateGas(tx)
+        tx = create_tx_from_args(
+            from_addr=from_addr,
+            to_addr=to_addr,
+            value=value,
+            data=data,
+            gas=gas,
+            gas_price=gas_price,
+            max_fee_per_gas=max_fee_per_gas,
+            max_priority_fee_per_gas=max_priority_fee_per_gas,
+            nonce=nonce,
+            chain_id=chain_id,
+        )
 
-        # Data
-        if data:
-            tx["data"] = HexStr(data)
+        # Fill in any missing values.
 
-    # Must have the nonce to put into the tx, or the from_addr to
-    # compute it from.
-
-    if not nonce:
-        if not from_addr:
-            raise ClickException("must specify either --nonce or --from")
-
-        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-        nonce = w3.eth.get_transaction_count(from_addr)
-    tx["nonce"] = Nonce(nonce)
-
-    # Require either gas_price OR max_fee_per_gas, etc
-
-    if gas_price:
-        if fee_factor or fee_factor or max_fee_per_gas or max_priority_fee_per_gas:
-            raise ClickException("--gas-price cannot be used with other fee parameters")
-        tx["gasPrice"] = parse_wei_representation(gas_price)
-    else:
-        if max_fee_per_gas:
-            tx["maxFeePerGas"] = str(max_fee_per_gas)
-        elif fee_factor:
-            w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-            block_number = w3.eth.block_number
-            block_data = w3.eth.get_block(block_number)
-            tx["maxFeePerGas"] = str(
-                Wei(int(float(block_data["baseFeePerGas"]) * fee_factor))
-            )
-        else:
-            raise ClickException(
-                "must specify one of --max-fee-per-gas or --fee-factor"
-            )
-
-        if max_priority_fee_per_gas:
-            tx["maxPriorityFeePerGas"] = str(max_priority_fee_per_gas)
-        else:
-            tx["maxPriorityFeePerGas"] = tx["maxFeePerGas"]
-
-    # Chain ID
-
-    if chain_id:
-        tx["chainId"] = chain_id
-    else:
-        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-        tx["chainId"] = w3.eth.chain_id
+        tx = finalize_tx_from_args(w3, rpc_endpoint, tx, from_addr)
 
     # If the --legacy flag was given, explicitly set the type,
     # otherwise have web3 determine it.

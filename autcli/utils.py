@@ -9,6 +9,11 @@ from autcli.logging import log
 from autonity import Autonity
 from autonity.utils.web3 import create_web3_for_endpoint
 from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
+from autonity.utils.tx import (
+    create_transaction,
+    create_contract_function_transaction,
+    finalize_transaction,
+)
 
 import os
 import sys
@@ -16,11 +21,15 @@ import json
 from decimal import Decimal
 from click import ClickException
 from web3 import Web3
-from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes
+from web3.contract import ContractFunction
+from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
 from typing import Dict, Mapping, Optional, Union, TypeVar, Any, cast
 
 
-# Intended to "value" types
+# pylint: disable=too-many-arguments
+
+
+# Intended to represent "value" types
 V = TypeVar("V")
 
 
@@ -86,6 +95,98 @@ def from_address_from_argument(
         return from_addr
 
     raise ClickException("from address or keyfile required")
+
+
+def create_tx_from_args(
+    from_addr: Optional[ChecksumAddress] = None,
+    to_addr: Optional[ChecksumAddress] = None,
+    value: Optional[str] = None,
+    data: Optional[str] = None,
+    gas: Optional[str] = None,
+    gas_price: Optional[str] = None,
+    max_fee_per_gas: Optional[str] = None,
+    max_priority_fee_per_gas: Optional[str] = None,
+    nonce: Optional[int] = None,
+    chain_id: Optional[int] = None,
+) -> TxParams:
+    """
+    Convenience function to setup a TxParams object based on optional
+    command-line parameters.
+    """
+
+    try:
+        return create_transaction(
+            from_addr=from_addr,
+            to_addr=to_addr,
+            value=parse_wei_representation(value) if value else None,
+            data=HexBytes(data) if data else None,
+            gas=parse_wei_representation(gas) if gas else None,
+            gas_price=parse_wei_representation(gas_price) if gas_price else None,
+            max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
+            if max_fee_per_gas
+            else None,
+            max_priority_fee_per_gas=parse_wei_representation(max_priority_fee_per_gas)
+            if max_priority_fee_per_gas
+            else None,
+            nonce=Nonce(nonce) if nonce else None,
+            chain_id=chain_id,
+        )
+    except ValueError as err:
+        raise ClickException(err.args[0]) from err
+
+
+def finalize_tx_from_args(
+    w3: Optional[Web3],
+    rpc_endpoint: Optional[str],
+    tx: TxParams,
+    from_addr: Optional[ChecksumAddress],
+) -> TxParams:
+    """
+    Fill in any values not set by create_tx_from_args.  Wraps the
+    finalize_tx call in autonity.py.
+    """
+
+    def create_w3() -> Web3:
+        return web3_from_endpoint_arg(w3, rpc_endpoint)
+
+    return finalize_transaction(create_w3, tx, from_addr)
+
+
+def create_contract_tx_from_args(
+    function: ContractFunction,
+    from_addr: ChecksumAddress,
+    value: Optional[str] = None,
+    gas: Optional[str] = None,
+    gas_price: Optional[str] = None,
+    max_fee_per_gas: Optional[str] = None,
+    max_priority_fee_per_gas: Optional[str] = None,
+    nonce: Optional[int] = None,
+    chain_id: Optional[int] = None,
+) -> TxParams:
+    """
+    Convenience function to setup a TxParams object based on optional
+    command-line parameters.  There is not need to call
+    `finalize_tx_from_args` on the result of this function.
+    """
+
+    try:
+        return create_contract_function_transaction(
+            function=function,
+            from_addr=from_addr,
+            value=parse_wei_representation(value) if value else None,
+            gas=parse_wei_representation(gas) if gas else None,
+            gas_price=parse_wei_representation(gas_price) if gas_price else None,
+            max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
+            if max_fee_per_gas
+            else None,
+            max_priority_fee_per_gas=parse_wei_representation(max_priority_fee_per_gas)
+            if max_priority_fee_per_gas
+            else None,
+            nonce=Nonce(nonce) if nonce else None,
+            chain_id=chain_id,
+        )
+    except ValueError as err:
+        raise ClickException(err.args[0]) from err
 
 
 # TODO: remove
