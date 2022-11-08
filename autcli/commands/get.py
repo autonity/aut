@@ -7,15 +7,20 @@ from autcli.utils import (
     validate_block_identifier,
     web3_from_endpoint_arg,
     newton_or_token_to_address,
+    from_address_from_argument_optional,
 )
-from autcli.options import rpc_endpoint_option, newton_or_token_option
-from autcli.user import get_account_stats, get_node_stats, get_block
+from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
+from autcli.user import (
+    get_account_stats,
+    get_node_stats,
+    get_block,
+)
 
 from autonity.erc20 import ERC20
 
 import sys
 from web3 import Web3
-from click import group, command, option, argument
+from click import group, command, option, argument, ClickException
 from typing import List, Optional
 
 
@@ -93,14 +98,24 @@ def account(
 @command()
 @rpc_endpoint_option
 @newton_or_token_option
-@argument("account_str", metavar="ACCOUNT", nargs=1)
+@keyfile_option()
+@argument("account_str", metavar="ACCOUNT", default="")
 def balance(
-    rpc_endpoint: Optional[str], account_str: str, ntn: bool, token: Optional[str]
+    rpc_endpoint: Optional[str],
+    account_str: Optional[str],
+    key_file: Optional[str],
+    ntn: bool,
+    token: Optional[str],
 ) -> None:
     """
     Print the current balance of the given account.
     """
-    account_addr = Web3.toChecksumAddress(account_str)
+    account_addr = from_address_from_argument_optional(account_str, key_file)
+    if not account_addr:
+        raise ClickException(
+            "could not determine account address from argument or keyfile"
+        )
+
     token_addresss = newton_or_token_to_address(ntn, token)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
