@@ -1,6 +1,17 @@
 [aut]
+
+# Endpoint URI to use (if not specified on the CLI or via ENV vars)
 rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/
-keystore = path_to_keystore
-keyfile = path_to_keyfile
+
+# Location of keystore directory
+# keystore = path_to_keystore
+
+# Keyfile to use by default
+# keyfile = path_to_keyfile
+
+# Default validator to interact with (for bonding / unbonding / claiming fees etc)
+# validator = <validator-address>
+
+# TODO:
 # address =
 # chain_id =
