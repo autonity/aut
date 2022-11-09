@@ -3,8 +3,8 @@
 set -x
 set -e
 
-mkdir -p _test_autonity_getters
-pushd _test_autonity_getters
+mkdir -p _test_autonity_cli
+pushd _test_autonity_cli
 
 ../scripts/setup_config_file.sh
 
@@ -51,12 +51,7 @@ echo "aut autonity get-unbonding-req"
 aut autonity get-unbonding-req 200 220
 
 echo "aut autonity get-validators"
-aut autonity get-validators > validators
-cat validators
-v1=$(head -n1 validators)
-
-echo "aut autonity get-validator"
-aut autonity get-validator ${v1}
+aut autonity get-validators
 
 echo "aut autonity get-version"
 aut autonity get-version
@@ -78,5 +73,8 @@ aut autonity tail-unbonding-id
 
 echo "aut autonity total-redistributed"
 aut autonity total-redistributed
+
+set +e
+set +x
 
 popd

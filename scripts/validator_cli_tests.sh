@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+mkdir -p _test_validators_cli
+pushd _test_validators_cli
+
+../scripts/setup_config_file.sh
+
+aut autonity get-validators > validators
+v1=$(head -n1 validators)
+
+echo "validator=${v1}" >> .autrc
+
+echo "aut validator info"
+aut validator info
+
+echo "aut validator unclaimed-rewards"
+aut validator unclaimed-rewards
+
+aut validator register --gas 1000000000 enode://d9a7297bb3e2fcc292233d2c3f40c5ca398ff5025867a5b60219ed8b22ae6077fb30d5740296d4a513689aaef85dadb29bcc6564863f1594a037b9d6d91b139e@1.2.3.4:30303 > register.tx
+
+aut validator claim-rewards > claim_rewards.tx
+
+aut validator bond --gas 1000000 10 > bond.tx
+aut validator unbond --gas 1000000 10 > unbond.tx
+
+aut validator pause --gas 1000000 > pause.tx
+aut validator activate --gas 1000000 > activate.tx
+
+# TODO: enable when this call is available
+# aut validator change-commission-rate --gas 1000000 2000 > change_commission_rate.tx
+
+set -e
+set -x
