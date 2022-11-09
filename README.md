@@ -1,30 +1,30 @@
 # Autonity CLI
 
-A command-line RPC client for Autonity.  Run `aut --help` for the list
-of all commands and options.
+A command-line RPC client for Autonity.  Run `aut --help` for the list of all commands and options.
 
-Currently implements only a subset of generic Web3 functionality, but
-will be expanded in functionality to cover the entire
-autonity-specific RPC namespace as well,
+## Quick Start
 
-## Installation
+### Installation
 
-You need python >=3.7 with [pipx](https://pypa.github.io/pipx/)
-installed. Clone the repo and submodules and `make install`.
+You need python >=3.7 with [pipx](https://pypa.github.io/pipx/) installed. The command can then be installed as a pipx package isolated in its own environment.
 
-pipx will install autcli in a virtual environment, but provide `aut`
-as a console entry point that is globally available on your system
-like any other unix command. This achieves isolation without the user
-needing to know anything about python venv usage.. or python itself,
-for that matter.
+```console
+$ git clone --recurse-submodules https://github.com/autonity/autcli
+$ cd autcli
+$ make install
+```
 
-## `.autrc` files
+### Usage
 
-This (optional) file can store configuration information, which can be overridden by environment variables and command-line parameters.  See the [sample file](.autrc.sample) in this repo.
+The `aut` command should now be available like any other unix command.  Use `aut` by itself to list commands and `aut <command> -h` to get help for individual commands.
+
+### `.autrc` files
+
+This (optional) file set configuration parameters, which can be overridden by environment variables and command-line parameters.  See the [sample file](.autrc.sample) in this repo.
 
 If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.
 
-## Installation for development
+## Development
 
 The [autonity.py](https://github.com/autonity/autonity.py) dependency
 is included as a submodule, for ease of development  To sync the submodules:
@@ -47,8 +47,7 @@ development:
 (env)$ make
 ```
 
-The `aut` command is now available to any console with the virtual-env
-activated.
+(Note that the `aut` command is also installed in the virtual-env.)
 
 Execute all code checks (linters, type-checker, unit tests, etc):
 ```console

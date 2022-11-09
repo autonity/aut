@@ -6,6 +6,7 @@ setup:
 
 install:
 	pipx install . --force
+	pipx inject autcli external/autonity.py --force
 
 check: check-types check-lint check-format check-tests
 
