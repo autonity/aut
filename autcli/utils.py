@@ -23,7 +23,7 @@ from click import ClickException
 from web3 import Web3
 from web3.contract import ContractFunction
 from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
-from typing import Dict, Mapping, Tuple, Optional, Union, TypeVar, Any, cast
+from typing import Dict, Mapping, Sequence, Tuple, Optional, Union, TypeVar, Any, cast
 
 
 # pylint: disable=too-many-arguments
@@ -312,7 +312,7 @@ def to_checksum_address(address: str) -> ChecksumAddress:
     return checksum_address
 
 
-def to_json(data: Mapping[str, V], pretty: bool = False) -> str:
+def to_json(data: Union[Mapping[str, V], Sequence[V]], pretty: bool = False) -> str:
     """
     Take python data structure, return json formatted data.
 

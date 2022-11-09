@@ -10,6 +10,8 @@ functions meant to be called in that.
 
 from autcli.utils import w3_provider
 
+from autonity import Autonity
+
 from web3 import Web3
 from web3.types import (
     ChecksumAddress,
@@ -19,12 +21,23 @@ from web3.types import (
     TxParams,
     SignedTx,
 )
-from typing import Dict, List, Tuple, Optional, Any
+from typing import TypedDict, List, Optional, Any
+
+
+class AccountStats(TypedDict):
+    """
+    Dict holding information about a specific account.
+    """
+
+    account: ChecksumAddress
+    tx_count: int
+    balance: Wei
+    ntn_balance: Wei
 
 
 def get_account_stats(
     w3: Web3, accounts: List[ChecksumAddress], tag: Optional[str] = None
-) -> Dict[ChecksumAddress, Tuple[int, Wei]]:
+) -> List[AccountStats]:
     """
     For a list of accounts, return a dictionary with accounts as keys
     and list of transaction count and balance (in that order) as
@@ -33,14 +46,23 @@ def get_account_stats(
     tag. The underlying RPC methods are eth_getBalance and
     eth_getTransactionCount.
     """
-    stats: Dict[ChecksumAddress, Tuple[int, Wei]] = {}
+    stats: List[AccountStats] = []
     for acct in accounts:
         txcount = w3.eth.get_transaction_count(acct)
         if tag is None:
             balance = w3.eth.get_balance(acct)
         else:
             balance = w3.eth.get_balance(acct, tag)
-        stats[acct] = (txcount, balance)
+        ntn_balance = Autonity(w3).balance_of(acct)
+        stats.append(
+            {
+                "account": acct,
+                "tx_count": txcount,
+                "balance": balance,
+                "ntn_balance": ntn_balance,
+            }
+        )
+
     return stats
 
 

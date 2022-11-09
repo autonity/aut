@@ -8,9 +8,9 @@ from autcli.commands import (
     sendtx,
     waittx,
     get,
-    list as list_group,
     autonity,
     validator,
+    account,
 )
 from autcli.logging import enable_logging
 
@@ -33,6 +33,6 @@ aut.add_command(signtx.signtx)
 aut.add_command(sendtx.sendtx)
 aut.add_command(waittx.waittx)
 aut.add_command(get.get)
-aut.add_command(list_group.list_group)
 aut.add_command(autonity.autonity)
 aut.add_command(validator.validator)
+aut.add_command(account.account_group)

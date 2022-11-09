@@ -30,4 +30,4 @@ jobs:
         # ./scripts/cli_test.sh
         ./scripts/autonity_cli_tests.sh
         ./scripts/validator_cli_tests.sh
-
+        ./scripts/account_cli_tests.sh
