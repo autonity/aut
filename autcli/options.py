@@ -126,3 +126,15 @@ def tx_aux_options(fn: Callable) -> Callable:
     )(fn)
 
     return fn
+
+
+def validator_option(fn: Func) -> Func:
+    """
+    Add the --validator <address> option to specify a validator.  Uses
+    the "validator_addr_str" argument.
+    """
+    return option(
+        "--validator",
+        "validator_addr_str",
+        help="Validator address (defaults to value in config file)",
+    )(fn)

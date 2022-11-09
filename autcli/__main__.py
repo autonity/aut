@@ -10,6 +10,7 @@ from autcli.commands import (
     get,
     list as list_group,
     autonity,
+    validator,
 )
 from autcli.logging import enable_logging
 
@@ -34,3 +35,4 @@ aut.add_command(waittx.waittx)
 aut.add_command(get.get)
 aut.add_command(list_group.list_group)
 aut.add_command(autonity.autonity)
+aut.add_command(validator.validator)
