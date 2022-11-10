@@ -150,9 +150,9 @@ def maketx(
             chain_id=chain_id,
         )
 
-        # Fill in any missing values.
+    # Fill in any missing values.
 
-        tx = finalize_tx_from_args(w3, rpc_endpoint, tx, from_addr)
+    tx = finalize_tx_from_args(w3, rpc_endpoint, tx, from_addr)
 
     # If the --legacy flag was given, explicitly set the type,
     # otherwise have web3 determine it.
