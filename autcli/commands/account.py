@@ -3,7 +3,7 @@ The `account` command group.
 """
 
 from autcli import config
-from autonity.erc20 import ERC20
+from autcli.logging import log
 from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
 from autcli.user import get_account_stats
 from autcli.utils import (
@@ -14,7 +14,17 @@ from autcli.utils import (
     from_address_from_argument_optional,
 )
 
+from autonity.utils.keyfile import (
+    create_keyfile_from_private_key,
+    get_address_from_keyfile,
+)
+from autonity.erc20 import ERC20
+
 import sys
+import os.path
+import eth_account
+import json
+from getpass import getpass
 from web3 import Web3
 from click import group, command, option, argument, ClickException
 from typing import List, Optional
@@ -130,3 +140,64 @@ def balance(
 
 
 account_group.add_command(balance)
+
+
+@command()
+@keyfile_option(required=True)
+@option(
+    "--extra-entropy",
+    is_flag=True,
+    help="Prompt the user for a string containing extra entropy",
+)
+@option(
+    "--show-password",
+    is_flag=True,
+    help="Echo password input to the terminal",
+)
+def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
+    """
+    Create a new key and write it to a keyfile.
+    """
+
+    if os.path.exists(key_file):
+        raise ClickException("refusing to overwrite existing keyfile")
+
+    # Ask for extra entropy, if requested.
+
+    entropy: str = ""
+    if extra_entropy:
+        entropy = input("Entropy: ")
+
+    # Ask for password (and confirmation) and ensure both entries
+    # match.
+
+    prompt = "Password for new account: "
+    prompt_2 = "Confirm account password: "
+    if show_password:
+        password = input(prompt)
+        password_2 = input(prompt_2)
+    else:
+        password = getpass(prompt)
+        password_2 = getpass(prompt_2)
+
+    if password != password_2:
+        raise ClickException("passwords do not match")
+
+    log("Generating private key ...")
+    account = eth_account.Account.create(entropy)
+    keyfile_data = create_keyfile_from_private_key(account.key, password)
+    keyfile_addr = get_address_from_keyfile(keyfile_data)
+    if account.address != keyfile_addr:
+        raise ClickException(
+            f"internal error (address-mismatch) {account.address} != {keyfile_addr}"
+        )
+
+    with open(key_file, "w", encoding="utf8") as key_f:
+        json.dump(keyfile_data, key_f)
+
+    log(f"Encrypted key written to {key_file}")
+
+    print(keyfile_addr)
+
+
+account_group.add_command(new)
