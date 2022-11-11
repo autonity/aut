@@ -14,6 +14,17 @@ $ cd autcli
 $ make install
 ```
 
+### (Optional) Enable command completion (bash and zsh)
+
+Completion is available in `bash` and `zsh` shells as follows.  (Adapt these commands to your particular configuration.)
+
+```console
+# For zsh, replace bash_source with zsh_source.
+$ _AUT_COMPLETE=bash_source aut > ~/.aut-complete
+$ echo 'source ~/.aut-complete' >> ~/.bashrc
+```
+Auto-complete should be enabled in new shells.
+
 ### Usage
 
 The `aut` command should now be available like any other unix command.  Use `aut` by itself to list commands and `aut <command> -h` to get help for individual commands.
