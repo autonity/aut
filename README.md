@@ -24,6 +24,63 @@ This (optional) file set configuration parameters, which can be overridden by en
 
 If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.
 
+### Examples
+
+#### Create a new account (for demo purposes)
+
+```console
+# Create an account
+# !! For demonstration purposes only. Use a HW wallet or other key-management infrastructure. !!
+$ aut account new --key-file keystore/alice.key
+Password for new account:
+Confirm account password:
+0xd888bc90720757796C72eC2a3A231c81b55e8097
+```
+
+#### Set up a configuration file
+
+```console
+# Create a config file (avoids specifying some basic params / ENV vars).
+$ echo '[aut]' > .autrc
+$ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
+$ echo 'keyfile = keystore/alice.key' >> .autrc
+```
+
+#### Check account balance (after funding the account)
+
+```console
+# Check Alice's balance (use address in keystore/alice.key)
+$ aut account balance
+100000000000000000000
+# Check Bob's balance (1 XTN).  Bob's address is 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
+$ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
+1000000000000000000
+```
+
+#### Create, sign and send a transaction
+
+```console
+# Send 1 XTN to Bob
+$ aut maketx --to 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f --value 1aut | aut signtx - | aut sendtx -
+Enter passphrase (or CTRL-d to exit):
+0x47f71a94372d00a3066414b80f3b9c78d71b3011479ddc86e37ab86e0fe80d8a
+```
+
+Explanation of the above: The `maketx` command extracts the `from` address from the default keyfile, and automatically sets the `gas`, `nonce` and other fields by querying the RPC endpoint in the config file.  It then writes this to `stdout`, which is piped to the `signtx` command, using the `-` argument to indicate `stdin`.  The sign `signtx` decrypts the default keyfile after querying the user for the password, and writes the signed transaction to `stdout`.  This is then piped to the `sendtx` command, which connects to the RPC endpoint given in the config file and passes the signed transaction to the node for broadcast.  It then outputs the transaction hash to `stdout`.
+
+All configuration options can be set using command-line parameters to override the configuration file. Use the `--help` flag with any command to see all available options.
+
+#### Wait for the transaction
+
+```console
+$ aut waittx 0x47f71a94372d00a3066414b80f3b9c78d71b3011479ddc86e37ab86e0fe80d8a
+{"blockHash": "0x65e74faaaee5efa3b6e998fd78c8e1ca3085c8bd88709101e8fa801a03ab371d", "blockNumber": 5780419, "contractAddress": null, "cumulativeGasUsed": 21000, "effectiveGasPrice": 1000000000, "from": "0xd888bc90720757796C72eC2a3A231c81b55e8097", "gasUsed": 21000, "logs": [], "logsBloom": "0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000", "status": 1, "to": "0x4EcE2e62E67a7B64a83D3E180dC86962145b762f", "transactionHash": "0x47f71a94372d00a3066414b80f3b9c78d71b3011479ddc86e37ab86e0fe80d8a", "transactionIndex": 0, "type": "0x2"}
+
+# Re-check Bob's balance
+$ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
+2000000000000000000
+```
+
 ## Development
 
 The [autonity.py](https://github.com/autonity/autonity.py) dependency
