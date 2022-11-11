@@ -2,12 +2,18 @@
 Utility functions that are only meant to be called by other functions in this package.
 """
 
-from autcli.config import get_rpc_endpoint
+from autcli import config
 from autcli.constants import AutonDenoms
+from autcli.logging import log
 
 from autonity import Autonity
 from autonity.utils.web3 import create_web3_for_endpoint
-from autonity.utils.keyfile import load_keyfile
+from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
+from autonity.utils.tx import (
+    create_transaction,
+    create_contract_function_transaction,
+    finalize_transaction,
+)
 
 import os
 import sys
@@ -15,11 +21,16 @@ import json
 from decimal import Decimal
 from click import ClickException
 from web3 import Web3
-from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes
-from typing import Dict, Mapping, Optional, Union, TypeVar, Any, cast
+from web3.contract import ContractFunction
+from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
+from typing import Dict, Mapping, Sequence, Tuple, Optional, Union, TypeVar, Any, cast
 
 
-# Intended to "value" types
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
+
+
+# Intended to represent "value" types
 V = TypeVar("V")
 
 
@@ -40,9 +51,168 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     given on the command line, no connected web3 object is required.
     """
     if w3 is None:
-        return create_web3_for_endpoint(get_rpc_endpoint(endpoint_arg))
+        return create_web3_for_endpoint(config.get_rpc_endpoint(endpoint_arg))
 
     return w3
+
+
+def from_address_from_argument_optional(
+    from_str: Optional[str], key_file: Optional[str]
+) -> Optional[ChecksumAddress]:
+    """
+    Given an optional command line parameter, create an address,
+    falling back to the keyfile given in the config.  May be null if
+    neither is given.
+    """
+
+    # If from_str is not set, take the address from a keyfile instead
+    # (if given)
+    if from_str:
+        from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
+    else:
+        log("no from-addr given.  attempting to extract from keyfile")
+        key_file = config.get_keyfile_optional(key_file)
+        if key_file:
+            key_data = load_keyfile(key_file)
+            from_addr = get_address_from_keyfile(key_data)
+            log(f"got keyfile: {key_file}, address: {from_addr}")
+        else:
+            log("no keyfile.  empty from-addr")
+            from_addr = None
+    log(f"from_addr: {from_addr}")
+    return from_addr
+
+
+def from_address_from_argument(
+    from_str: Optional[str], key_file: Optional[str]
+) -> ChecksumAddress:
+    """
+    Given an optional command line parameter, create an address,
+    falling back to the keyfile given in the config.  Throws a
+    ClickException if the address cannot be determined.
+    """
+    from_addr = from_address_from_argument_optional(from_str, key_file)
+    if from_addr:
+        return from_addr
+
+    raise ClickException("from address or keyfile required")
+
+
+def create_tx_from_args(
+    w3: Optional[Web3],
+    rpc_endpoint: Optional[str],
+    from_addr: Optional[ChecksumAddress] = None,
+    to_addr: Optional[ChecksumAddress] = None,
+    value: Optional[str] = None,
+    data: Optional[str] = None,
+    gas: Optional[str] = None,
+    gas_price: Optional[str] = None,
+    max_fee_per_gas: Optional[str] = None,
+    max_priority_fee_per_gas: Optional[str] = None,
+    fee_factor: Optional[float] = None,
+    nonce: Optional[int] = None,
+    chain_id: Optional[int] = None,
+) -> Tuple[TxParams, Optional[Web3]]:
+    """
+    Convenience function to setup a TxParams object based on optional
+    command-line parameters.
+    """
+
+    if fee_factor:
+        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
+        block_number = w3.eth.block_number
+        block_data = w3.eth.get_block(block_number)
+        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
+
+    try:
+        return (
+            create_transaction(
+                from_addr=from_addr,
+                to_addr=to_addr,
+                value=parse_wei_representation(value) if value else None,
+                data=HexBytes(data) if data else None,
+                gas=parse_wei_representation(gas) if gas else None,
+                gas_price=parse_wei_representation(gas_price) if gas_price else None,
+                max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
+                if max_fee_per_gas
+                else None,
+                max_priority_fee_per_gas=parse_wei_representation(
+                    max_priority_fee_per_gas
+                )
+                if max_priority_fee_per_gas
+                else None,
+                nonce=Nonce(nonce) if nonce else None,
+                chain_id=chain_id,
+            ),
+            w3,
+        )
+    except ValueError as err:
+        raise ClickException(err.args[0]) from err
+
+
+def finalize_tx_from_args(
+    w3: Optional[Web3],
+    rpc_endpoint: Optional[str],
+    tx: TxParams,
+    from_addr: Optional[ChecksumAddress],
+) -> TxParams:
+    """
+    Fill in any values not set by create_tx_from_args.  Wraps the
+    finalize_tx call in autonity.py.
+    """
+
+    def create_w3() -> Web3:
+        return web3_from_endpoint_arg(w3, rpc_endpoint)
+
+    return finalize_transaction(create_w3, tx, from_addr)
+
+
+def create_contract_tx_from_args(
+    function: ContractFunction,
+    from_addr: ChecksumAddress,
+    value: Optional[str] = None,
+    gas: Optional[str] = None,
+    gas_price: Optional[str] = None,
+    max_fee_per_gas: Optional[str] = None,
+    max_priority_fee_per_gas: Optional[str] = None,
+    fee_factor: Optional[float] = None,
+    nonce: Optional[int] = None,
+    chain_id: Optional[int] = None,
+) -> TxParams:
+    """
+    Convenience function to setup a TxParams object based on optional
+    command-line parameters.  There is not need to call
+    `finalize_tx_from_args` on the result of this function.
+    """
+
+    # TODO: abstract this calculation out
+
+    if fee_factor:
+        w3 = function.web3
+        block_number = w3.eth.block_number
+        block_data = w3.eth.get_block(block_number)
+        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
+
+    try:
+        tx = create_contract_function_transaction(
+            function=function,
+            from_addr=from_addr,
+            value=parse_wei_representation(value) if value else None,
+            gas=parse_wei_representation(gas) if gas else None,
+            gas_price=parse_wei_representation(gas_price) if gas_price else None,
+            max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
+            if max_fee_per_gas
+            else None,
+            max_priority_fee_per_gas=parse_wei_representation(max_priority_fee_per_gas)
+            if max_priority_fee_per_gas
+            else None,
+            nonce=Nonce(nonce) if nonce else None,
+            chain_id=chain_id,
+        )
+        return finalize_transaction(lambda: function.web3, tx, from_addr)
+
+    except ValueError as err:
+        raise ClickException(err.args[0]) from err
 
 
 # TODO: remove
@@ -142,7 +312,7 @@ def to_checksum_address(address: str) -> ChecksumAddress:
     return checksum_address
 
 
-def to_json(data: Mapping[str, V], pretty: bool = False) -> str:
+def to_json(data: Union[Mapping[str, V], Sequence[V]], pretty: bool = False) -> str:
     """
     Take python data structure, return json formatted data.
 

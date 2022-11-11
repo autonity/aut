@@ -7,9 +7,11 @@ from autcli.utils import web3_from_endpoint_arg, to_json
 
 from autonity import Autonity
 
-from web3 import Web3
 from click import group, command, argument
 from typing import Callable, Sequence, Optional, Any
+
+# pylint: disable=too-many-arguments
+# pylint: disable=too-many-locals
 
 
 @group()
@@ -55,6 +57,11 @@ def _autonity_getter_command(
 
 
 _autonity_getter_command(
+    "commission-rate-precision",
+    Autonity.commission_rate_precision,
+    "Precision of validator  commission rate values",
+)
+_autonity_getter_command(
     "config", Autonity.config, "Print the Autonity contract config", _show_json
 )
 _autonity_getter_command("epoch-id", Autonity.epoch_id, "ID of current epoch")
@@ -93,22 +100,6 @@ _autonity_getter_command(
 _autonity_getter_command(
     "get-validators", Autonity.get_validators, "Get current validators", _show_sequence
 )
-
-
-@command()
-@rpc_endpoint_option
-@argument("validator_address", nargs=1)
-def get_validator(rpc_endpoint: Optional[str], validator_address: str) -> None:
-    """
-    Get the information about a specific validator.
-    """
-    addr = Web3.toChecksumAddress(validator_address)
-    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
-    print(_show_json(aut.get_validator(addr)))
-
-
-autonity.add_command(get_validator)
-
 
 _autonity_getter_command(
     "get-max-committee-size", Autonity.get_max_committee_size, "Maximum committee size"

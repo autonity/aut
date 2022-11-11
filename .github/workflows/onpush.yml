@@ -22,4 +22,12 @@ jobs:
         python -m venv env
         . env/bin/activate
         make
-        make check
+        make check -j 3
+    - name: Run command line tests
+      run: |
+        python -m venv env
+        . env/bin/activate
+        # ./scripts/cli_test.sh
+        ./scripts/autonity_cli_tests.sh
+        ./scripts/validator_cli_tests.sh
+        ./scripts/account_cli_tests.sh
