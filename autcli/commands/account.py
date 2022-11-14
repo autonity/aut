@@ -18,6 +18,7 @@ from autonity.utils.keyfile import (
     create_keyfile_from_private_key,
     get_address_from_keyfile,
 )
+from autonity.autonity import Autonity
 from autonity.erc20 import ERC20
 
 import sys
@@ -27,7 +28,7 @@ import json
 from getpass import getpass
 from web3 import Web3
 from click import group, command, option, argument, ClickException
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 
 @group(name="account")
@@ -140,6 +141,41 @@ def balance(
 
 
 account_group.add_command(balance)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@argument("account_str", metavar="ACCOUNT", default="")
+def lnew_balances(
+    rpc_endpoint: Optional[str], account_str: Optional[str], key_file: Optional[str]
+) -> None:
+    """
+    Print the current balance of the given account.
+    """
+    account_addr = from_address_from_argument_optional(account_str, key_file)
+    if not account_addr:
+        raise ClickException(
+            "could not determine account address from argument or keyfile"
+        )
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    aut = Autonity(w3)
+    validator_addrs = aut.get_validators()
+    validators = [aut.get_validator(vaddr) for vaddr in validator_addrs]
+
+    balances: Dict[str, int] = {}
+    for validator in validators:
+        log("computing holdings for validators {validator['addr']}")
+        lnew = ERC20(w3, validator["liquid_contract"])
+        bal = lnew.balance_of(account_addr)
+        if bal:
+            balances[validator["addr"]] = bal
+
+    print(to_json(balances, pretty=True))
+
+
+account_group.add_command(lnew_balances)
 
 
 @command()
