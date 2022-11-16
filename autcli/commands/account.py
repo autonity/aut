@@ -2,8 +2,9 @@
 The `account` command group.
 """
 
-from autcli import config
+from autcli.options import keyfile_and_password_options
 from autcli.logging import log
+from autcli import config
 from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
 from autcli.user import get_account_stats
 from autcli.utils import (
@@ -12,19 +13,21 @@ from autcli.utils import (
     web3_from_endpoint_arg,
     newton_or_token_to_address,
     from_address_from_argument_optional,
+    load_from_file_or_stdin,
 )
 
 from autonity.utils.keyfile import (
     create_keyfile_from_private_key,
     get_address_from_keyfile,
 )
+from autonity.utils.tx import sign_tx
 from autonity.autonity import Autonity
 from autonity.erc20 import ERC20
 
-import sys
+
+import json
 import os.path
 import eth_account
-import json
 from getpass import getpass
 from web3 import Web3
 from click import group, command, option, argument, ClickException
@@ -67,32 +70,23 @@ account_group.add_command(list_cmd)
     "--asof",
     help="state as of TAG, one of block number, 'latest', 'earliest', or 'pending'.",
 )
-@option(
-    "--stdin",
-    "use_stdin",
-    is_flag=True,
-    help="read account lines from stdin instead of positional arguments",
-)
 @argument("accounts", nargs=-1)
 def info(
     rpc_endpoint: Optional[str],
     key_file: Optional[str],
     accounts: List[str],
     asof: Optional[str],
-    use_stdin: bool,
 ) -> None:
     """
-    Print some information about the given account.
+    Print some information about the given account (falling back to
+    the default keyfile account if no accounts specified).
     """
 
-    if use_stdin:
-        accounts = sys.stdin.read().splitlines()
-    else:
-        if len(accounts) == 0:
-            account = from_address_from_argument_optional(None, key_file)
-            if not account:
-                raise ClickException("No accounts specified")
-            accounts = [account]
+    if len(accounts) == 0:
+        account = from_address_from_argument_optional(None, key_file)
+        if not account:
+            raise ClickException("No accounts specified")
+        accounts = [account]
 
     addresses = [Web3.toChecksumAddress(act) for act in accounts]
 
@@ -237,3 +231,39 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
 
 
 account_group.add_command(new)
+
+
+@command()
+@keyfile_and_password_options()
+@argument(
+    "tx-file",
+    required=True,
+)
+def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> None:
+    """
+    Sign a transaction using the given keyfile.  Use '-' to read from
+    stdin instead of a file.
+
+    If password is not given, the env variable 'KEYFILEPWD' is used.
+    If that is not set, the user is prompted.
+    """
+
+    # Read tx
+    tx = json.loads(load_from_file_or_stdin(tx_file))
+
+    # Read keyfile
+    key_file = config.get_keyfile(key_file)
+    log(f"using key file: {key_file}")
+    with open(key_file, encoding="ascii") as key_f:
+        encrypted_key = json.load(key_f)
+
+    # Read password
+    password = config.get_keyfile_password(password)
+
+    # Sign the tx:
+    signed_tx = sign_tx(tx, encrypted_key, password)
+
+    print(to_json(signed_tx._asdict()))
+
+
+account_group.add_command(signtx)

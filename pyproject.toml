@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "autcli"
-version = "0.0.1"
+version = "0.0.2"
 description = "A command-line RPC client for Autonity"
 readme = "README.md"
 requires-python = ">=3.9,<3.10"
