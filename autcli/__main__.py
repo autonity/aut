@@ -36,3 +36,7 @@ aut.add_command(get.get)
 aut.add_command(autonity.autonity)
 aut.add_command(validator.validator)
 aut.add_command(account.account_group)
+
+
+if __name__ == "__main__":
+    aut()  # pylint: disable=no-value-for-parameter
