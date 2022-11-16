@@ -37,3 +37,6 @@ def info(rpc_endpoint: Optional[str]) -> None:
         "web3_clientVersion": w3.clientVersion,
     }
     print(to_json(node_info, pretty=True))
+
+
+node_group.add_command(info)
