@@ -12,6 +12,7 @@ from autcli.commands import (
 )
 from autcli.logging import enable_logging
 
+import sys
 from click import group, option
 
 
@@ -24,6 +25,9 @@ def aut(verbose: bool) -> None:
 
     if verbose:
         enable_logging()
+    else:
+        # Do not print the full callstack
+        sys.tracebacklimit = 0
 
 
 aut.add_command(node.node_group)
