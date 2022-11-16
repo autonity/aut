@@ -21,7 +21,7 @@ from web3.types import (
     TxParams,
     SignedTx,
 )
-from typing import TypedDict, List, Optional, Any
+from typing import TypedDict, List, Optional
 
 
 class AccountStats(TypedDict):
@@ -68,27 +68,6 @@ def get_account_stats(
 
 # TODO: Properly typed object.
 # TODO: Move to autonity.py
-
-
-def get_node_stats(w3: Web3) -> Any:
-    """
-    Return a dictionary with results for a bunch of of nullary EIP1474 RPC methods.
-    """
-
-    stats = {
-        "eth_accounts": w3.eth.accounts,
-        "eth_blockNumber": w3.eth.block_number,
-        "eth_coinbase": w3.eth.coinbase,
-        "eth_gasPrice": w3.eth.gas_price,
-        "eth_hashrate": w3.eth.hashrate,
-        "eth_mining": w3.eth.mining,
-        "eth_syncing": w3.eth.syncing,
-        "net_listening": w3.net.listening,
-        "net_peerCount": w3.net.peer_count,
-        "net_version": w3.net.version,
-        "web3_clientVersion": w3.clientVersion,
-    }
-    return stats
 
 
 # TODO: Move to autonity.py
