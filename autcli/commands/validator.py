@@ -17,6 +17,7 @@ from autcli.utils import (
     create_contract_tx_from_args,
     parse_wei_representation,
 )
+from autcli.commands.autonity import autonity as autonity_cmd
 
 from autonity.autonity import Autonity
 from autonity.validator import Validator
@@ -36,6 +37,9 @@ def validator() -> None:
     """
     Commands related to the validators.
     """
+
+
+validator.add_command(autonity_cmd.get_command(None, "get-validators"), name="list")  # type: ignore
 
 
 @command()
