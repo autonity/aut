@@ -60,7 +60,10 @@ def newton_or_token_option(fn: Func) -> Func:
     """
     fn = option("--ntn", is_flag=True, help="Use Newton (NTN) instead of Auton")(fn)
     fn = option(
-        "--token", metavar="TOKEN-ADDR", help="Use the ERC20 token at the given address"
+        "--token",
+        "-t",
+        metavar="TOKEN-ADDR",
+        help="Use the ERC20 token at the given address",
     )(fn)
     return fn
 
