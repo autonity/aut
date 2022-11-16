@@ -19,6 +19,11 @@ CAROL=0x6813Eb9362372EEF6200f3b1dbC3f819671cBA69
 mkdir -p _test_data
 pushd _test_data
 
+    # Some basic calls
+
+    aut node info
+    aut block get
+
     # Basic key handling
 
     mkdir -p keystore

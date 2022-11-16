@@ -3,7 +3,8 @@ Autonity RPC Client
 """
 
 from autcli.commands import (
-    get,
+    node,
+    block,
     tx,
     autonity,
     validator,
@@ -25,7 +26,8 @@ def aut(verbose: bool) -> None:
         enable_logging()
 
 
-aut.add_command(get.get)
+aut.add_command(node.node_group)
+aut.add_command(block.block_group)
 aut.add_command(tx.tx_group)
 aut.add_command(autonity.autonity)
 aut.add_command(validator.validator)
