@@ -16,7 +16,7 @@ rpc_endpoint_option: Decorator = option(
     "--rpc-endpoint",
     "-r",
     metavar="URL",
-    help="RPC endpoint (defaults to WEB3_ENDPOINT env var",
+    help="RPC endpoint (defaults to WEB3_ENDPOINT env var if set)",
 )
 
 
