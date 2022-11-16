@@ -11,7 +11,7 @@ install:
 check: check-types check-lint check-format check-tests
 
 check-lint:
-	pylint autcli tests
+	pylint --ignore-patterns='.*flycheck.*' autcli tests
 	flake8 autcli tests
 
 check-format:
