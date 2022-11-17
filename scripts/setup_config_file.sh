@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-mkdir keystore
+mkdir -p keystore
 cp ../tests/data/alice.key keystore
 cp ../tests/data/bob.key keystore
 

@@ -33,6 +33,6 @@ jobs:
         pip install pipx
         pipx install .
         # ./scripts/cli_test.sh
-        ./scripts/autonity_cli_tests.sh
+        ./scripts/protocol_tests.sh
         ./scripts/validator_cli_tests.sh
         ./scripts/account_cli_tests.sh
