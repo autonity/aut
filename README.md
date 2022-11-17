@@ -6,8 +6,11 @@ A command-line RPC client for Autonity.  Run `aut --help` for the list of all co
 
 ### Installation
 
-You need Python >=3.8, and a recent version of [pipx](https://pypa.github.io/pipx/) installed. The `aut` tool can then be installed as a pipx package isolated in its own environment.
+You need:
+- Python 3.8 or 3.9 (at the time of writing, 3.10+ is incompatible with the latest stable version of the `web3.py` dependency)
+- a recent version of [pipx](https://pypa.github.io/pipx/)
 
+The `aut` tool can then be installed as a pipx package isolated in its own environment:
 ```console
 $ pipx install https://github.com/autonity/autcli.git
 ```
