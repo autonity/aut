@@ -403,7 +403,7 @@ def newton_or_token_to_address(
     if ntn:
         if token:
             raise ClickException(
-                "cannot use --new and --token <addr> arguments together"
+                "cannot use --ntn and --token <addr> arguments together"
             )
 
         return Autonity.address()

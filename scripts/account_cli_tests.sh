@@ -20,8 +20,8 @@ echo -e "\n\n" | aut account new --key-file keystore/dave.key --show-password
     echo "ERROR: account new succeeded with existing file"; exit 1)
 
 # Make a fake transaction and test signing using the new key
-aut maketx --key-file keystore/dave.key --to 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf --value '0.001kwei' --gas 1000 > test.tx
-KEYFILEPWD="" aut signtx --key-file keystore/dave.key test.tx > test.signed.tx
+aut tx make --key-file keystore/dave.key --to 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf --value '0.001kwei' --gas 1000 > test.tx
+KEYFILEPWD="" aut account signtx --key-file keystore/dave.key test.tx > test.signed.tx
 
 popd
 

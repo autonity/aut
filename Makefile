@@ -1,17 +1,13 @@
 .PHONY: tests
 
 setup:
-	pip install -e external/autonity.py[dev]
-	pip install -e .[dev]
-
-install:
-	pipx install . --force
-	pipx inject autcli external/autonity.py --force
+	pip --require-virtualenv install -e .[dev]
+	pip --require-virtualenv install -e external/autonity.py
 
 check: check-types check-lint check-format check-tests
 
 check-lint:
-	pylint autcli tests
+	pylint --ignore-patterns='.*flycheck.*' autcli tests
 	flake8 autcli tests
 
 check-format:

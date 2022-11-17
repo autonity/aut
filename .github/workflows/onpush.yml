@@ -6,28 +6,33 @@ on:
   push:
 
 jobs:
-  check:
-    runs-on: ubuntu-20.04
 
+  install-and-test:
+    strategy:
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, macos-11]
+        python-ver: [ '3.8', '3.9' ]
+    runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
       with:
         token: ${{ secrets.AUTONITY_PY_ACCESS_TOKEN }}
         submodules: recursive
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
       with:
-        python-version: 3.9
-    - name: Install and check
+        python-version: ${{ matrix.python-ver }}
+    - name: dev install and check
       run: |
         python -m venv env
         . env/bin/activate
         make
         make check -j 3
-    - name: Run command line tests
+    - name: pipx-install-and-cli-tests
       run: |
-        python -m venv env
-        . env/bin/activate
+        (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install autcli"
+        pip install pipx
+        pipx install .
         # ./scripts/cli_test.sh
-        ./scripts/autonity_cli_tests.sh
+        ./scripts/protocol_tests.sh
         ./scripts/validator_cli_tests.sh
         ./scripts/account_cli_tests.sh
