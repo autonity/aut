@@ -4,9 +4,7 @@ A command-line RPC client for Autonity.  Run `aut --help` for the list of all co
 
 ## Quick Start
 
-### Installation
-
-You need:
+Requirements:
 - Python 3.8 or 3.9 (at the time of writing, 3.10+ is incompatible with the latest stable version of the `web3.py` dependency)
 - a recent version of [pipx](https://pypa.github.io/pipx/)
 
@@ -15,7 +13,11 @@ The `aut` tool can then be installed as a pipx package isolated in its own envir
 $ pipx install https://github.com/autonity/autcli.git
 ```
 
-### (Optional) Enable command completion (bash and zsh)
+Use the `--python` flag with `pipx install` if you need to specify a specific python version, e.g. `--python $(which python3.9)`.  See the `pipx install` help text for details.
+
+The `aut` command should now be installed and available in the PATH.  All commands are discoverable via `aut --help`, `aut <command> --help` etc.
+
+## (Optional) Enable command completion (bash and zsh)
 
 Completion is available in `bash` and `zsh` shells as follows.  (Adapt these commands to your particular configuration.)
 
@@ -26,27 +28,22 @@ $ echo 'source ~/.aut-complete' >> ~/.bashrc
 ```
 Auto-complete should be enabled in new shells.
 
-### Usage
+## `.autrc` files
 
-The `aut` command should now be installed and available in the PATH.  Use `aut` by itself to list command groups available and `aut <command> -h` to get help for individual commands.
-
-### `.autrc` files
-
-This (optional) file set configuration parameters, which can be overridden by environment variables and command-line parameters.  See the [sample file](.autrc.sample) in this repo.
+If the `aut` command find this file, it reads configuration parameters from it.  See the [sample file](.autrc.sample) in this repo.  This avoids the need to enter certain values on the command line. These parameters can be overridden by environment variables and command-line parameters where necessary.
 
 If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.  Alternatively, this file can be placed in `~/.config/aut/autrc`.
 
-For example, it is often convenient to use the `.autrc` file (or environment variables - see `--help` text) to hold the endpoint for Web3 connections, instead of specifying this on the command line at each invocation:
-
+A very simple `.autrc` file may specify the endpoint for Web3 connections:
 ```console
 # Create a config file holding the rpc endpoint.
 $ echo '[aut]' > .autrc
 $ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
 ```
 
-### Examples
+## Usage Examples
 
-#### Create a new account (for demo purposes)
+### Create a new account (for demo purposes)
 
 ```console
 # Create an account
@@ -64,7 +61,7 @@ This can be added as the default key for transaction signing (and default addres
 $ echo 'keyfile = keystore/alice.key' >> .autrc
 ```
 
-#### Check account balance (after funding the account)
+### Check account balance (after funding the account)
 
 ```console
 # Check Alice's balance (use address in keystore/alice.key), given in Wei.
@@ -75,7 +72,7 @@ $ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 1000000000000000000
 ```
 
-#### Create, sign and send a transaction
+### Create, sign and send a transaction
 
 ```console
 # Send 1 XTN to Bob
@@ -88,7 +85,7 @@ Explanation of the above: The `maketx` command extracts the `from` address from 
 
 All configuration options can be set using command-line parameters to override the configuration file. Use the `--help` flag with any command to see all available options.
 
-#### Wait for the transaction
+### Wait for the transaction
 
 ```console
 # Wait for a transaction to complete.  Print the transaction receipt to stdout.
@@ -103,12 +100,12 @@ $ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 ## Development
 
 The [autonity.py](https://github.com/autonity/autonity.py) dependency
-is included as a submodule, for ease of development  To sync the submodules:
+is included as a submodule, for ease of development.  Sync all submodules, e.g.:
 ```console
 $ git submodule update --init --recursive
 ```
 
-Create and activate a virtual-env:
+Create and activate a virtual-env for development:
 ```console
 $ python -m venv env
 $ . env/bin/activate
@@ -125,9 +122,9 @@ development:
 
 (Note that the `aut` command is also installed in the virtual-env.)
 
-Execute all code checks (linters, type-checker, unit tests, etc):
+To run all code checks (linters, type-checker, unit tests, etc):
 ```console
 (env)$ make check
 ```
 
-Some tests scripts (which invoke the `aut` command itself) are available in the [scripts](./scripts) directory.  The are intended to be run within the virtual-env, from the repository root directory.
+Several tests scripts (which invoke the `aut` command itself) are available in the [scripts](./scripts) directory.  The are intended to be run within the Python virtual-env, from the repository root directory.
