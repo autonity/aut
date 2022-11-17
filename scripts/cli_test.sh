@@ -86,6 +86,6 @@ pushd _test_data
 set +e
 set +x
 
-echo "--------------------------"
-echo "--  aut cli test passed --"
-echo "--------------------------"
+echo "---------------------------"
+echo "--  aut cli test passed  --"
+echo "---------------------------"

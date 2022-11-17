@@ -14,11 +14,11 @@ from typing import Callable, Sequence, Optional, Any
 # pylint: disable=too-many-locals
 
 
-@group()
-def autonity() -> None:
+@group(name="protocol")
+def protocol_group() -> None:
     """
-    Commands related to the Autonity contract.  See the Autonity
-    contract reference for details.
+    Commands related to Autonity-specific protocol operations.  See
+    the Autonity contract reference for details.
     """
 
 
@@ -33,14 +33,14 @@ def _show_json(value: Any) -> str:
     return to_json(value, pretty=True)
 
 
-def _autonity_getter_command(
+def _protocol_getter_command(
     name: str,
     method: GetMethod,
     comment: str,
     show: Optional[Callable[[Any], str]] = None,
 ) -> None:
     """
-    Create an autonity method and register it.
+    Create an protocol method and register it.
     """
 
     @command(name=name, help=comment)
@@ -53,64 +53,64 @@ def _autonity_getter_command(
         else:
             print(ret)
 
-    autonity.add_command(cmd)
+    protocol_group.add_command(cmd)
 
 
-_autonity_getter_command(
+_protocol_getter_command(
     "commission-rate-precision",
     Autonity.commission_rate_precision,
     "Precision of validator  commission rate values",
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "config", Autonity.config, "Print the Autonity contract config", _show_json
 )
-_autonity_getter_command("epoch-id", Autonity.epoch_id, "ID of current epoch")
-_autonity_getter_command(
+_protocol_getter_command("epoch-id", Autonity.epoch_id, "ID of current epoch")
+_protocol_getter_command(
     "last-epoch-block", Autonity.last_epoch_block, "block number of the last epoch"
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "epoch-total-bonded-stake",
     Autonity.epoch_total_bonded_stake,
     "Total stake bonded this epoch",
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "total-redistributed", Autonity.total_redistributed, "Total fees redistributed"
 )
-_autonity_getter_command("epoch-reward", Autonity.epoch_reward, "Reward for this epoch")
-_autonity_getter_command(
+_protocol_getter_command("epoch-reward", Autonity.epoch_reward, "Reward for this epoch")
+_protocol_getter_command(
     "tail-bonding-id", Autonity.tail_bonding_id, "Tail ID of bonding queue"
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "head-bonding-id", Autonity.head_bonding_id, "Head ID of bonding queue"
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "tail-unbonding-id", Autonity.tail_unbonding_id, "Tail ID of unbondign queue "
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "head-unbonding-id", Autonity.head_unbonding_id, "Head ID of unbondign queue "
 )
-_autonity_getter_command("deployer", Autonity.deployer, "Contract deployer")
-_autonity_getter_command(
+_protocol_getter_command("deployer", Autonity.deployer, "Contract deployer")
+_protocol_getter_command(
     "get-last-epoch-block", Autonity.get_last_epoch_block, "Block of last epoch"
 )
-_autonity_getter_command("get-version", Autonity.get_version, "Contract version")
-_autonity_getter_command(
+_protocol_getter_command("get-version", Autonity.get_version, "Contract version")
+_protocol_getter_command(
     "get-committee", Autonity.get_committee, "Get current committee", _show_json
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "get-validators", Autonity.get_validators, "Get current validators", _show_sequence
 )
 
-_autonity_getter_command(
+_protocol_getter_command(
     "get-max-committee-size", Autonity.get_max_committee_size, "Maximum committee size"
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "get-committee-enodes", Autonity.get_committee_enodes, "Enodes in current committee"
 )
-_autonity_getter_command(
+_protocol_getter_command(
     "get-minimum-base-fee", Autonity.get_minimum_base_fee, "Minimum base fee"
 )
-_autonity_getter_command("get-operator", Autonity.get_operator, "Contract operator")
+_protocol_getter_command("get-operator", Autonity.get_operator, "Contract operator")
 
 
 @command()
@@ -125,7 +125,7 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     print(aut.get_proposer(height, round_))
 
 
-autonity.add_command(get_proposer)
+protocol_group.add_command(get_proposer)
 
 
 @command()
@@ -140,7 +140,7 @@ def get_bonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None:
     print(_show_json(aut.get_bonding_req(start, end)))
 
 
-autonity.add_command(get_bonding_req)
+protocol_group.add_command(get_bonding_req)
 
 
 @command()
@@ -155,4 +155,4 @@ def get_unbonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None
     print(_show_json(aut.get_unbonding_req(start, end)))
 
 
-autonity.add_command(get_unbonding_req)
+protocol_group.add_command(get_unbonding_req)

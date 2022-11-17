@@ -8,7 +8,7 @@ pushd _test_validators_cli
 
 ../scripts/setup_config_file.sh
 
-aut autonity get-validators > validators
+aut validator list > validators
 v1=$(head -n1 validators)
 
 echo "validator=${v1}" >> .autrc

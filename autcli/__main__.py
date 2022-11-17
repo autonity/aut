@@ -6,7 +6,7 @@ from autcli.commands import (
     node,
     block,
     tx,
-    autonity,
+    protocol,
     validator,
     account,
 )
@@ -33,7 +33,7 @@ def aut(verbose: bool) -> None:
 aut.add_command(node.node_group)
 aut.add_command(block.block_group)
 aut.add_command(tx.tx_group)
-aut.add_command(autonity.autonity)
+aut.add_command(protocol.protocol_group)
 aut.add_command(validator.validator)
 aut.add_command(account.account_group)
 
