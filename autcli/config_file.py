@@ -44,6 +44,14 @@ class ConfigFile:
 
 
 CONFIG_FILE_NAME = ".autrc"
+"""
+Search current and parent directories for this file.
+"""
+
+DOT_CONFIG_FILE_NAME = "autrc"
+"""
+Check for this file in the ~/.config/aut directory.
+"""
 
 CONFIG_FILE_SECTION_NAME = "aut"
 
@@ -60,6 +68,8 @@ def _find_config_file() -> str | None:
     .autrc file in the current or any parent dir.
     """
 
+    home_dir = os.path.expanduser("~")
+
     # Start at
     cur_dir = os.getcwd()
 
@@ -69,9 +79,18 @@ def _find_config_file() -> str | None:
             log(f"found config file: {config_path}")
             return config_path
 
+        # If/when we reach the home directory, check also for ~/.config/aut/autrc
+        if cur_dir == home_dir:
+            config_path = os.path.join(home_dir, ".config", "aut", DOT_CONFIG_FILE_NAME)
+            if os.path.exists(config_path):
+                log(f"HOME dir. found {config_path}")
+                return config_path
+
+            log(f"HOME dir. no file {config_path}")
+
         parent_dir = os.path.normpath(os.path.join(cur_dir, ".."))
         if parent_dir == cur_dir:
-            log(f"no {CONFIG_FILE_NAME} file found")
+            log(f"reached root. no {CONFIG_FILE_NAME} file found")
             break
 
         cur_dir = parent_dir

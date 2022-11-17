@@ -33,9 +33,9 @@ The `aut` command should now be available like any other unix command.  Use `aut
 
 This (optional) file set configuration parameters, which can be overridden by environment variables and command-line parameters.  See the [sample file](.autrc.sample) in this repo.
 
-If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.
+If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.  Alternatively, this file can be placed in `~/.config/aut/autrc`.
 
-It is often convenient to use the `.autrc` file (or environment variables - see `--help` text) to hold the endpoint for Web3 connections, instead of specifying this on the command line at each invocation:
+For example, it is often convenient to use the `.autrc` file (or environment variables - see `--help` text) to hold the endpoint for Web3 connections, instead of specifying this on the command line at each invocation:
 
 ```console
 # Create a config file holding the rpc endpoint.
