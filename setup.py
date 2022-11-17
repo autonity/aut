@@ -16,7 +16,7 @@ setup(
     ],
     description="A command-line RPC client for Autonity",
     packages=find_packages(exclude=["tests", "external"]),
-    python_requires=">=3.9,<3.10",
+    python_requires=">=3.8",
     classifiers=[
         "Development Status :: 1 - Planning",
         "License :: OSI Approved :: MIT License",
