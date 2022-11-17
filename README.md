@@ -6,12 +6,10 @@ A command-line RPC client for Autonity.  Run `aut --help` for the list of all co
 
 ### Installation
 
-You need Python 3.9 (support for other versions [coming soon](https://github.com/autonity/autcli/issues/11)), the `distutils` package and a recent version of [pipx](https://pypa.github.io/pipx/) installed. The `aut` tool can then be installed as a pipx package isolated in its own environment.
+You need Python >=3.8, and a recent version of [pipx](https://pypa.github.io/pipx/) installed. The `aut` tool can then be installed as a pipx package isolated in its own environment.
 
 ```console
-$ git clone --recurse-submodules https://github.com/autonity/autcli
-$ cd autcli
-$ make install
+$ pipx install https://github.com/autonity/autcli.git
 ```
 
 ### (Optional) Enable command completion (bash and zsh)
@@ -27,7 +25,7 @@ Auto-complete should be enabled in new shells.
 
 ### Usage
 
-The `aut` command should now be available like any other unix command.  Use `aut` by itself to list commands and `aut <command> -h` to get help for individual commands.
+The `aut` command should now be installed and available in the PATH.  Use `aut` by itself to list command groups available and `aut <command> -h` to get help for individual commands.
 
 ### `.autrc` files
 
