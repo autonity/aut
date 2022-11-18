@@ -2,4 +2,7 @@ autcli.egg-info
 build
 notes.org
 scripts/examples/*
-_test_*
+_test_*env
+__pycache__
+*~
+*.orig
