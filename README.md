@@ -13,9 +13,14 @@ The `aut` tool can then be installed as a pipx package isolated in its own envir
 $ pipx install https://github.com/autonity/autcli.git
 ```
 
-Use the `--python` flag with `pipx install` if you need to specify a specific python version, e.g. `--python $(which python3.9)`.  See the `pipx install` help text for details.
+**Note:** Depending on your git credentials setup, the `https` URL above may not work while the repository is not public.  In this case, you can try the SSH-style url:
+```console
+$ pipx install git+ssh://git@github.com/autonity/autcli.git
+```
 
-The `aut` command should now be installed and available in the PATH.  All commands are discoverable via `aut --help`, `aut <command> --help` etc.
+**Note:** If you need to specify a specific python version (because pipx selects a version that is not compatible with `autcli`), use the `--python` flag `pipx install --python $(which python3.9) <url>`.  See the `pipx install` help text for details.
+
+Once successfully installed, the `aut` command should be available in the PATH.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
 ## (Optional) Enable command completion (bash and zsh)
 
