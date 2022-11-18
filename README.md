@@ -10,18 +10,23 @@ Requirements:
 
 The `aut` tool can then be installed as a pipx package, isolated in its own environment:
 ```console
+$ pipx install git+ssh://git@github.com/autonity/autcli.git
+```
+or
+```console
 $ pipx install https://github.com/autonity/autcli.git
 ```
+(depending on your github setup).
 
 Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
-**Note:** Until it is public, this repository will require credentials with sufficient permissions.  If you don't have `https` tokens set up, the SSH-style url can be used:
+**Note:** If `pipx` selects an incompatible version of Python, you may need to specify a specific python. Use the `--python` flag:
 ```console
-$ pipx install git+ssh://git@github.com/autonity/autcli.git
+$ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/autcli.git
 ```
-If you are trying to install on a VPS, or other machine without github credentials, you may need to [set these up](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token) for that host.
+See the `pipx install` help text for details.
 
-**Note:** If `pipx` selects an incompatible version of Python, you may need to specify a specific python. Use the `--python` flag (e.g. `pipx install --python $(which python3.9) <url>`).  See the `pipx install` help text for details.
+**Note:** Until it is public, this repository will require `ssh` or `https` credentials with sufficient permissions.  This is not expected to present a problem since the expected use-case is for this tool to be used from the "local" machine (on which your Autonity private keys are available), and communicate with an Autonity node running on a "remote" host.
 
 ## (Optional) Enable command completion (bash and zsh)
 
