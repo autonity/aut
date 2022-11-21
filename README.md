@@ -14,7 +14,7 @@ $ pipx install git+ssh://git@github.com/autonity/autcli.git
 ```
 or
 ```console
-$ pipx install https://github.com/autonity/autcli.git
+$ pipx install git+https://github.com/autonity/autcli.git
 ```
 (depending on your github setup).
 
