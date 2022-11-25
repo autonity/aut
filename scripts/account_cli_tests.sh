@@ -8,6 +8,17 @@ pushd _test_accounts_cli
 
 ../scripts/setup_config_file.sh
 
+# Create a keyfile from a private key and check the address
+export HISTCONTROL=ignorespace
+ echo '6173646661647366616473666173646671776572717765727177657271776572' > test_key.priv
+rm -f test_key.key
+echo -e '\n\n' | aut account import-private-key --key-file test_key.key --show-password test_key.priv > test_key_out
+test_addr=`grep -oe '0x[0-9A-Za-z]\+' test_key_out`
+if ! [ "${test_addr}" == "0x1e9Ee7293bc304A10a0b33D0FCCBDFF78463bE5c" ] ; then
+   echo Private key generated wrong address
+   exit 1
+fi
+
 aut account list
 aut account info
 aut account info --key-file keystore/bob.key
@@ -15,6 +26,7 @@ aut account balance
 
 # Create new key.  Use --show-password to allow stdin to be piped to
 # the password prompts.
+rm -f keystore/dave.key
 echo -e "\n\n" | aut account new --key-file keystore/dave.key --show-password
 (echo -e "\n\n" | aut account new --key-file keystore/dave.key --show-password) && (
     echo "ERROR: account new succeeded with existing file"; exit 1)

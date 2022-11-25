@@ -2,11 +2,15 @@
 Implementation of `node` subcommands
 """
 
-from autcli.utils import to_json, web3_from_endpoint_arg
 from autcli.options import rpc_endpoint_option
 
 from click import group, command
 from typing import Optional
+
+# Disable pylint warning about imports outside top-level.  We do this
+# intentionally to try and keep startup times of the CLI low.
+
+# pylint: disable=import-outside-toplevel
 
 
 @group(name="node")
@@ -22,6 +26,8 @@ def info(rpc_endpoint: Optional[str]) -> None:
     """
     Print general information about the RPC node configuration and state.
     """
+    from autcli.utils import to_json, web3_from_endpoint_arg
+
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     node_info = {
         "eth_accounts": w3.eth.accounts,
