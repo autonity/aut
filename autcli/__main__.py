@@ -13,11 +13,12 @@ from autcli.commands import (
 from autcli.logging import enable_logging
 
 import sys
-from click import group, option
+from click import group, option, version_option
 
 
 @group()
 @option("--verbose", "-v", is_flag=True, help="Enable additional output (to stderr)")
+@version_option()
 def aut(verbose: bool) -> None:
     """
     Command line interface to Autonity functionality.
