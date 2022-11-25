@@ -30,7 +30,7 @@ import os.path
 import eth_account
 from getpass import getpass
 from web3 import Web3
-from click import group, command, option, argument, ClickException
+from click import group, command, option, argument, ClickException, Path
 from typing import Dict, List, Optional
 
 
@@ -45,6 +45,7 @@ def account_group() -> None:
 @option("--with-files", is_flag=True, help="also show keyfile names.")
 @option(
     "--keystore",
+    type=Path(exists=True),
     help="keystore directory (falls back to config file or ~/.autonity/keystore).",
 )
 def list_cmd(keystore: Optional[str], with_files: bool) -> None:
@@ -173,7 +174,7 @@ account_group.add_command(lnew_balances)
 
 
 @command()
-@keyfile_option(required=True)
+@keyfile_option(required=True, output=True)
 @option(
     "--extra-entropy",
     is_flag=True,
@@ -237,6 +238,7 @@ account_group.add_command(new)
 @keyfile_and_password_options()
 @argument(
     "tx-file",
+    type=Path(exists=True),
     required=True,
 )
 def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> None:
