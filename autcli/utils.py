@@ -56,6 +56,15 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     return w3
 
 
+def autonity_from_endpoint_arg(endpoint_arg: Optional[str]) -> Autonity:
+    """
+    Construct a reference to the Autonity contract from an endpoint
+    argument.  Intended for the case of Protocol queries where the CLI
+    function simply loads the Autonity contract and makes one request.
+    """
+    return Autonity(web3_from_endpoint_arg(None, endpoint_arg))
+
+
 def from_address_from_argument_optional(
     from_str: Optional[str], key_file: Optional[str]
 ) -> Optional[ChecksumAddress]:

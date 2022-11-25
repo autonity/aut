@@ -2,7 +2,6 @@
 The `validator` command group.
 """
 
-from autcli.config import get_validator_address
 from autcli.options import (
     rpc_endpoint_option,
     keyfile_option,
@@ -10,22 +9,15 @@ from autcli.options import (
     tx_aux_options,
     validator_option,
 )
-from autcli.utils import (
-    web3_from_endpoint_arg,
-    from_address_from_argument,
-    to_json,
-    create_contract_tx_from_args,
-    parse_wei_representation,
-)
 from autcli.commands.protocol import protocol_group
 
-from autonity.autonity import Autonity
-from autonity.validator import Validator
-
 from click import group, command, option, argument
-
 from typing import Optional
 
+# Disable pylint warning about imports outside top-level.  We do this
+# intentionally to try and keep startup times of the CLI low.
+
+# pylint: disable=import-outside-toplevel
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 
@@ -52,8 +44,11 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
     """
     Get information about a validator.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import autonity_from_endpoint_arg, to_json
+
     validator_addr = get_validator_address(validator_addr_str)
-    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
     print(to_json(aut.get_validator(validator_addr), pretty=True))
 
 
@@ -84,12 +79,20 @@ def bond(
     """
     Create transaction to bond Newton to a validator.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import (
+        autonity_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+        parse_wei_representation,
+    )
+
     amount = parse_wei_representation(amount_str)
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
         function=aut.bond(validator_addr, amount),
@@ -132,12 +135,20 @@ def unbond(
     """
     Create transaction to unbond Newton from a validator.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import (
+        autonity_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+        parse_wei_representation,
+    )
+
     amount = parse_wei_representation(amount_str)
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
         function=aut.unbond(validator_addr, amount),
@@ -178,11 +189,17 @@ def register(
     """
     Create transaction to register a validator
     """
+    from autcli.utils import (
+        autonity_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+    )
+
     from_addr = from_address_from_argument(from_str, key_file)
     # TODO: validate enode string?
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
     tx = create_contract_tx_from_args(
         function=aut.register_validator(enode),
         from_addr=from_addr,
@@ -223,11 +240,18 @@ def pause(
     Create transaction to pause the given validator.  See
     `pauseValidator` on the Autonity contract.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import (
+        autonity_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+    )
+
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
         function=aut.pause_validator(validator_addr),
@@ -269,11 +293,18 @@ def activate(
     Create transaction to activate a paused validator.  See
     `activateValidator` on the Autonity contract.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import (
+        autonity_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+    )
+
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
         function=aut.activate_validator(validator_addr),
@@ -359,13 +390,17 @@ def unclaimed_rewards(
     """
     Check the given validator for unclaimed-fees.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import autonity_from_endpoint_arg, from_address_from_argument
+
+    from autonity.validator import Validator
+
     validator_addr = get_validator_address(validator_addr_str)
     account = from_address_from_argument(account, key_file)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
     vdesc = aut.get_validator(validator_addr)
-    val = Validator(w3, vdesc)
+    val = Validator(aut.contract.web3, vdesc)
     print(val.unclaimed_rewards(account))
 
 
@@ -394,6 +429,17 @@ def claim_rewards(
     """
     Create transaction to claim rewards from a Validator.
     """
+    from autcli.config import get_validator_address
+    from autcli.utils import (
+        web3_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+    )
+
+    from autonity.autonity import Autonity
+    from autonity.validator import Validator
+
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 

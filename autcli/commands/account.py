@@ -3,35 +3,15 @@ The `account` command group.
 """
 
 from autcli.options import keyfile_and_password_options
-from autcli.logging import log
-from autcli import config
 from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
-from autcli.user import get_account_stats
-from autcli.utils import (
-    address_keyfile_dict,
-    to_json,
-    web3_from_endpoint_arg,
-    newton_or_token_to_address,
-    from_address_from_argument_optional,
-    load_from_file_or_stdin,
-)
-
-from autonity.utils.keyfile import (
-    create_keyfile_from_private_key,
-    get_address_from_keyfile,
-)
-from autonity.utils.tx import sign_tx
-from autonity.autonity import Autonity
-from autonity.erc20 import ERC20
-
-
-import json
-import os.path
-import eth_account
-from getpass import getpass
-from web3 import Web3
 from click import group, command, option, argument, ClickException, Path
 from typing import Dict, List, Optional
+
+# Disable pylint warning about imports outside top-level.  We do this
+# intentionally to try and keep startup times of the CLI low.
+
+# pylint: disable=import-outside-toplevel
+# pylint: disable=too-many-locals
 
 
 @group(name="account")
@@ -52,6 +32,10 @@ def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     """
     List the accounts for files in the keystore directory.
     """
+
+    from autcli import config
+    from autcli.utils import address_keyfile_dict
+
     keystore = config.get_keystore_directory(keystore)
     keyfiles = address_keyfile_dict(keystore)
     for addr, keyfile in keyfiles.items():
@@ -82,6 +66,15 @@ def info(
     Print some information about the given account (falling back to
     the default keyfile account if no accounts specified).
     """
+
+    from autcli.user import get_account_stats
+    from autcli.utils import (
+        to_json,
+        web3_from_endpoint_arg,
+        from_address_from_argument_optional,
+    )
+
+    from web3 import Web3
 
     if len(accounts) == 0:
         account = from_address_from_argument_optional(None, key_file)
@@ -114,6 +107,15 @@ def balance(
     """
     Print the current balance of the given account.
     """
+
+    from autcli.utils import (
+        web3_from_endpoint_arg,
+        newton_or_token_to_address,
+        from_address_from_argument_optional,
+    )
+
+    from autonity.erc20 import ERC20
+
     account_addr = from_address_from_argument_optional(account_str, key_file)
     if not account_addr:
         raise ClickException(
@@ -148,6 +150,17 @@ def lnew_balances(
     """
     Print the current balance of the given account.
     """
+
+    from autcli.logging import log
+    from autcli.utils import (
+        to_json,
+        web3_from_endpoint_arg,
+        from_address_from_argument_optional,
+    )
+
+    from autonity.autonity import Autonity
+    from autonity.erc20 import ERC20
+
     account_addr = from_address_from_argument_optional(account_str, key_file)
     if not account_addr:
         raise ClickException(
@@ -189,6 +202,18 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
     """
     Create a new key and write it to a keyfile.
     """
+
+    from autcli.logging import log
+
+    from autonity.utils.keyfile import (
+        create_keyfile_from_private_key,
+        get_address_from_keyfile,
+    )
+
+    import json
+    import os.path
+    import eth_account
+    from getpass import getpass
 
     if os.path.exists(key_file):
         raise ClickException("refusing to overwrite existing keyfile")
@@ -249,6 +274,14 @@ def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> No
     If password is not given, the env variable 'KEYFILEPWD' is used.
     If that is not set, the user is prompted.
     """
+
+    from autcli.logging import log
+    from autcli import config
+    from autcli.utils import to_json, load_from_file_or_stdin
+
+    from autonity.utils.tx import sign_tx
+
+    import json
 
     # Read tx
     tx = json.loads(load_from_file_or_stdin(tx_file))

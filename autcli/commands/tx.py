@@ -2,7 +2,6 @@
 The `tx` command group.
 """
 
-from autcli.logging import log
 from autcli.options import (
     from_option,
     rpc_endpoint_option,
@@ -10,31 +9,15 @@ from autcli.options import (
     keyfile_option,
     tx_aux_options,
 )
-from autcli.utils import (
-    create_tx_from_args,
-    create_contract_tx_from_args,
-    finalize_tx_from_args,
-    to_json,
-    web3_from_endpoint_arg,
-    newton_or_token_to_address,
-    from_address_from_argument_optional,
-    validate_32byte_hash_string,
-    parse_wei_representation,
-    load_from_file_or_stdin,
-)
 from autcli.commands.account import signtx
 
-from autonity.utils.tx import send_tx, wait_for_tx
-from autonity.erc20 import ERC20
-
-import asyncio
-from eth_account.account import SignedTransaction
-import json
-from web3 import Web3
-from web3.types import HexBytes, HexStr
 from click import group, command, option, argument, ClickException, Path
 from typing import Optional
 
+# Disable pylint warning about imports outside top-level.  We do this
+# intentionally to try and keep startup times of the CLI low.
+
+# pylint: disable=import-outside-toplevel
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
 
@@ -92,6 +75,23 @@ def make(
     """
     Create a transaction given the parameters passed in.
     """
+
+    from autcli.logging import log
+    from autcli.utils import (
+        create_tx_from_args,
+        create_contract_tx_from_args,
+        finalize_tx_from_args,
+        to_json,
+        web3_from_endpoint_arg,
+        newton_or_token_to_address,
+        from_address_from_argument_optional,
+        parse_wei_representation,
+    )
+
+    from autonity.erc20 import ERC20
+
+    from web3 import Web3
+    from web3.types import HexStr
 
     # TODO: Add a flag which results in only unconnected Web3
     # instances being created.  Callers who do not want to connect to
@@ -192,6 +192,14 @@ def send(rpc_endpoint: Optional[str], tx_file: str) -> None:
     Outputs the transaction hash if it is successfully sent.
     """
 
+    from autcli.utils import web3_from_endpoint_arg, load_from_file_or_stdin
+
+    from autonity.utils.tx import send_tx
+
+    from eth_account.account import SignedTransaction
+    import json
+    from web3 import Web3
+
     signed_tx = SignedTransaction(**json.loads(load_from_file_or_stdin(tx_file)))
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     tx_hash = send_tx(w3, signed_tx)
@@ -221,6 +229,17 @@ def wait(
 
     Timeouts also result in a non-zero exit code.
     """
+
+    from autcli.utils import (
+        to_json,
+        web3_from_endpoint_arg,
+        validate_32byte_hash_string,
+    )
+
+    from autonity.utils.tx import wait_for_tx
+
+    import asyncio
+    from web3.types import HexBytes
 
     hash_bytes = HexBytes(validate_32byte_hash_string(tx_hash))
 

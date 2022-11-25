@@ -2,12 +2,15 @@
 The "get" command group
 """
 
-from autcli.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
 from autcli.options import rpc_endpoint_option
-from autcli.user import get_block
 
 from click import group, command, argument
 from typing import Optional
+
+# Disable pylint warning about imports outside top-level.  We do this
+# intentionally to try and keep startup times of the CLI low.
+
+# pylint: disable=import-outside-toplevel
 
 
 @group(name="block")
@@ -25,6 +28,10 @@ def get(rpc_endpoint: Optional[str], identifier: str) -> None:
     Print information for block, where <identifier> is a block number
     or hash.  If no argument is given, "latest" is used.
     """
+
+    from autcli.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
+    from autcli.user import get_block
+
     block_id = validate_block_identifier(identifier)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     block_data = get_block(w3, block_id)
