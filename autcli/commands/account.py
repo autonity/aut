@@ -204,6 +204,7 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
     """
 
     from autcli.logging import log
+    from autcli.utils import prompt_for_new_password
 
     from autonity.utils.keyfile import (
         create_keyfile_from_private_key,
@@ -213,7 +214,6 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
     import json
     import os.path
     import eth_account
-    from getpass import getpass
 
     if os.path.exists(key_file):
         raise ClickException("refusing to overwrite existing keyfile")
@@ -227,18 +227,7 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
     # Ask for password (and confirmation) and ensure both entries
     # match.
 
-    prompt = "Password for new account: "
-    prompt_2 = "Confirm account password: "
-    if show_password:
-        password = input(prompt)
-        password_2 = input(prompt_2)
-    else:
-        password = getpass(prompt)
-        password_2 = getpass(prompt_2)
-
-    if password != password_2:
-        raise ClickException("passwords do not match")
-
+    password = prompt_for_new_password(show_password)
     log("Generating private key ...")
     account = eth_account.Account.create(entropy)
     keyfile_data = create_keyfile_from_private_key(account.key, password)
@@ -257,6 +246,57 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
 
 
 account_group.add_command(new)
+
+
+@command()
+@keyfile_option(required=True, output=True)
+@option(
+    "--show-password",
+    is_flag=True,
+    help="Echo password input to the terminal",
+)
+@argument("private_key_file", type=Path(exists=True))
+def import_private_key(
+    key_file: str, show_password: bool, private_key_file: str
+) -> None:
+    """
+    Read a plaintext private key file (as hex), and create a new
+    keyfile for it.  Use - for stdin.
+    """
+
+    from autcli.utils import load_from_file_or_stdin, prompt_for_new_password
+    from autcli.logging import log
+
+    from autonity.utils.keyfile import (
+        PrivateKey,
+        create_keyfile_from_private_key,
+        get_address_from_keyfile,
+    )
+
+    from hexbytes import HexBytes
+    import json
+    import os.path
+
+    if os.path.exists(key_file):
+        raise ClickException("refusing to overwrite existing keyfile")
+
+    private_key = HexBytes.fromhex(load_from_file_or_stdin(private_key_file))
+    if len(private_key) != 32:
+        raise ClickException("invalid private key length")
+
+    password = prompt_for_new_password(show_password)
+
+    keyfile_data = create_keyfile_from_private_key(PrivateKey(private_key), password)
+
+    with open(key_file, "w", encoding="utf8") as key_f:
+        json.dump(keyfile_data, key_f)
+
+    log(f"Encrypted key written to {key_file}")
+
+    print(get_address_from_keyfile(keyfile_data))
+
+
+account_group.add_command(import_private_key)
 
 
 @command()
