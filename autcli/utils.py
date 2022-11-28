@@ -20,6 +20,7 @@ import sys
 import json
 from decimal import Decimal
 from click import ClickException
+from getpass import getpass
 from web3 import Web3
 from web3.contract import ContractFunction
 from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
@@ -54,6 +55,15 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
         return create_web3_for_endpoint(config.get_rpc_endpoint(endpoint_arg))
 
     return w3
+
+
+def autonity_from_endpoint_arg(endpoint_arg: Optional[str]) -> Autonity:
+    """
+    Construct a reference to the Autonity contract from an endpoint
+    argument.  Intended for the case of Protocol queries where the CLI
+    function simply loads the Autonity contract and makes one request.
+    """
+    return Autonity(web3_from_endpoint_arg(None, endpoint_arg))
 
 
 def from_address_from_argument_optional(
@@ -412,3 +422,23 @@ def newton_or_token_to_address(
         return Web3.toChecksumAddress(token)
 
     return None
+
+
+def prompt_for_new_password(show_password: bool) -> str:
+    """
+    Prompt for a new password (with confirmation), optionally echoing
+    to the console.
+    """
+    prompt = "Password for new account: "
+    prompt_2 = "Confirm account password: "
+    if show_password:
+        password = input(prompt)
+        password_2 = input(prompt_2)
+    else:
+        password = getpass(prompt)
+        password_2 = getpass(prompt_2)
+
+    if password != password_2:
+        raise ClickException("passwords do not match")
+
+    return password

@@ -2,7 +2,7 @@
 Command line option sets used by multiple commands.
 """
 
-from click import option
+from click import option, Path
 from typing import Callable, TypeVar, Any
 
 
@@ -20,15 +20,19 @@ rpc_endpoint_option: Decorator = option(
 )
 
 
-def keyfile_option(required: bool = False) -> Decorator:
+def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
     """
     Options: --key-file.  If `required` is True, --key-file is
-    required.
+    required.  If `output` is True, the file does not need to exist.
     """
 
     def decorator(fn: Func) -> Func:
         fn = option(
-            "--key-file", "-k", required=required, help="Encrypted private key file"
+            "--key-file",
+            "-k",
+            required=required,
+            type=Path(exists=not output),
+            help="Encrypted private key file",
         )(fn)
         return fn
 
