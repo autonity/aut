@@ -43,3 +43,4 @@ jobs:
         ./scripts/test_protocol
         ./scripts/test_validator
         ./scripts/test_account
+        [ `uname` == "Linux" ] && ./scripts/test_transactions
