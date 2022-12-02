@@ -20,6 +20,8 @@ $ pipx install git+https://github.com/autonity/autcli.git
 
 Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
+**Note:** If `autcli` is already installed, the `--force` flag may be required in order to update.
+
 **Note:** If `pipx` selects an incompatible version of Python, you may need to specify a specific python. Use the `--python` flag:
 ```console
 $ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/autcli.git
