@@ -14,7 +14,11 @@ OWNER_ADDR=0x56b25a4ded9ce76d1d4f704a97d309838f4b9dc1
 
 function autonity_install() {
     if ! [ -e ${AUTONITY} ] ; then
-        wget -O autonity.tar.gz ${AUTONITY_DOWNNLOAD_URL}
+        if [ "" == "${AUTH_TOKEN}" ] ; then
+            curl -o autonity.tar.gz ${AUTONITY_DOWNNLOAD_URL}
+        else
+            curl -o autonity.tar.gz -H "Authorization: token ${AUTH_TOKEN}" ${AUTONITY_DOWNNLOAD_URL}
+        fi
         tar jzf autonity.tar.gz
         mv autonity ${AUTONITY}
     fi

@@ -43,4 +43,4 @@ jobs:
         ./scripts/test_protocol
         ./scripts/test_validator
         ./scripts/test_account
-        [ `uname` == "Linux" ] && ./scripts/test_transactions
+        [ `uname` == "Linux" ] && AUTH_TOKEN=${{ secrets.AUTONITY_PY_ACCESS_TOKEN }} ./scripts/test_transactions
