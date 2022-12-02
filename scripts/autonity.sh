@@ -19,7 +19,7 @@ function autonity_install() {
         else
             curl -o autonity.tar.gz -H "Authorization: token ${AUTH_TOKEN}" ${AUTONITY_DOWNNLOAD_URL}
         fi
-        tar jzf autonity.tar.gz
+        tar xzf autonity.tar.gz
         mv autonity ${AUTONITY}
     fi
 }
