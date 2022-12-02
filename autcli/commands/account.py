@@ -303,7 +303,7 @@ account_group.add_command(import_private_key)
 @keyfile_and_password_options()
 @argument(
     "tx-file",
-    type=Path(exists=True),
+    type=Path(),
     required=True,
 )
 def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> None:
