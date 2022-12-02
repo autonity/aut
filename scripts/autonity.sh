@@ -1,6 +1,6 @@
 # Functions to starting and stopping and Autonity node
 
-AUTONITY_DOWNNLOAD=https://github.com/autonity/autonity-sim/releases/download/v0.9.0/autonity-linux-amd64-v0.9.0.tar.gz
+AUTONITY_DOWNNLOAD_URL=https://github.com/autonity/autonity-sim/releases/download/v0.9.0/autonity-linux-amd64-v0.9.0.tar.gz
 
 AUTONITY=../autonity
 # AUTONITY=../../autonity-internal/build/bin/autonity
@@ -14,7 +14,7 @@ OWNER_ADDR=0x56b25a4ded9ce76d1d4f704a97d309838f4b9dc1
 
 function autonity_install() {
     if ! [ -e ${AUTONITY} ] ; then
-        wget -O autonity.tar.gz ${AUTONITY_REPO}
+        wget -O autonity.tar.gz ${AUTONITY_DOWNNLOAD_URL}
         tar jzf autonity.tar.gz
         mv autonity ${AUTONITY}
     fi
