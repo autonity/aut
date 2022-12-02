@@ -1,3 +1,7 @@
+# v0.0.3
+
+- Small fixes for command line parameters
+
 # v0.0.2
 
 - Cleaned up some parameter handling
