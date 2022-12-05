@@ -40,7 +40,7 @@ jobs:
     - name: cache autonity
       uses: actions/cache@v3
       with:
-        path: ../autoniy
+        path: ../autonity
         key: ${{ runner.os }}-autonity
     - name: pipx-install-and-cli-tests
       env:
