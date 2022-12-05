@@ -41,7 +41,7 @@ jobs:
       uses: actions/cache@v3
       with:
         path: ../autonity
-        key: ${{ runner.os }}-autonity
+        key: ${{ matrix.os }}-autonity
     - name: pipx-install-and-cli-tests
       env:
         AUTONITY_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
