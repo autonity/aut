@@ -1,0 +1,87 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+mkdir -p _test_transactions
+pushd _test_transactions
+
+source ../scripts/autonity.sh
+
+ALICE=0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf
+
+BOB=0x2B5AD5c4795c026514f8317c7a215E218DcCD6cF
+
+# Install autonity binary
+autonity_install
+
+# Start Autonity standalone
+autonity_start
+autonity_wait
+
+function operator_sign_send() {
+    KEYFILEPWD="" aut tx sign - | aut tx send -
+}
+
+function alice_sign_send() {
+    KEYFILEPWD="alice" aut tx sign - | aut tx send -
+}
+
+# Set up the operator dir
+mkdir -p operator
+pushd operator
+    echo "[aut]" > .autrc
+    echo "rpc_endpoint = ${RPC_ENDPOINT}" >> .autrc
+    echo "keyfile = ../${OWNER_KEYFILE}" >> .autrc
+
+    aut protocol mint 100 ${ALICE} | operator_sign_send > mint.tx.hash
+    aut tx wait `cat mint.tx.hash`
+
+    aut protocol set-epoch-period 5 | operator_sign_send > set_epoch_period.tx.hash
+    aut tx wait `cat set_epoch_period.tx.hash`
+
+    aut protocol set-unbonding-period 1 | operator_sign_send > set_unbonding_period.tx.hash
+    aut tx wait `cat set_unbonding_period.tx.hash`
+
+    aut tx make --to ${ALICE} --value 10 | operator_sign_send > send_alice.tx.hash
+    aut tx wait `cat send_alice.tx.hash`
+
+    popd  # operator
+
+# Set up alices dir
+mkdir -p alice
+pushd alice
+
+    # - check balance
+    # - send NTN to Bob
+    # - register a validator
+
+    echo "[aut]" > .autrc
+    echo "rpc_endpoint = ${RPC_ENDPOINT}" >> .autrc
+    echo "keyfile = ../../tests/data/alice.key" >> .autrc
+
+    # Check Alices XTN and NTN balance is non-zero
+    ! [ `aut account balance` == "0" ]
+    ! [ `aut account balance --ntn` == "0" ]
+
+    num_validators=`aut validator list | wc -l`
+    aut validator register 'enode://cff5713710aec2f6b24f942e9a4e873a56f4b6ab3caf6ab07ef0376a611be17b08ab9727941e209f7b03bed65bf83ab37557aa0e731e085130d31a53316fd048@127.0.0.1:0'
+    [ `aut validator list | wc -l` == $(($(num_validators) + 1)) ]
+
+    popd
+
+# Set up bobs dir
+
+# Operator
+# - mint NTN to alice
+# - change all epoch / bonding lengths to 2
+
+# Alice
+
+#
+
+# Stop Autonity
+autonity_stop
+
+
+popd  # _test_transactions

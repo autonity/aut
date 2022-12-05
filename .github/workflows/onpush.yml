@@ -5,34 +5,51 @@ name: onpush
 on:
   push:
 
+env:
+  HOMEBREW_PACKAGES: "pidof"
+  HOMEBREW_NO_AUTO_UPDATE: 1
+
 jobs:
 
   install-and-test:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-11]
-        python-ver: [ '3.8', '3.9' ]
+        os: [ubuntu-20.04]
+        python-ver: [ '3.9' ]
+        # os: [ubuntu-20.04, ubuntu-22.04, macos-11]
+        # python-ver: [ '3.8', '3.9' ]
     runs-on: ${{ matrix.os }}
     steps:
     - uses: actions/checkout@v2
       with:
-        token: ${{ secrets.AUTONITY_PY_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         submodules: recursive
     - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-ver }}
+    - name: dependencies
+      if: matrix.os == 'macos-11'
+      run: |
+        brew install ${HOMEBREW_PACKAGES}
     - name: dev install and check
       run: |
         python -m venv env
         . env/bin/activate
         make
         make check -j 3
+    - name: cache autonity
+      uses: actions/cache@v3
+      with:
+        path: ../autonity
+        key: ${{ matrix.os }}-autonity
     - name: pipx-install-and-cli-tests
+      env:
+        AUTONITY_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
       run: |
         (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install autcli"
         pip install pipx
         pipx install .
-        # ./scripts/cli_test.sh
-        ./scripts/protocol_tests.sh
-        ./scripts/validator_cli_tests.sh
-        ./scripts/account_cli_tests.sh
+        [ `uname` == "Linux" ] && AUTH_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} ./scripts/test_transactions
+        ./scripts/test_protocol
+        ./scripts/test_validator
+        ./scripts/test_account
