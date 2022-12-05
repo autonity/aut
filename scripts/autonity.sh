@@ -72,10 +72,18 @@ function autonity_download_release() {
         mv autonity ${AUTONITY}
     fi
 
-    export AUTONITY=`pwd`/autonity
+    export AUTONITY=$(pwd)/autonity
 }
 
 function autonity_install() {
+
+    # If ${AUTONITY} already points to a binary, use that.  Otherwise
+    # download or build the relevant version and set AUTONITY to point
+    # to it.
+
+    if [ -e ${AUTONITY} ] ; then
+        return
+    fi
 
     if ! [ "" == "${AUTONITY_BRANCH}" ] ; then
         autonity_build_from_branch ${AUTONITY_BRANCH}
