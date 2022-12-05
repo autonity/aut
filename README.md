@@ -20,13 +20,19 @@ $ pipx install git+https://github.com/autonity/autcli.git
 
 Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
-**Note:** If `pipx` selects an incompatible version of Python, you may need to specify a specific python. Use the `--python` flag:
-```console
-$ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/autcli.git
-```
-See the `pipx install` help text for details.
+**Note:**
 
-**Note:** Until it is public, this repository will require `ssh` or `https` credentials with sufficient permissions.  This is not expected to present a problem since the expected use-case is for this tool to be used from the "local" machine (on which your Autonity private keys are available), and communicate with an Autonity node running on a "remote" host.
+  - If `autcli` is already installed, the `--force` flag may be required in order to update.
+
+  - If `pipx` selects an incompatible version of Python, you may need to specify a specific one. Use the `--python` flag:
+    ```console
+    $ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/autcli.git
+    ```
+    See the `pipx install` help text for details.
+
+  - If the `aut` command is not available, ensure that `~/.local/bin` appears in your `PATH`.  Use `pipx ensurepath` to verify.
+
+  - Until it is public, this repository will require `ssh` or `https` credentials with sufficient permissions.  This is not expected to present a problem since the expected use-case is for this tool to be used from the "local" machine (on which your Autonity private keys are available), and communicate with an Autonity node running on a "remote" host.
 
 ## (Optional) Enable command completion (bash and zsh)
 
