@@ -36,7 +36,8 @@ function autonity_build_from_branch() {
                 repo_url=https://github.com/${AUTONITY_REPO}
             fi
 
-            git clone --depth 1 --recurse-submodule --shallow-submodules -b $1 ${repo_url} autonity
+            # git clone --depth 1 --recurse-submodule --shallow-submodules -b $1 ${repo_url} autonity
+            git clone --recurse-submodule -b $1 ${repo_url} autonity
             pushd autonity
         else
             pushd autonity
