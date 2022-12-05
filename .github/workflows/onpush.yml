@@ -22,7 +22,7 @@ jobs:
     steps:
     - uses: actions/checkout@v2
       with:
-        token: ${{ secrets.AUTONITY_PY_ACCESS_TOKEN }}
+        token: ${{ secrets.REPO_ACCESS_TOKEN }}
         submodules: recursive
     - uses: actions/setup-python@v4
       with:
@@ -45,4 +45,4 @@ jobs:
         ./scripts/test_protocol
         ./scripts/test_validator
         ./scripts/test_account
-        [ `uname` == "Linux" ] && AUTH_TOKEN=${{ secrets.AUTONITY_PY_ACCESS_TOKEN }} ./scripts/test_transactions
+        [ `uname` == "Linux" ] && AUTH_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} ./scripts/test_transactions
