@@ -47,7 +47,7 @@ function autonity_build_from_branch() {
 
         # Build
         make all
-        export AUTONITY=`pwd`/build/bin/autonity
+        export AUTONITY=$(pwd)/build/bin/autonity
         popd  # autonity
 
     popd  # ..
@@ -101,7 +101,7 @@ function autonity_check_install() {
 function autonity_start() {
     autonity_check_install
 
-    pid=`pidof autonity`
+    pid=$(pidof autonity || echo -n '')
     if ! [ "${pid}" == "" ] ; then
         echo "Autonity process already started."
         return 0
@@ -126,7 +126,7 @@ function autonity_wait() {
 }
 
 function autonity_stop() {
-    pid=`pidof autonity`
+    pid=$(pidof autonity || echo -n '')
     echo "Autonity PID: ${pid}"
     if ! [ "${pid}" == "" ] ; then
         while (kill -SIGINT ${pid} > /dev/null 2>&1) ; do
