@@ -38,11 +38,13 @@ jobs:
         make
         make check -j 3
     - name: pipx-install-and-cli-tests
+      env:
+        AUTONITY_TOKEN: ${{ secrets.REPO_ACCESS_TOKEN }}
       run: |
         (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install autcli"
         pip install pipx
         pipx install .
+        [ `uname` == "Linux" ] && AUTH_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} ./scripts/test_transactions
         ./scripts/test_protocol
         ./scripts/test_validator
         ./scripts/test_account
-        [ `uname` == "Linux" ] && AUTH_TOKEN=${{ secrets.REPO_ACCESS_TOKEN }} ./scripts/test_transactions

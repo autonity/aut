@@ -1,9 +1,14 @@
 # Functions to starting and stopping and Autonity node
 
-AUTONITY_DOWNNLOAD_URL=https://github.com/autonity/autonity-sim/releases/download/v0.9.0/autonity-linux-amd64-v0.9.0.tar.gz
+# The repository to download Autonity from If AUTONITY_VERSION is set,
+# a binary release is downloaded.  If AUTONITY_BRANCH is set, the
+# repository is built.  AUTONITY_TOKEN is used for authentication if
+# provided.  See autonity_install.
 
-AUTONITY=../autonity
-# AUTONITY=../../autonity-internal/build/bin/autonity
+AUTONITY_REPO=clearmatics/autonity-internal
+# AUTONITY_VERSION=
+AUTONITY_BRANCH=autonity-devmode
+
 AUTONITY_KEYSTORE=../tests/data #
 AUTONITY_HTTP_PORT=6066
 
@@ -12,7 +17,50 @@ RPC_ENDPOINT=http://localhost:${AUTONITY_HTTP_PORT}
 OWNER_KEYFILE=${AUTONITY_KEYSTORE}/UTC--2022-12-01T13-20-59.210299618Z--56b25a4ded9ce76d1d4f704a97d309838f4b9dc1
 OWNER_ADDR=0x56b25a4ded9ce76d1d4f704a97d309838f4b9dc1
 
-function autonity_install() {
+# Build from a branch of the autonity-internal repo.  Set AUTONITY to
+# point to the binary.
+#
+# Arguments:
+# 1 - branch name
+function autonity_build_from_branch() {
+    # TODO: ideally this would just download a binary.
+
+    pushd ..
+
+        # Clone / checkout and enter the autonity directory.
+        if ! [ -d autonity ] ; then
+            # Determine the URL.  If we have a github token, use it.
+            if ! [ "" == "${AUTONITY_TOKEN}" ] ; then
+                repo_url=https://${AUTONITY_TOKEN}:x-oauth-basic@github.com/${AUTONITY_REPO}
+            else
+                repo_url=https://github.com/${AUTONITY_REPO}
+            fi
+
+            git clone --depth 1 --recurse-submodule --shallow-submodules -b $1 ${repo_url} autonity
+            pushd autonity
+        else
+            pushd autonity
+            git fetch --update-shallow $1
+            git checkout $1
+        fi
+
+        # Build
+        make all
+        export AUTONITY=`pwd`/build/bin/autonity
+        popd  # autonity
+
+    popd  # ..
+}
+
+# Download and unpack a release of autonity, given a version string.
+#
+# Arguments:
+# 1 - version string
+function autonity_download_release() {
+    # TODO: fix this
+
+    AUTONITY_DOWNLOAD_URL=https://github.com/autonity/autonity-sim/releases/download/${AUTONITY_VERSION}/autonity-linux-amd64-${AUTONITY_VERSION}.tar.gz
+
     if ! [ -e ${AUTONITY} ] ; then
         if [ "" == "${AUTH_TOKEN}" ] ; then
             curl --fail -o autonity.tar.gz ${AUTONITY_DOWNNLOAD_URL}
@@ -22,9 +70,36 @@ function autonity_install() {
         tar xzf autonity.tar.gz
         mv autonity ${AUTONITY}
     fi
+
+    export AUTONITY=`pwd`/autonity
+}
+
+function autonity_install() {
+
+    if ! [ "" == "${AUTONITY_BRANCH}" ] ; then
+        autonity_build_from_branch ${AUTONITY_BRANCH}
+    elif ! [ "" == "${AUTONITY_VERSION}" ] ; then
+        autonity_download_release ${AUTONITY_VERSION}
+    else
+        echo "Nether AUTONITY_BRANCH or AUTONITY_VERSION have been set."
+        return 1
+    fi
+}
+
+function autonity_check_install() {
+    if [ "" == "${AUTONITY}" ] ; then
+        echo "AUTONITY env var not set"
+        return 1
+    fi
+    if ! [ -e ${AUTONITY} ] ; then
+        echo "No autonity executable at ${AUTONITY}"
+        return 1
+    fi
 }
 
 function autonity_start() {
+    autonity_check_install
+
     pid=`pidof autonity`
     if ! [ "${pid}" == "" ] ; then
         echo "Autonity process already started."
