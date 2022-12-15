@@ -329,57 +329,62 @@ def activate(
 validator.add_command(activate)
 
 
-# TODO: enable this once the call is available.
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@validator_option
+@argument("rate", type=float, nargs=1)
+def change_commission_rate(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+    rate: float,
+) -> None:
+    """
+    Create transaction to set the commission rate for the given
+    Validator.  See `changeCommissionRate` on the Autonity contract.
+    """
+    from autcli.config import get_validator_address
+    from autcli.utils import (
+        autonity_from_endpoint_arg,
+        from_address_from_argument,
+        to_json,
+        create_contract_tx_from_args,
+    )
 
-# @command()
-# @rpc_endpoint_option
-# @keyfile_option()
-# @from_option
-# @tx_aux_options
-# @validator_option
-# @argument("rate", type=float, nargs=1)
-# def change_commission_rate(
-#     rpc_endpoint: Optional[str],
-#     keyfile: Optional[str],
-#     from_str: Optional[str],
-#     gas: Optional[str],
-#     gas_price: Optional[str],
-#     max_priority_fee_per_gas: Optional[str],
-#     max_fee_per_gas: Optional[str],
-#     fee_factor: Optional[float],
-#     nonce: Optional[int],
-#     chain_id: Optional[int],
-#     validator_addr_str: Optional[str],
-#     rate: float,
-# ) -> None:
-#     """
-#     Create transaction to set the commission rate for the given
-#     Validator.  See `changeCommissionRate` on the Autonity contract.
-#     """
-#     validator_addr = get_validator_address(validator_addr_str)
-#     from_addr = from_address_from_argument(from_str, keyfile)
+    validator_addr = get_validator_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
 
-#     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-#     aut = Autonity(w3)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
 
-#     rate_precision = aut.commission_rate_precision()
-#     rate_int = int(rate * rate_precision)
+    rate_precision = aut.commission_rate_precision()
+    rate_int = int(rate * rate_precision)
 
-#     tx = create_contract_tx_from_args(
-#         function=aut.change_commission_rate(validator_addr, rate_int),
-#         from_addr=from_addr,
-#         gas=gas,
-#         gas_price=gas_price,
-#         max_fee_per_gas=max_fee_per_gas,
-#         max_priority_fee_per_gas=max_priority_fee_per_gas,
-#         fee_factor=fee_factor,
-#         nonce=nonce,
-#         chain_id=chain_id,
-#     )
-#     print(to_json(tx))
+    tx = create_contract_tx_from_args(
+        function=aut.change_commission_rate(validator_addr, rate_int),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
 
 
-# validator.add_command(change_commission_rate)
+validator.add_command(change_commission_rate)
 
 
 @command()
