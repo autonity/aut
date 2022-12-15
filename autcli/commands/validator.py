@@ -173,6 +173,7 @@ validator.add_command(unbond)
 @from_option
 @tx_aux_options
 @argument("enode")
+@argument("proof")
 def register(
     rpc_endpoint: Optional[str],
     keyfile: Optional[str],
@@ -185,6 +186,7 @@ def register(
     nonce: Optional[int],
     chain_id: Optional[int],
     enode: str,
+    proof: str,
 ) -> None:
     """
     Create transaction to register a validator
@@ -195,13 +197,17 @@ def register(
         to_json,
         create_contract_tx_from_args,
     )
+    from web3.types import HexBytes
+
+    # Check the "proof" is at least valid hex.
+    proof_bytes = HexBytes(proof)
 
     from_addr = from_address_from_argument(from_str, keyfile)
     # TODO: validate enode string?
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     tx = create_contract_tx_from_args(
-        function=aut.register_validator(enode),
+        function=aut.register_validator(enode, proof_bytes),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
