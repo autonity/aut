@@ -51,8 +51,14 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     multiple connections.  Conversely, if all of these values are
     given on the command line, no connected web3 object is required.
     """
+
     if w3 is None:
-        return create_web3_for_endpoint(config.get_rpc_endpoint(endpoint_arg))
+        # TODO: For now, ignore the chain ID by default.  Later, this
+        # check should be enabled and controllable by a flag.
+
+        return create_web3_for_endpoint(
+            config.get_rpc_endpoint(endpoint_arg), ignore_chain_id=True
+        )
 
     return w3
 
