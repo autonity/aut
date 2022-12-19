@@ -190,15 +190,15 @@ account_group.add_command(lnew_balances)
 @keyfile_option(required=True, output=True)
 @option(
     "--extra-entropy",
-    is_flag=True,
-    help="Prompt the user for a string containing extra entropy",
+    type=Path(),
+    help="File containing extra entropy.  Use '-' to prompt for keyboard input.",
 )
 @option(
     "--show-password",
     is_flag=True,
     help="Echo password input to the terminal",
 )
-def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
+def new(key_file: str, extra_entropy: Optional[str], show_password: bool) -> None:
     """
     Create a new key and write it to a keyfile.
     """
@@ -222,7 +222,12 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
 
     entropy: str = ""
     if extra_entropy:
-        entropy = input("Entropy: ")
+        if extra_entropy == "-":
+            entropy = input("Random string (press ENTER to finish): ")
+        else:
+            # Use ascii so that binary data is not reinterpreted.
+            with open(extra_entropy, "r", encoding="ascii") as entropy_f:
+                entropy = entropy_f.read()
 
     # Ask for password (and confirmation) and ensure both entries
     # match.
