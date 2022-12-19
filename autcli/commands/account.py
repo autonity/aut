@@ -261,7 +261,8 @@ def import_private_key(
 ) -> None:
     """
     Read a plaintext private key file (as hex), and create a new
-    keyfile for it.  Use - for stdin.
+    encrypted keystore file for it.  Use - to read private key from
+    stdin.
     """
 
     from autcli.utils import load_from_file_or_stdin, prompt_for_new_password
