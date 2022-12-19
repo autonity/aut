@@ -8,27 +8,58 @@ from autcli.logging import log
 
 from autonity import Autonity
 from autonity.utils.web3 import create_web3_for_endpoint
-from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
+from autonity.utils.keyfile import (
+    load_keyfile,
+    get_address_from_keyfile,
+    get_address_from_private_key,
+    PrivateKey,
+)
 from autonity.utils.tx import (
     create_transaction,
     create_contract_function_transaction,
     finalize_transaction,
+    sign_tx_with_private_key,
+    SignedTransaction,
 )
 
+import asyncio
 import os
 import sys
 import json
+import queue
+from asyncio import Task
+from dataclasses import dataclass
 from decimal import Decimal
 from click import ClickException
 from getpass import getpass
+from threading import Thread
 from web3 import Web3
 from web3.contract import ContractFunction
+from web3.eth import AsyncEth
 from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
-from typing import Dict, Mapping, Sequence, Tuple, Optional, Union, TypeVar, Any, cast
+from typing import (
+    Dict,
+    Mapping,
+    Sequence,
+    List,
+    Tuple,
+    Optional,
+    Union,
+    TypeVar,
+    Any,
+    cast,
+)
 
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
+
+DEFAULT_BATCH_SIZE = 100
+""" Default number of txs in a batch, for stress-testing. """
+
+
+DEFAULT_CONCURRENT_BATCHES = 10
+""" Default number of batches in-flight at any given time. """
 
 
 # Intended to represent "value" types
@@ -487,3 +518,172 @@ def prompt_for_new_password(show_password: bool) -> str:
         raise ClickException("passwords do not match")
 
     return password
+
+
+def generate_participants(
+    num_participants: int, seed: int
+) -> Dict[ChecksumAddress, PrivateKey]:
+    """
+    Generate a set of participants for a diagnostics run.
+    """
+
+    participants: Dict[ChecksumAddress, PrivateKey] = {}
+    for pk_value in range(seed, seed + num_participants):
+        private_key = PrivateKey(pk_value.to_bytes(32, byteorder="big"))
+        address = get_address_from_private_key(private_key)
+        participants[address] = private_key
+
+    return participants
+
+
+def generate_txs(  # pylint: disable=too-many-statements
+    rpc_endpoint: str,
+    accounts_and_keys: Dict[ChecksumAddress, PrivateKey],
+    batch_size: int = DEFAULT_BATCH_SIZE,
+    concurrent_batches: int = DEFAULT_CONCURRENT_BATCHES,
+) -> None:
+    """
+    Create and broadcast a large sequence of transactions.
+    """
+
+    assert len(accounts_and_keys) > 1
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    w3_async = Web3(
+        Web3.AsyncHTTPProvider(rpc_endpoint),  # type: ignore
+        modules={"eth": (AsyncEth,)},
+        middlewares=[],
+    )
+
+    @dataclass
+    class Account:
+        "Account data for an address"
+        nonce: Nonce
+        private_key: PrivateKey
+        # balance: Wei
+
+    # Set up required information (e.g. nonce and balances)
+
+    whale = next(iter(accounts_and_keys))
+    whale_balance = w3.eth.get_balance(whale)
+    participants: Dict[ChecksumAddress, Account] = {}
+
+    print("Getting participant data ...")
+    for account, private_key in accounts_and_keys.items():
+        nonce = w3.eth.get_transaction_count(account)
+        participants[account] = Account(nonce, private_key)
+
+    print(f"Primary account: {whale} ({whale_balance})")
+
+    # Create tx template and a function to returned signed
+    # transactions from the template.
+
+    whale_tx_value = Wei(1000000000000000)
+    shrimp_tx_value = Wei(whale_tx_value // len(participants))
+    tx_template = finalize_transaction(
+        create_w3=lambda: w3,
+        tx=create_transaction(whale, whale, whale_tx_value),
+        from_addr=whale,
+    )
+
+    def _create_tx(
+        from_addr: ChecksumAddress,
+        from_account: Account,
+        to_addr: ChecksumAddress,
+        value: Wei,
+    ) -> SignedTransaction:
+        """
+        Create a single signed tx, using the template.
+        """
+        nonce = from_account.nonce
+        tx_template["from"] = from_addr
+        tx_template["to"] = to_addr
+        tx_template["nonce"] = nonce
+        tx_template["value"] = value
+
+        from_account.nonce = Nonce(nonce + 1)
+        assert participants[from_addr].nonce == nonce + 1
+
+        return sign_tx_with_private_key(tx_template, from_account.private_key)
+
+    # Queue of tx batches
+
+    batch_queue: queue.Queue[List[SignedTransaction]] = queue.Queue(concurrent_batches)
+
+    def _create_tx_batches() -> None:
+        """
+        Function to create batches of transactions and push them to batch_queue.
+
+        Repeatedly create tiny transactions from whale to all others,
+        and from all others back to the whale.  Get a template tx with
+        gas filled out correctly, and reuse this to generate all
+        signed transactions.
+        """
+
+        txs: List[SignedTransaction] = []
+
+        def _check_push() -> None:
+            nonlocal txs
+            if len(txs) >= batch_size:
+                batch_queue.put(txs)
+                txs = []
+                print("created batch")
+
+        while True:  # pylint: disable=too-many-nested-blocks
+            for from_addr, from_account in participants.items():
+                if from_addr == whale:
+                    # Whale to everyone else
+                    for to_addr, _ in participants.items():
+                        if to_addr == whale:
+                            continue
+
+                        txs.append(
+                            _create_tx(from_addr, from_account, to_addr, whale_tx_value)
+                        )
+                        _check_push()
+
+                else:
+                    # Everyone else to the whale
+                    txs.append(
+                        _create_tx(from_addr, from_account, whale, shrimp_tx_value)
+                    )
+                    _check_push()
+
+    create_thread_1 = Thread(target=_create_tx_batches)
+    create_thread_1.start()
+
+    def _send_tx_batch(batch: List[SignedTransaction]) -> List[Task]:
+        task_batch: List[Task] = []
+        for tx in batch:
+            try:
+                task_batch.append(
+                    asyncio.create_task(
+                        w3_async.eth.send_raw_transaction(tx.rawTransaction)  # type: ignore
+                    )
+                )
+            except ValueError as err:
+                print(f"tx failed: {tx}: {err}")
+        return task_batch
+
+    async def create_and_send() -> None:
+        backlog: queue.Queue[List[Task]] = queue.Queue(concurrent_batches)
+        while True:
+            batch = batch_queue.get()
+            fut_batch = _send_tx_batch(batch)
+            assert isinstance(fut_batch, list)
+            backlog.put(fut_batch)
+            print("sent batch")
+
+            if backlog.qsize() > 4:
+                fut_batch = backlog.get()
+                assert isinstance(fut_batch, list)
+                print("awaiting batch ...")
+                try:
+                    await asyncio.gather(*fut_batch)
+                except ValueError as err:
+                    print(f"tx failed: {err}")
+                except Exception as err:  # pylint: disable=broad-except
+                    print(f"other exception: {err}")
+                print("awaited")
+
+    asyncio.run(create_and_send())
