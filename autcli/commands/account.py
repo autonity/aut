@@ -144,7 +144,7 @@ account_group.add_command(balance)
 @rpc_endpoint_option
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
-def lnew_balances(
+def lntn_balances(
     rpc_endpoint: Optional[str], account_str: Optional[str], key_file: Optional[str]
 ) -> None:
     """
@@ -183,7 +183,7 @@ def lnew_balances(
     print(to_json(balances, pretty=True))
 
 
-account_group.add_command(lnew_balances)
+account_group.add_command(lntn_balances)
 
 
 @command()
