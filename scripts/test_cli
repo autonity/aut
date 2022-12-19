@@ -50,9 +50,9 @@ pushd _test_data
         --ntn \
         --from ${BOB} \
         --to ${ALICE} \
-        --value '0.002kwei' \
+        --value 2.345 \
         --gas 1000000 \
-        --gas-price 1000000000 \
+        --gas-price 1gwei \
         --nonce 12 > test_ntn_tx
 
     # Sign the tx using Bobs private key.  Intentionally use piping to
@@ -66,7 +66,7 @@ pushd _test_data
     aut --verbose tx make \
         --to ${BOB} \
         --value '0.001kwei' \
-        --gas-price 1000000000 > test_tx
+        --gas-price 1gwei > test_tx
 
     # Sign the tx using Alices private key (taken from the .autrc file)
     KEYFILEPWD=alice aut --verbose tx sign test_tx > test_tx.signed

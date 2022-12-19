@@ -44,7 +44,7 @@ tx_group.add_command(signtx, name="sign")
     "--value",
     "-v",
     required=True,
-    help="value sent with tx (nb '7000000000' and '7gwei' are identical).",
+    help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
 )
 @option(
     "--data", "-d", help="compiled contract code OR method signature and parameters."
@@ -85,7 +85,7 @@ def make(
         web3_from_endpoint_arg,
         newton_or_token_to_address,
         from_address_from_argument_optional,
-        parse_wei_representation,
+        parse_token_value_representation,
     )
 
     from autonity.erc20 import ERC20
@@ -127,9 +127,9 @@ def make(
             raise ClickException("from address not given")
 
         w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
-        function = ERC20(w3, token_addresss).transfer(
-            recipient=to_addr, amount=parse_wei_representation(value)
-        )
+        erc = ERC20(w3, token_addresss)
+        token_units = parse_token_value_representation(value, erc.decimals())
+        function = erc.transfer(recipient=to_addr, amount=token_units)
         tx = create_contract_tx_from_args(
             function=function,
             from_addr=from_addr,
