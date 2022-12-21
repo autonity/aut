@@ -8,6 +8,7 @@
 - Auton balances are still output in Wei.  This inconsistency will be addressed in a future release.
 - Support for `attoton` units.
 - Entropy for new accounts can be given via a file.
+- Show enode of the attached node in `aut node info`
 - Small updates to command help text.
 
 # v0.0.3
