@@ -5,10 +5,12 @@ Test util functions
 from autcli.utils import (
     parse_wei_representation,
     parse_token_value_representation,
+    parse_commission_rate,
     geth_keyfile_name,
 )
 from autcli.constants import AutonDenoms
 
+from click import ClickException
 from unittest import TestCase
 from datetime import datetime, timezone
 from web3 import Web3
@@ -68,6 +70,24 @@ class TestUtils(TestCase):
         self.assertEqual(312, parse_token_value_representation("3.12345", 2))
         self.assertEqual(31, parse_token_value_representation("3.12345", 1))
         self.assertEqual(3, parse_token_value_representation("3.12345", 0))
+
+    def test_parse_commission_rate(self) -> None:
+        """
+        Test parse_commission_rate.
+        """
+
+        self.assertEqual(100, parse_commission_rate("100", 10000))
+        self.assertEqual(9000, parse_commission_rate("0.9", 10000))
+        self.assertEqual(9000, parse_commission_rate("90%", 10000))
+        self.assertEqual(300, parse_commission_rate("0.03", 10000))
+        self.assertEqual(1, parse_commission_rate("0.0001", 10000))
+
+        with self.assertRaises(ClickException):
+            self.assertEqual(1, parse_commission_rate("1", 10000))
+        with self.assertRaises(ClickException):
+            self.assertEqual(1, parse_commission_rate("1.0", 10000))
+        with self.assertRaises(ClickException):
+            self.assertEqual(1, parse_commission_rate("100.01", 10000))
 
     def test_geth_keyfile_name(self) -> None:
         """

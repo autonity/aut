@@ -9,6 +9,7 @@ from autcli.options import (
     tx_aux_options,
     validator_option,
 )
+from autcli.utils import parse_commission_rate
 from autcli.commands.protocol import protocol_group
 
 from click import group, command, option, argument
@@ -335,7 +336,7 @@ validator.add_command(activate)
 @from_option
 @tx_aux_options
 @validator_option
-@argument("rate", type=float, nargs=1)
+@argument("rate", type=str, nargs=1)
 def change_commission_rate(
     rpc_endpoint: Optional[str],
     keyfile: Optional[str],
@@ -348,11 +349,12 @@ def change_commission_rate(
     nonce: Optional[int],
     chain_id: Optional[int],
     validator_addr_str: Optional[str],
-    rate: float,
+    rate: str,
 ) -> None:
     """
-    Create transaction to set the commission rate for the given
-    Validator.  See `changeCommissionRate` on the Autonity contract.
+    Create transaction to change the commission rate for the given
+    Validator.  The rate is given as a decimal, and must be no greater
+    than 1 e.g. 3% would be 0.03.
     """
     from autcli.config import get_validator_address
     from autcli.utils import (
@@ -368,7 +370,7 @@ def change_commission_rate(
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     rate_precision = aut.commission_rate_precision()
-    rate_int = int(rate * rate_precision)
+    rate_int = parse_commission_rate(rate, rate_precision)
 
     tx = create_contract_tx_from_args(
         function=aut.change_commission_rate(validator_addr, rate_int),
