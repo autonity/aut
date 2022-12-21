@@ -144,7 +144,7 @@ account_group.add_command(balance)
 @rpc_endpoint_option
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
-def lnew_balances(
+def lntn_balances(
     rpc_endpoint: Optional[str], account_str: Optional[str], key_file: Optional[str]
 ) -> None:
     """
@@ -183,22 +183,22 @@ def lnew_balances(
     print(to_json(balances, pretty=True))
 
 
-account_group.add_command(lnew_balances)
+account_group.add_command(lntn_balances)
 
 
 @command()
 @keyfile_option(required=True, output=True)
 @option(
     "--extra-entropy",
-    is_flag=True,
-    help="Prompt the user for a string containing extra entropy",
+    type=Path(),
+    help="File containing extra entropy.  Use '-' to prompt for keyboard input.",
 )
 @option(
     "--show-password",
     is_flag=True,
     help="Echo password input to the terminal",
 )
-def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
+def new(key_file: str, extra_entropy: Optional[str], show_password: bool) -> None:
     """
     Create a new key and write it to a keyfile.
     """
@@ -222,7 +222,12 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
 
     entropy: str = ""
     if extra_entropy:
-        entropy = input("Entropy: ")
+        if extra_entropy == "-":
+            entropy = input("Random string (press ENTER to finish): ")
+        else:
+            # Use ascii so that binary data is not reinterpreted.
+            with open(extra_entropy, "r", encoding="ascii") as entropy_f:
+                entropy = entropy_f.read()
 
     # Ask for password (and confirmation) and ensure both entries
     # match.
@@ -261,7 +266,8 @@ def import_private_key(
 ) -> None:
     """
     Read a plaintext private key file (as hex), and create a new
-    keyfile for it.  Use - for stdin.
+    encrypted keystore file for it.  Use - to read private key from
+    stdin.
     """
 
     from autcli.utils import load_from_file_or_stdin, prompt_for_new_password

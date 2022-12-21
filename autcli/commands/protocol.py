@@ -168,7 +168,7 @@ protocol_group.add_command(head_bonding_id)
 @rpc_endpoint_option
 def tail_unbonding_id(rpc_endpoint: Optional[str]) -> None:
     """
-    Tail ID of unbondign queue
+    Tail ID of unbonding queue
     """
     from autcli.utils import autonity_from_endpoint_arg
 
@@ -182,7 +182,7 @@ protocol_group.add_command(tail_unbonding_id)
 @rpc_endpoint_option
 def head_unbonding_id(rpc_endpoint: Optional[str]) -> None:
     """
-    Head ID of unbondign queue
+    Head ID of unbonding queue
     """
     from autcli.utils import autonity_from_endpoint_arg
 

@@ -2,7 +2,7 @@
 Test util functions
 """
 
-from autcli.utils import parse_wei_representation
+from autcli.utils import parse_wei_representation, parse_token_value_representation
 from autcli.constants import AutonDenoms
 
 from unittest import TestCase
@@ -17,8 +17,6 @@ class TestUtils(TestCase):
         """
         Test Wei parser
         """
-        self.assertEqual(1, parse_wei_representation("1"))
-        self.assertEqual(1, parse_wei_representation("1wei"))
         self.assertEqual(
             AutonDenoms.KWEI_VALUE_IN_WEI, parse_wei_representation("1kwei")
         )
@@ -46,3 +44,21 @@ class TestUtils(TestCase):
         self.assertEqual(
             AutonDenoms.FINNEY_VALUE_IN_WEI * 500, parse_wei_representation("0.5auton")
         )
+        self.assertEqual(
+            AutonDenoms.FINNEY_VALUE_IN_WEI * 500, parse_wei_representation("0.5auton")
+        )
+        self.assertEqual(
+            AutonDenoms.FINNEY_VALUE_IN_WEI * 200, parse_wei_representation("0.2")
+        )
+
+    def test_token_value_parser(self) -> None:
+        """
+        Test token value parser.
+        """
+
+        self.assertEqual(312345, parse_token_value_representation("3.12345", 5))
+        self.assertEqual(31234, parse_token_value_representation("3.12345", 4))
+        self.assertEqual(3123, parse_token_value_representation("3.12345", 3))
+        self.assertEqual(312, parse_token_value_representation("3.12345", 2))
+        self.assertEqual(31, parse_token_value_representation("3.12345", 1))
+        self.assertEqual(3, parse_token_value_representation("3.12345", 0))

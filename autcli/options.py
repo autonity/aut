@@ -102,17 +102,17 @@ def tx_aux_options(fn: Callable) -> Callable:
     fn = option(
         "--gas-price",
         "-p",
-        help="value per gas (legacy, use -F and -P instead).",
+        help="value per gas in Auton (legacy, use -F and -P instead).",
     )(fn)
     fn = option(
         "--max-fee-per-gas",
         "-F",
-        help="maximum to pay per gas for the total fee of the tx.",
+        help="maximum to pay (in Auton) per gas for the total fee of the tx.",
     )(fn)
     fn = option(
         "--max-priority-fee-per-gas",
         "-P",
-        help="maximum to pay per gas as tip to block proposer.",
+        help="maximum to pay (in Auton) per gas as tip to block proposer.",
     )(fn)
     fn = option(
         "--fee-factor",
