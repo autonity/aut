@@ -9,6 +9,7 @@ from autcli.commands import (
     protocol,
     validator,
     account,
+    token,
 )
 from autcli.logging import enable_logging
 
@@ -37,6 +38,7 @@ aut.add_command(tx.tx_group)
 aut.add_command(protocol.protocol_group)
 aut.add_command(validator.validator)
 aut.add_command(account.account_group)
+aut.add_command(token.token_group)
 
 
 if __name__ == "__main__":
