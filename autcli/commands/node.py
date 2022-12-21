@@ -41,8 +41,8 @@ def info(rpc_endpoint: Optional[str]) -> None:
         "net_peerCount": w3.net.peer_count,
         "net_version": w3.net.version,
         "web3_clientVersion": w3.clientVersion,
-        "geth_enode": admin_node_info["enode"],
-        "geth_id": admin_node_info["id"],
+        "admin_enode": admin_node_info["enode"],
+        "admin_id": admin_node_info["id"],
     }
 
     print(to_json(node_info, pretty=True))
