@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+mkdir -p _test_token_cli
+pushd _test_token_cli
+
+../scripts/setup_config_file.sh
+
+# We use these dummy Dummy keys:
+ALICE=0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf
+
+# Find the address of the first validators Liquid Newton contract.
+aut validator list > validators
+v1=$(head -n1 validators)
+v2=$(sed -n 2p validators)
+
+treasury=`aut validator info --validator ${v1} | jq -r '.treasury'`
+token=`aut validator info --validator ${v1} | jq -r '.liquid_contract'`
+other=`aut validator info --validator ${v2} | jq -r '.treasury'`
+other2=`aut validator info --validator ${v2} | jq -r '.treasury'`
+
+# Queries
+
+aut token name --token ${token} || echo -n
+aut token symbol --token ${token} || echo -n
+aut token decimals --token ${token}
+aut token total-supply --token ${token}
+aut token balance-of --token ${token} ${treasury}
+aut token allowance --token ${token} ${treasury}
+
+# Create transactions, using "--gas 1000000" to avoid the client
+# asking the attached node to execute the transaction.
+
+aut token transfer --gas 1000000 --token ${token} --from ${treasury} ${other} 1 > transfer.tx
+# "treasury" grants "other" permission to spend 10 of his tokens.
+aut token approve --gas 1000000 --token ${token} --from ${treasury} ${other} 10 > approve.tx
+# "other" sends 10 of "treasury"'s tokens to ALICE
+aut token transfer-from --gas 1000000 --token ${token} --from ${other} ${treasury} ${ALICE} 10 > transfer_from.tx
+
+popd  # _test_token_cli
