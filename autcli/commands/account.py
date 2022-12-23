@@ -112,6 +112,7 @@ def balance(
         web3_from_endpoint_arg,
         newton_or_token_to_address,
         from_address_from_argument_optional,
+        format_quantity,
     )
 
     from autonity.erc20 import ERC20
@@ -131,7 +132,9 @@ def balance(
 
     if token_addresss is not None:
         token_contract = ERC20(w3, token_addresss)
-        print(token_contract.balance_of(account_addr))
+        decimals = token_contract.decimals()
+        bal = token_contract.balance_of(account_addr)
+        print(format_quantity(bal, decimals))
 
     else:
         print(w3.eth.get_balance(account_addr))
@@ -156,6 +159,7 @@ def lntn_balances(
         to_json,
         web3_from_endpoint_arg,
         from_address_from_argument_optional,
+        format_quantity,
     )
 
     from autonity.autonity import Autonity
@@ -172,13 +176,14 @@ def lntn_balances(
     validator_addrs = aut.get_validators()
     validators = [aut.get_validator(vaddr) for vaddr in validator_addrs]
 
-    balances: Dict[str, int] = {}
+    decimals = aut.decimals()
+    balances: Dict[str, str] = {}
     for validator in validators:
         log("computing holdings for validators {validator['addr']}")
         lnew = ERC20(w3, validator["liquid_contract"])
         bal = lnew.balance_of(account_addr)
         if bal:
-            balances[validator["addr"]] = bal
+            balances[validator["addr"]] = format_quantity(bal, decimals)
 
     print(to_json(balances, pretty=True))
 

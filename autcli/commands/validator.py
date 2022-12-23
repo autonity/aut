@@ -85,14 +85,15 @@ def bond(
         from_address_from_argument,
         to_json,
         create_contract_tx_from_args,
-        parse_wei_representation,
+        parse_token_value_representation,
     )
 
-    amount = parse_wei_representation(amount_str)
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    amount = parse_token_value_representation(amount_str, aut.decimals())
 
     tx = create_contract_tx_from_args(
         function=aut.bond(validator_addr, amount),
@@ -141,14 +142,14 @@ def unbond(
         from_address_from_argument,
         to_json,
         create_contract_tx_from_args,
-        parse_wei_representation,
+        parse_token_value_representation,
     )
 
-    amount = parse_wei_representation(amount_str)
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, key_file)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
+    amount = parse_token_value_representation(amount_str, aut.decimals())
 
     tx = create_contract_tx_from_args(
         function=aut.unbond(validator_addr, amount),
