@@ -5,6 +5,10 @@ name: onpush
 on:
   push:
 
+env:
+  HOMEBREW_PACKAGES: "pidof"
+  HOMEBREW_NO_AUTO_UPDATE: 1
+
 jobs:
 
   install-and-test:
@@ -21,6 +25,10 @@ jobs:
     - uses: actions/setup-python@v4
       with:
         python-version: ${{ matrix.python-ver }}
+    - name: dependencies
+      if: matrix.os == 'macos-11'
+      run: |
+        brew install ${HOMEBREW_PACKAGES}
     - name: dev install and check
       run: |
         python -m venv env
@@ -31,8 +39,9 @@ jobs:
       run: |
         (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install autcli"
         pip install pipx
+        pip install packaging==21.3  # temp fix for pipx install errors
         pipx install .
-        # ./scripts/cli_test.sh
-        ./scripts/protocol_tests.sh
-        ./scripts/validator_cli_tests.sh
-        ./scripts/account_cli_tests.sh
+        ./scripts/test_protocol
+        ./scripts/test_validator
+        ./scripts/test_account
+        ./scripts/test_token

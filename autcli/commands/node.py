@@ -29,10 +29,10 @@ def info(rpc_endpoint: Optional[str]) -> None:
     from autcli.utils import to_json, web3_from_endpoint_arg
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    admin_node_info = w3.geth.admin.node_info()
     node_info = {
         "eth_accounts": w3.eth.accounts,
         "eth_blockNumber": w3.eth.block_number,
-        # "eth_coinbase": w3.eth.coinbase,
         "eth_gasPrice": w3.eth.gas_price,
         "eth_hashrate": w3.eth.hashrate,
         "eth_mining": w3.eth.mining,
@@ -41,7 +41,10 @@ def info(rpc_endpoint: Optional[str]) -> None:
         "net_peerCount": w3.net.peer_count,
         "net_version": w3.net.version,
         "web3_clientVersion": w3.clientVersion,
+        "admin_enode": admin_node_info["enode"],
+        "admin_id": admin_node_info["id"],
     }
+
     print(to_json(node_info, pretty=True))
 
 

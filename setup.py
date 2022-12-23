@@ -9,7 +9,7 @@ sys.stderr.write(f"local_link={local_link}\n")
 
 setup(
     name="autcli",
-    version="0.0.3",
+    version="0.0.4",
     authors=[
         {"name": "Robert Sams", "email": "rs@clearmatics.com"},
         {"name": "Duncan Tebbs", "email": "duncan.tebbs@clearmatics.com"},
@@ -30,7 +30,7 @@ setup(
             "mypy==0.982",
             "pylint==2.15.4",
             "flake8==5.0.4",
-            "black==22.3.0",
+            "black==22.12.0",
         ],
     },
     tests_require=["unittest"],

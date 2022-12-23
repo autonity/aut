@@ -8,7 +8,7 @@ If aut implements an ipyothon 'console mode', perhaps these are the
 functions meant to be called in that.
 """
 
-from autcli.utils import w3_provider
+from autcli.utils import w3_provider, format_quantity
 
 from autonity import Autonity
 
@@ -32,7 +32,7 @@ class AccountStats(TypedDict):
     account: ChecksumAddress
     tx_count: int
     balance: Wei
-    ntn_balance: Wei
+    ntn_balance: str
 
 
 def get_account_stats(
@@ -47,13 +47,14 @@ def get_account_stats(
     eth_getTransactionCount.
     """
     stats: List[AccountStats] = []
+    autonity = Autonity(w3)
     for acct in accounts:
         txcount = w3.eth.get_transaction_count(acct)
         if tag is None:
             balance = w3.eth.get_balance(acct)
         else:
             balance = w3.eth.get_balance(acct, tag)
-        ntn_balance = Autonity(w3).balance_of(acct)
+        ntn_balance = format_quantity(autonity.balance_of(acct), autonity.decimals())
         stats.append(
             {
                 "account": acct,

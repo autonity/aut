@@ -51,8 +51,14 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     multiple connections.  Conversely, if all of these values are
     given on the command line, no connected web3 object is required.
     """
+
     if w3 is None:
-        return create_web3_for_endpoint(config.get_rpc_endpoint(endpoint_arg))
+        # TODO: For now, ignore the chain ID by default.  Later, this
+        # check should be enabled and controllable by a flag.
+
+        return create_web3_for_endpoint(
+            config.get_rpc_endpoint(endpoint_arg), ignore_chain_id=True
+        )
 
     return w3
 
@@ -201,7 +207,13 @@ def create_contract_tx_from_args(
         w3 = function.web3
         block_number = w3.eth.block_number
         block_data = w3.eth.get_block(block_number)
-        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
+        # Note, keep this in units of whole Auton.  It will be
+        # converted to Wei below.
+        max_fee_per_gas = str(
+            Decimal(block_data["baseFeePerGas"])
+            * Decimal(fee_factor)
+            / Decimal(pow(10, 18))
+        )
 
     try:
         tx = create_contract_function_transaction(
@@ -275,15 +287,34 @@ def parse_wei_representation(wei_str: str) -> Wei:
             wei = _parse_numerical_part(wei_str[:-5], AutonDenoms.AUTON_VALUE_IN_WEI)
         elif wei_str.endswith("aut"):
             wei = _parse_numerical_part(wei_str[:-3], AutonDenoms.AUTON_VALUE_IN_WEI)
-        elif wei_str.endswith("wei"):
+        elif wei_str.endswith("wei") or wei_str.endswith("attoton"):
             wei = _parse_numerical_part(wei_str[:-3], 1)
         else:
-            wei = int(wei_str)
+            wei = _parse_numerical_part(wei_str, AutonDenoms.AUTON_VALUE_IN_WEI)
     except Exception as exc:
         raise Exception(
             f"{wei_str} is not a valid string representation of wei"
         ) from exc
     return Wei(wei)
+
+
+def parse_token_value_representation(value_str: str, decimals: int) -> int:
+    """
+    Parse a token value (e.g. "0.001") into token units, given the
+    number of decimals.  Suffices such as "wei" are not supported for
+    tokens.
+    """
+    return int(Decimal(value_str) * Decimal(pow(10, decimals)))
+
+
+def format_quantity(units: int, decimals: int) -> str:
+    """
+    Given some quantity of atomic "token units" of a currency
+    (e.g. Attoton for Auton), and the decimals used to represent the
+    value of such a unit, return a string representation of the number
+    of tokens.
+    """
+    return str(Decimal(units) * Decimal(pow(10, decimals)))
 
 
 def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
@@ -422,6 +453,20 @@ def newton_or_token_to_address(
         return Web3.toChecksumAddress(token)
 
     return None
+
+
+def newton_or_token_to_address_require(
+    ntn: bool, token: Optional[str]
+) -> ChecksumAddress:
+    """
+    Similar to newton_or_token_address, but thrown an error if neither
+    is given.
+    """
+    token = newton_or_token_to_address(ntn, token)
+    if token is None:
+        raise ClickException("Token address (or --ntn) must be specified.")
+
+    return token
 
 
 def prompt_for_new_password(show_password: bool) -> str:

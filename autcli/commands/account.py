@@ -112,6 +112,7 @@ def balance(
         web3_from_endpoint_arg,
         newton_or_token_to_address,
         from_address_from_argument_optional,
+        format_quantity,
     )
 
     from autonity.erc20 import ERC20
@@ -131,7 +132,9 @@ def balance(
 
     if token_addresss is not None:
         token_contract = ERC20(w3, token_addresss)
-        print(token_contract.balance_of(account_addr))
+        decimals = token_contract.decimals()
+        bal = token_contract.balance_of(account_addr)
+        print(format_quantity(bal, decimals))
 
     else:
         print(w3.eth.get_balance(account_addr))
@@ -144,7 +147,7 @@ account_group.add_command(balance)
 @rpc_endpoint_option
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
-def lnew_balances(
+def lntn_balances(
     rpc_endpoint: Optional[str], account_str: Optional[str], key_file: Optional[str]
 ) -> None:
     """
@@ -156,6 +159,7 @@ def lnew_balances(
         to_json,
         web3_from_endpoint_arg,
         from_address_from_argument_optional,
+        format_quantity,
     )
 
     from autonity.autonity import Autonity
@@ -172,33 +176,34 @@ def lnew_balances(
     validator_addrs = aut.get_validators()
     validators = [aut.get_validator(vaddr) for vaddr in validator_addrs]
 
-    balances: Dict[str, int] = {}
+    decimals = aut.decimals()
+    balances: Dict[str, str] = {}
     for validator in validators:
         log("computing holdings for validators {validator['addr']}")
         lnew = ERC20(w3, validator["liquid_contract"])
         bal = lnew.balance_of(account_addr)
         if bal:
-            balances[validator["addr"]] = bal
+            balances[validator["addr"]] = format_quantity(bal, decimals)
 
     print(to_json(balances, pretty=True))
 
 
-account_group.add_command(lnew_balances)
+account_group.add_command(lntn_balances)
 
 
 @command()
 @keyfile_option(required=True, output=True)
 @option(
     "--extra-entropy",
-    is_flag=True,
-    help="Prompt the user for a string containing extra entropy",
+    type=Path(),
+    help="File containing extra entropy.  Use '-' to prompt for keyboard input.",
 )
 @option(
     "--show-password",
     is_flag=True,
     help="Echo password input to the terminal",
 )
-def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
+def new(key_file: str, extra_entropy: Optional[str], show_password: bool) -> None:
     """
     Create a new key and write it to a keyfile.
     """
@@ -222,7 +227,12 @@ def new(key_file: str, extra_entropy: bool, show_password: bool) -> None:
 
     entropy: str = ""
     if extra_entropy:
-        entropy = input("Entropy: ")
+        if extra_entropy == "-":
+            entropy = input("Random string (press ENTER to finish): ")
+        else:
+            # Use ascii so that binary data is not reinterpreted.
+            with open(extra_entropy, "r", encoding="ascii") as entropy_f:
+                entropy = entropy_f.read()
 
     # Ask for password (and confirmation) and ensure both entries
     # match.
@@ -261,7 +271,8 @@ def import_private_key(
 ) -> None:
     """
     Read a plaintext private key file (as hex), and create a new
-    keyfile for it.  Use - for stdin.
+    encrypted keystore file for it.  Use - to read private key from
+    stdin.
     """
 
     from autcli.utils import load_from_file_or_stdin, prompt_for_new_password
