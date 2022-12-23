@@ -9,7 +9,7 @@ sys.stderr.write(f"local_link={local_link}\n")
 
 setup(
     name="autcli",
-    version="0.0.3",
+    version="0.0.4",
     authors=[
         {"name": "Robert Sams", "email": "rs@clearmatics.com"},
         {"name": "Duncan Tebbs", "email": "duncan.tebbs@clearmatics.com"},
