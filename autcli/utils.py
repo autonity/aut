@@ -647,18 +647,14 @@ def generate_txs(  # pylint: disable=too-many-statements
             if backlog.qsize() > 4:
                 fut_batch = backlog.get()
                 assert isinstance(fut_batch, list)
-                # print(f"fut_batch: {fut_batch}")
-                print("awaiting batch ...")
-                try:
-                    await asyncio.gather(*fut_batch)
-                except ValueError as err:
-                    print(f"tx failed: {err}")
-                except Exception as err:
-                    print(f"other exception: {err}")
-
-                # for t in fut_batch:
-                #     await t
-                print("awaited")
+                # print("awaiting batch ...")
+                # try:
+                #     await asyncio.gather(*fut_batch)
+                # except ValueError as err:
+                #     print(f"tx failed: {err}")
+                # except Exception as err:
+                #     print(f"other exception: {err}")
+                # print("awaited")
 
     asyncio.run(create_and_send())
 
