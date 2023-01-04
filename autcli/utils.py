@@ -653,6 +653,8 @@ def generate_txs(  # pylint: disable=too-many-statements
                     await asyncio.gather(*fut_batch)
                 except ValueError as err:
                     print(f"tx failed: {err}")
+                except Exception as err:
+                    print(f"other exception: {err}")
 
                 # for t in fut_batch:
                 #     await t
