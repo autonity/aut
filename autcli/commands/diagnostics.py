@@ -29,8 +29,17 @@ def diagnostics_group() -> None:
     default=20,
     help="Number of fake participants to set up",
 )
+@option(
+    "--seed",
+    "-s",
+    type=int,
+    default=100,
+    help="Number of fake participants to set up",
+)
 @argument("participants-file", type=Path())
-def generate_participants_cmd(participants_file: str, num_participants: int) -> None:
+def generate_participants_cmd(
+    participants_file: str, num_participants: int, seed: int
+) -> None:
     """
     Generate a set of fake participants.
     """
@@ -39,7 +48,7 @@ def generate_participants_cmd(participants_file: str, num_participants: int) -> 
 
     import json
 
-    participants = generate_participants(num_participants, 100)
+    participants = generate_participants(num_participants, seed)
     with open(participants_file, "w", encoding="utf8") as out_f:
         json.dump({k: v.hex() for k, v in participants.items()}, out_f)
 

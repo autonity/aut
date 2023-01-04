@@ -19,14 +19,15 @@ from autonity.utils.tx import (
     create_contract_function_transaction,
     finalize_transaction,
     sign_tx_with_private_key,
-    send_tx,
     SignedTransaction,
 )
 
+import asyncio
 import os
 import sys
 import json
 import queue
+from asyncio import Task
 from dataclasses import dataclass
 from decimal import Decimal
 from click import ClickException
@@ -489,12 +490,15 @@ def generate_participants(
     return participants
 
 
-def generate_txs(
+def generate_txs(  # pylint: disable=too-many-statements
     rpc_endpoint: str, accounts_and_keys: Dict[ChecksumAddress, PrivateKey]
 ) -> None:
     """
     Create and broadcast a large sequence of transactions.
     """
+
+    TXS_PER_BATCH = 100
+    BATCHES_IN_FLIGHT = 10
 
     assert len(accounts_and_keys) > 1
 
@@ -561,19 +565,19 @@ def generate_txs(
 
         return sign_tx_with_private_key(tx_template, from_account.private_key)
 
-    batch_queue: queue.Queue[List[SignedTransaction]] = queue.Queue(5)
+    batch_queue: queue.Queue[List[SignedTransaction]] = queue.Queue(BATCHES_IN_FLIGHT)
+    fut_queue: queue.Queue[List[Task]] = queue.Queue(BATCHES_IN_FLIGHT)
 
-    def _create_tx_batches() -> List[SignedTransaction]:
-
-        num_txs = 1000
+    def _create_tx_batches() -> None:
 
         txs: List[SignedTransaction] = []
 
         def _check_push() -> None:
             nonlocal txs
-            if len(txs) >= num_txs:
+            if len(txs) >= TXS_PER_BATCH:
                 batch_queue.put(txs)
                 txs = list()
+                print(f"created batch")
 
         while True:  # pylint: disable=too-many-nested-blocks
             for from_addr, from_account in participants.items():
@@ -595,19 +599,73 @@ def generate_txs(
                     )
                     _check_push()
 
-    def _send_tx_batch(batch: List[SignedTransaction]) -> None:
+    # def _await_tx_batches() -> None:
+    #     async def do_await() -> None:
+    #         while True:
+    #             fut_batch = fut_queue.get()
+    #             for fut in fut_batch:
+    #                 await fut
+    #                 # while not fut.done():
+    #                 #     time.sleep(0.0)
+    #                 # _ = fut.result()
+    #             print(f"awaited batch")
+
+    #     asyncio.run(do_await())
+
+    def _send_tx_batch(batch: List[SignedTransaction]) -> List:
+        fut_batch: List[Task] = []
         for tx in batch:
             try:
-                # w3_async.eth.send_raw_transaction(tx.rawTransaction)
-                send_tx(w3, tx)
+                fut_batch.append(
+                    asyncio.create_task(
+                        w3_async.eth.send_raw_transaction(tx.rawTransaction)
+                    )
+                )
+                # send_tx(w3, tx)
             except ValueError as err:
                 print(f"tx failed: {tx}: {err}")
+        # fut_queue.put(fut_batch)
+        # print(f"fut_batch: {fut_batch}")
+        assert isinstance(fut_batch, list)
+        return fut_batch
 
-    create_thread = Thread(target=_create_tx_batches)
-    create_thread.start()
+    create_thread_1 = Thread(target=_create_tx_batches)
+    create_thread_1.start()
 
-    while True:
-        print("waiting for batch...")
-        batch = batch_queue.get()
-        print(f"sending batch ({len(batch)}) ...")
-        _send_tx_batch(batch)
+    # create_thread_2 = Thread(target=_create_tx_batches)
+    # create_thread_2.start()
+
+    async def create_and_send() -> None:
+        backlog: queue.Queue[List] = queue.Queue(BATCHES_IN_FLIGHT)
+        while True:
+            batch = batch_queue.get()
+            fut_batch = _send_tx_batch(batch)
+            assert isinstance(fut_batch, list)
+            backlog.put(fut_batch)
+            print("sent batch")
+
+            if backlog.qsize() > 4:
+                fut_batch = backlog.get()
+                assert isinstance(fut_batch, list)
+                # print(f"fut_batch: {fut_batch}")
+                print("awaiting batch ...")
+                try:
+                    await asyncio.gather(*fut_batch)
+                except ValueError as err:
+                    print(f"tx failed: {err}")
+
+                # for t in fut_batch:
+                #     await t
+                print("awaited")
+
+    asyncio.run(create_and_send())
+
+    # await_thread = Thread(target=_await_tx_batches)
+    # await_thread.start()
+
+    # def do_send() -> None:
+    #     while True:
+    #         print("waiting for batch...")
+    #         batch = batch_queue.get()
+    #         print(f"sending batch ({len(batch)}) ...")
+    #         _send_tx_batch(batch)
