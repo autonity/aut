@@ -67,10 +67,6 @@ def get_account_stats(
     return stats
 
 
-# TODO: Properly typed object.
-# TODO: Move to autonity.py
-
-
 # TODO: Move to autonity.py
 
 
