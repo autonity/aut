@@ -785,8 +785,8 @@ protocol_group.add_command(mint)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("amount-str", metavar="AMOUNT", nargs=1)
-@argument("account-str", metavar="ACCOUNT", nargs=0)
+@argument("amount-str", metavar="AMOUNT")
+@argument("account-str", metavar="ACCOUNT", required=False)
 def burn(
     rpc_endpoint: Optional[str],
     key_file: Optional[str],
