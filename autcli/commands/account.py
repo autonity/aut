@@ -366,8 +366,8 @@ def sign_message(
     key_file: Optional[str], password: Optional[str], message_file: str
 ) -> None:
     """
-    Use the private key in the given keyfile to sign a message.  Use -
-    to read the message from stdin.
+    Use the private key in the given keyfile to sign a message
+    contained in MESSAGE_FILE.  Use - to read the message from stdin.
     """
 
     from autcli.logging import log
@@ -425,8 +425,8 @@ def verify_signature(
 ) -> None:
 
     """
-    Verify that the signature in SIGNATURE-FILE` is valid for the
-    message in MESSAGE-FILE, signed by the owner of the FROM address.
+    Verify that the signature in SIGNATURE_FILE` is valid for the
+    message in MESSAGE_FILE, signed by the owner of the FROM address.
     Use - to read the message from stdin.  Signature must be contained
     in a file.
     """
