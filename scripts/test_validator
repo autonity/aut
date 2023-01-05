@@ -32,5 +32,16 @@ aut validator activate --gas 1000000 > activate.tx
 # TODO: enable when this call is available
 # aut validator change-commission-rate --gas 1000000 2000 > change_commission_rate.tx
 
+# Help text
+aut validator list --help > /dev/null
+aut validator info --help > /dev/null
+aut validator unclaimed-rewards --help > /dev/null
+aut validator register --help > /dev/null
+aut validator claim-rewards --help > /dev/null
+aut validator bond --help > /dev/null
+aut validator unbond --help > /dev/null
+aut validator pause --help > /dev/null
+aut validator activate --help > /dev/null
+
 set -e
 set -x
