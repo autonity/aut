@@ -2,7 +2,7 @@
 The `account` command group.
 """
 
-from autcli.options import keyfile_and_password_options
+from autcli.options import keyfile_and_password_options, from_option
 from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
 from click import group, command, option, argument, ClickException, Path
 from typing import Dict, List, Optional
@@ -353,3 +353,110 @@ def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> No
 
 
 account_group.add_command(signtx)
+
+
+@command()
+@keyfile_and_password_options()
+@argument(
+    "message-file",
+    type=Path(),
+    required=True,
+)
+def sign_message(
+    key_file: Optional[str], password: Optional[str], message_file: str
+) -> None:
+    """
+    Use the private key in the given keyfile to sign a message.  Use -
+    to read the message from stdin.
+    """
+
+    from autcli.logging import log
+    from autcli import config
+    from autcli.utils import to_json, load_from_file_or_stdin
+
+    from autonity.utils.keyfile import decrypt_keyfile
+
+    from eth_account import Account
+    from eth_account.messages import encode_defunct
+    import json
+
+    # Read message
+    message = load_from_file_or_stdin(message_file)
+
+    # Read keyfile
+    key_file = config.get_keyfile(key_file)
+    log(f"using key file: {key_file}")
+    with open(key_file, encoding="ascii") as key_f:
+        encrypted_key = json.load(key_f)
+
+    # Read password
+    password = config.get_keyfile_password(password)
+    private_key = decrypt_keyfile(encrypted_key, password)
+
+    # Sign the message
+    signature = Account().sign_message(
+        signable_message=encode_defunct(text=message), private_key=private_key
+    )
+
+    print(to_json(signature._asdict()))
+
+
+account_group.add_command(sign_message)
+
+
+@command()
+@keyfile_option()
+@from_option
+@argument(
+    "message-file",
+    type=Path(),
+    required=True,
+)
+@argument(
+    "signature-file",
+    type=Path(),
+    required=True,
+)
+def verify_signature(
+    key_file: Optional[str],
+    from_str: Optional[str],
+    message_file: str,
+    signature_file: str,
+) -> None:
+
+    """
+    Verify that the signature in SIGNATURE-FILE` is valid for the
+    message in MESSAGE-FILE, signed by the owner of the FROM address.
+    Use - to read the message from stdin.  Signature must be contained
+    in a file.
+    """
+
+    from autcli.logging import log
+    from autcli.utils import (
+        from_address_from_argument_optional,
+        load_from_file_or_stdin,
+    )
+
+    from eth_account import Account
+    from eth_account.messages import encode_defunct
+    import json
+
+    message = load_from_file_or_stdin(message_file)
+
+    with open(signature_file, "r", encoding="ascii") as signature_f:
+        signature = json.load(signature_f)
+
+    from_addr = from_address_from_argument_optional(from_str, key_file)
+
+    recovered_addr = Account().recover_message(
+        encode_defunct(text=message), signature=signature["signature"]
+    )
+
+    if recovered_addr != from_addr:
+        log(f"recovered address was {recovered_addr}, not {from_addr}")
+        raise ClickException("Signature invalid")
+
+    log("signature is valid")
+
+
+account_group.add_command(verify_signature)
