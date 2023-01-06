@@ -41,11 +41,9 @@ aut tx make --key-file keystore/dave.key --to 0x7E5F4552091A69125d5DfCb7b8C26590
 KEYFILEPWD="" aut account signtx --key-file keystore/dave.key test.tx > test.signed.tx
 
 # Sign and verify a message
-echo A message to be signed > message.txt
-echo Another message to be signed > message2.txt
-KEYFILEPWD="" aut account sign-message --key-file keystore/dave.key message.txt > message.sig
-aut account verify-signature --key-file keystore/dave.key message.txt message.sig
-!(aut account verify-signature --key-file keystore/dave.key message2.txt message.sig)
+KEYFILEPWD="" aut account sign-message --key-file keystore/dave.key "A message to be signed" message.sig
+aut account verify-signature --key-file keystore/dave.key "A message to be signed" message.sig
+!(aut account verify-signature --key-file keystore/dave.key "A different message" message.sig)
 
 # Help text
 aut account balance --help > /dev/null
