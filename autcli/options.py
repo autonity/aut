@@ -81,7 +81,8 @@ def from_option(fn: Func) -> Func:
         "--from",
         "-f",
         "from_str",
-        help="address from which tx is sent (extracted from keyfile if not given).",
+        metavar="FROM",
+        help="The from address (extracted from keyfile if not given).",
     )(fn)
 
 
