@@ -377,7 +377,7 @@ def sign_message(
 
     from autcli.logging import log
     from autcli import config
-    from autcli.utils import to_json, load_from_file_or_stdin
+    from autcli.utils import load_from_file_or_stdin
 
     from autonity.utils.keyfile import decrypt_keyfile
 
@@ -399,16 +399,17 @@ def sign_message(
     private_key = decrypt_keyfile(encrypted_key, password)
 
     # Sign the message
-    signature = Account().sign_message(
+    signature_data = Account().sign_message(
         signable_message=encode_defunct(text=message), private_key=private_key
     )
+    signature = signature_data["signature"].hex()
 
     # Optionally write to the output file
     if signature_file:
         with open(signature_file, "w", encoding="ascii") as signature_f:
-            signature_f.write(to_json(signature._asdict()))
+            signature_f.write(signature)
 
-    print(to_json(signature._asdict()))
+    print(signature)
 
 
 account_group.add_command(sign_message)
@@ -447,19 +448,21 @@ def verify_signature(
         load_from_file_or_stdin,
     )
 
+    from hexbytes import HexBytes
     from eth_account import Account
     from eth_account.messages import encode_defunct
-    import json
 
     message = load_from_file_or_stdin(message_file)
 
     with open(signature_file, "r", encoding="ascii") as signature_f:
-        signature = json.load(signature_f)
+        # TODO: check file size before blindly reading everything
+        signature_hex = signature_f.read().rstrip()
+        signature = HexBytes(signature_hex)
 
     from_addr = from_address_from_argument_optional(from_str, key_file)
 
     recovered_addr = Account().recover_message(
-        encode_defunct(text=message), signature=signature["signature"]
+        encode_defunct(text=message), signature=signature
     )
 
     if recovered_addr != from_addr:
