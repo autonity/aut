@@ -360,14 +360,19 @@ account_group.add_command(signtx)
 @argument(
     "message-file",
     type=Path(),
-    required=True,
 )
+@argument("signature-file", type=Path(), required=False)
 def sign_message(
-    key_file: Optional[str], password: Optional[str], message_file: str
+    key_file: Optional[str],
+    password: Optional[str],
+    message_file: str,
+    signature_file: Optional[str],
 ) -> None:
     """
     Use the private key in the given keyfile to sign a message
     contained in MESSAGE_FILE.  Use - to read the message from stdin.
+    The signature is always written to stdout (and can be piped to a
+    file). The signature is also written to SIGNATURE_FILE, if given.
     """
 
     from autcli.logging import log
@@ -397,6 +402,11 @@ def sign_message(
     signature = Account().sign_message(
         signable_message=encode_defunct(text=message), private_key=private_key
     )
+
+    # Optionally write to the output file
+    if signature_file:
+        with open(signature_file, "w", encoding="ascii") as signature_f:
+            signature_f.write(to_json(signature._asdict()))
 
     print(to_json(signature._asdict()))
 
