@@ -35,4 +35,15 @@ aut token approve --token ${token} --from ${treasury} ${ALICE} 10 > approve.tx
 # ALICE sends 10 of "treasury"'s tokens to BOB  (use --gas flag to prevent simulation on node)
 aut token transfer-from --gas 1000000 --token ${token} --from ${ALICE} ${treasury} ${BOB} 10 > transfer_from.tx
 
+# Help text
+aut token name --help > /dev/null
+aut token symbol --help > /dev/null
+aut token decimals --help > /dev/null
+aut token total-supply --help > /dev/null
+aut token balance-of --help > /dev/null
+aut token allowance --help > /dev/null
+aut token transfer --help > /dev/null
+aut token approve --help > /dev/null
+aut token transfer-from --help > /dev/null
+
 popd  # _test_token_cli
