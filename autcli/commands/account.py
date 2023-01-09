@@ -357,21 +357,28 @@ account_group.add_command(signtx)
 
 @command()
 @keyfile_and_password_options()
+@option(
+    "--use-message-file",
+    "-f",
+    is_flag=True,
+    help="Interpret MESSAGE as a filename where - means stdin",
+)
 @argument(
-    "message-file",
+    "message",
     type=Path(),
 )
 @argument("signature-file", type=Path(), required=False)
 def sign_message(
     key_file: Optional[str],
     password: Optional[str],
-    message_file: str,
+    use_message_file: bool,
+    message: str,
     signature_file: Optional[str],
 ) -> None:
     """
-    Use the private key in the given keyfile to sign a message
-    contained in MESSAGE_FILE.  Use - to read the message from stdin.
-    The signature is always written to stdout (and can be piped to a
+    Use the private key in the given keyfile to sign the string
+    MESSAGE (or the contents of a file; see --use-message-file).  The
+    signature is always written to stdout (which can be piped to a
     file). The signature is also written to SIGNATURE_FILE, if given.
     """
 
@@ -386,7 +393,8 @@ def sign_message(
     import json
 
     # Read message
-    message = load_from_file_or_stdin(message_file)
+    if use_message_file:
+        message = load_from_file_or_stdin(message)
 
     # Read keyfile
     key_file = config.get_keyfile(key_file)
@@ -418,8 +426,14 @@ account_group.add_command(sign_message)
 @command()
 @keyfile_option()
 @from_option
+@option(
+    "--use-message-file",
+    "-f",
+    is_flag=True,
+    help="Interpret MESSAGE as a filename where - means stdin",
+)
 @argument(
-    "message-file",
+    "message",
     type=Path(),
     required=True,
 )
@@ -431,15 +445,15 @@ account_group.add_command(sign_message)
 def verify_signature(
     key_file: Optional[str],
     from_str: Optional[str],
-    message_file: str,
+    use_message_file: bool,
+    message: str,
     signature_file: str,
 ) -> None:
 
     """
     Verify that the signature in SIGNATURE_FILE` is valid for the
-    message in MESSAGE_FILE, signed by the owner of the FROM address.
-    Use - to read the message from stdin.  Signature must be contained
-    in a file.
+    message MESSAGE, signed by the owner of the FROM address.
+    Signature must be contained in a file.
     """
 
     from autcli.logging import log
@@ -452,7 +466,8 @@ def verify_signature(
     from eth_account import Account
     from eth_account.messages import encode_defunct
 
-    message = load_from_file_or_stdin(message_file)
+    if use_message_file:
+        message = load_from_file_or_stdin(message)
 
     with open(signature_file, "r", encoding="ascii") as signature_f:
         # TODO: check file size before blindly reading everything
