@@ -2,6 +2,7 @@
 
 - Message signing and signature verification
 - Fixes to help text and parameters specs
+- Output chainId and networkId from `aut node info`
 
 # v0.0.4
 
