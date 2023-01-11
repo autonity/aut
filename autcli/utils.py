@@ -307,16 +307,6 @@ def parse_token_value_representation(value_str: str, decimals: int) -> int:
     return int(Decimal(value_str) * Decimal(pow(10, decimals)))
 
 
-def format_quantity(units: int, decimals: int) -> str:
-    """
-    Given some quantity of atomic "token units" of a currency
-    (e.g. Attoton for Auton), and the decimals used to represent the
-    value of such a unit, return a string representation of the number
-    of tokens.
-    """
-    return str(Decimal(units) * Decimal(pow(10, decimals)))
-
-
 def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
     """
     For directory 'keystore' that contains one or more keyfiles,

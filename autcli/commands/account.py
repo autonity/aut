@@ -112,10 +112,15 @@ def balance(
         web3_from_endpoint_arg,
         newton_or_token_to_address,
         from_address_from_argument_optional,
-        format_quantity,
     )
 
+    from autonity import Autonity
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import (
+        format_quantity,
+        format_auton_quantity,
+        format_newton_quantity,
+    )
 
     account_addr = from_address_from_argument_optional(account_str, key_file)
     if not account_addr:
@@ -130,14 +135,18 @@ def balance(
     # TODO: support printing in other denominations (AUT / units based
     # on num decimals of token).
 
-    if token_addresss is not None:
+    if ntn:
+        autonity = Autonity(w3)
+        print(format_newton_quantity(autonity.balance_of(account_addr)))
+
+    elif token_addresss is not None:
         token_contract = ERC20(w3, token_addresss)
         decimals = token_contract.decimals()
         bal = token_contract.balance_of(account_addr)
         print(format_quantity(bal, decimals))
 
     else:
-        print(w3.eth.get_balance(account_addr))
+        print(format_auton_quantity(w3.eth.get_balance(account_addr)))
 
 
 account_group.add_command(balance)
@@ -159,11 +168,11 @@ def lntn_balances(
         to_json,
         web3_from_endpoint_arg,
         from_address_from_argument_optional,
-        format_quantity,
     )
 
     from autonity.autonity import Autonity
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import format_newton_quantity
 
     account_addr = from_address_from_argument_optional(account_str, key_file)
     if not account_addr:
@@ -176,14 +185,13 @@ def lntn_balances(
     validator_addrs = aut.get_validators()
     validators = [aut.get_validator(vaddr) for vaddr in validator_addrs]
 
-    decimals = aut.decimals()
     balances: Dict[str, str] = {}
     for validator in validators:
         log("computing holdings for validators {validator['addr']}")
         lnew = ERC20(w3, validator["liquid_contract"])
         bal = lnew.balance_of(account_addr)
         if bal:
-            balances[validator["addr"]] = format_quantity(bal, decimals)
+            balances[validator["addr"]] = format_newton_quantity(bal)
 
     print(to_json(balances, pretty=True))
 
