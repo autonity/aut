@@ -116,10 +116,10 @@ def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -
     from autcli.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
-        format_quantity,
     )
 
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import format_quantity
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -153,10 +153,10 @@ def balance_of(
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
-        format_quantity,
     )
 
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import format_quantity
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     account_addr = from_address_from_argument(account_str, key_file)
@@ -193,10 +193,10 @@ def allowance(
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
-        format_quantity,
     )
 
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import format_quantity
 
     from web3 import Web3
 
