@@ -36,10 +36,26 @@ echo -e "entropy\n\n\n" | aut account new --extra-entropy - --key-file keystore/
 echo "entropy" > entropy.bin
 echo -e "\n\n" | aut account new --extra-entropy entropy.bin --key-file keystore/dave_entropy_file.key --show-password
 
-
 # Make a fake transaction and test signing using the new key
 aut tx make --key-file keystore/dave.key --to 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf --value '0.001kwei' --gas 1000 > test.tx
 KEYFILEPWD="" aut account signtx --key-file keystore/dave.key test.tx > test.signed.tx
+
+# Sign and verify a message
+KEYFILEPWD="" aut account sign-message --key-file keystore/dave.key "A message to be signed" message.sig
+aut account verify-signature --key-file keystore/dave.key "A message to be signed" message.sig
+!(aut account verify-signature --key-file keystore/dave.key "A different message" message.sig)
+
+# Help text
+aut account balance --help > /dev/null
+aut account import-private-key --help > /dev/null
+aut account info --help > /dev/null
+aut account list --help > /dev/null
+aut account lntn-balances --help > /dev/null
+aut account new --help > /dev/null
+aut account sign-message --help > /dev/null
+aut account signtx --help > /dev/null
+aut account verify-signature --help > /dev/null
+aut account verify-signature --help > /dev/null
 
 popd
 

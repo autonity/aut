@@ -394,6 +394,7 @@ def unclaimed_rewards(
     from autcli.config import get_validator_address
     from autcli.utils import autonity_from_endpoint_arg, from_address_from_argument
 
+    from autonity.utils.denominations import format_auton_quantity
     from autonity.validator import Validator
 
     validator_addr = get_validator_address(validator_addr_str)
@@ -402,7 +403,8 @@ def unclaimed_rewards(
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     vdesc = aut.get_validator(validator_addr)
     val = Validator(aut.contract.web3, vdesc)
-    print(val.unclaimed_rewards(account))
+    unclaimed_wei = val.unclaimed_rewards(account)
+    print(format_auton_quantity(unclaimed_wei))
 
 
 validator.add_command(unclaimed_rewards)

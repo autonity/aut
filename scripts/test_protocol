@@ -74,6 +74,39 @@ aut protocol tail-unbonding-id
 echo "aut protocol total-redistributed"
 aut protocol total-redistributed
 
+# Test help text (does some parameter validation)
+aut protocol config --help > /dev/null
+aut protocol deployer --help > /dev/null
+aut protocol epoch-id --help > /dev/null
+aut protocol epoch-reward --help > /dev/null
+aut protocol epoch-total-bonded-stake --help > /dev/null
+aut protocol get-bonding-req --help > /dev/null
+aut protocol get-committee --help > /dev/null
+aut protocol get-committee-enodes --help > /dev/null
+aut protocol get-last-epoch-block --help > /dev/null
+aut protocol get-max-committee-size --help > /dev/null
+aut protocol get-minimum-base-fee --help > /dev/null
+aut protocol get-operator --help > /dev/null
+aut protocol get-proposer --help > /dev/null
+aut protocol get-unbonding-req --help > /dev/null
+aut protocol get-validators --help > /dev/null
+aut protocol get-version --help > /dev/null
+aut protocol head-bonding-id --help > /dev/null
+aut protocol head-unbonding-id --help > /dev/null
+aut protocol last-epoch-block --help > /dev/null
+aut protocol tail-bonding-id --help > /dev/null
+aut protocol tail-unbonding-id --help > /dev/null
+aut protocol total-redistributed --help > /dev/null
+aut protocol set-minimum-base-fee --help > /dev/null
+aut protocol set-committee-size --help > /dev/null
+aut protocol set-unbonding-period --help > /dev/null
+aut protocol set-epoch-period --help > /dev/null
+aut protocol set-operator-account --help > /dev/null
+aut protocol set-treasury-account --help > /dev/null
+aut protocol set-treasury-fee --help > /dev/null
+aut protocol mint --help > /dev/null
+aut protocol burn --help > /dev/null
+
 set +e
 set +x
 

@@ -2,7 +2,7 @@
 The `account` command group.
 """
 
-from autcli.options import keyfile_and_password_options
+from autcli.options import keyfile_and_password_options, from_option
 from autcli.options import rpc_endpoint_option, newton_or_token_option, keyfile_option
 from click import group, command, option, argument, ClickException, Path
 from typing import Dict, List, Optional
@@ -112,10 +112,15 @@ def balance(
         web3_from_endpoint_arg,
         newton_or_token_to_address,
         from_address_from_argument_optional,
-        format_quantity,
     )
 
+    from autonity import Autonity
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import (
+        format_quantity,
+        format_auton_quantity,
+        format_newton_quantity,
+    )
 
     account_addr = from_address_from_argument_optional(account_str, key_file)
     if not account_addr:
@@ -130,14 +135,18 @@ def balance(
     # TODO: support printing in other denominations (AUT / units based
     # on num decimals of token).
 
-    if token_addresss is not None:
+    if ntn:
+        autonity = Autonity(w3)
+        print(format_newton_quantity(autonity.balance_of(account_addr)))
+
+    elif token_addresss is not None:
         token_contract = ERC20(w3, token_addresss)
         decimals = token_contract.decimals()
         bal = token_contract.balance_of(account_addr)
         print(format_quantity(bal, decimals))
 
     else:
-        print(w3.eth.get_balance(account_addr))
+        print(format_auton_quantity(w3.eth.get_balance(account_addr)))
 
 
 account_group.add_command(balance)
@@ -159,11 +168,11 @@ def lntn_balances(
         to_json,
         web3_from_endpoint_arg,
         from_address_from_argument_optional,
-        format_quantity,
     )
 
     from autonity.autonity import Autonity
     from autonity.erc20 import ERC20
+    from autonity.utils.denominations import format_newton_quantity
 
     account_addr = from_address_from_argument_optional(account_str, key_file)
     if not account_addr:
@@ -176,14 +185,13 @@ def lntn_balances(
     validator_addrs = aut.get_validators()
     validators = [aut.get_validator(vaddr) for vaddr in validator_addrs]
 
-    decimals = aut.decimals()
     balances: Dict[str, str] = {}
     for validator in validators:
         log("computing holdings for validators {validator['addr']}")
         lnew = ERC20(w3, validator["liquid_contract"])
         bal = lnew.balance_of(account_addr)
         if bal:
-            balances[validator["addr"]] = format_quantity(bal, decimals)
+            balances[validator["addr"]] = format_newton_quantity(bal)
 
     print(to_json(balances, pretty=True))
 
@@ -353,3 +361,138 @@ def signtx(key_file: Optional[str], password: Optional[str], tx_file: str) -> No
 
 
 account_group.add_command(signtx)
+
+
+@command()
+@keyfile_and_password_options()
+@option(
+    "--use-message-file",
+    "-f",
+    is_flag=True,
+    help="Interpret MESSAGE as a filename where - means stdin",
+)
+@argument(
+    "message",
+    type=Path(),
+)
+@argument("signature-file", type=Path(), required=False)
+def sign_message(
+    key_file: Optional[str],
+    password: Optional[str],
+    use_message_file: bool,
+    message: str,
+    signature_file: Optional[str],
+) -> None:
+    """
+    Use the private key in the given keyfile to sign the string
+    MESSAGE (or the contents of a file; see --use-message-file).  The
+    signature is always written to stdout (which can be piped to a
+    file). The signature is also written to SIGNATURE_FILE, if given.
+    """
+
+    from autcli.logging import log
+    from autcli import config
+    from autcli.utils import load_from_file_or_stdin
+
+    from autonity.utils.keyfile import decrypt_keyfile
+
+    from eth_account import Account
+    from eth_account.messages import encode_defunct
+    import json
+
+    # Read message
+    if use_message_file:
+        message = load_from_file_or_stdin(message)
+
+    # Read keyfile
+    key_file = config.get_keyfile(key_file)
+    log(f"using key file: {key_file}")
+    with open(key_file, encoding="ascii") as key_f:
+        encrypted_key = json.load(key_f)
+
+    # Read password
+    password = config.get_keyfile_password(password)
+    private_key = decrypt_keyfile(encrypted_key, password)
+
+    # Sign the message
+    signature_data = Account().sign_message(
+        signable_message=encode_defunct(text=message), private_key=private_key
+    )
+    signature = signature_data["signature"].hex()
+
+    # Optionally write to the output file
+    if signature_file:
+        with open(signature_file, "w", encoding="ascii") as signature_f:
+            signature_f.write(signature)
+
+    print(signature)
+
+
+account_group.add_command(sign_message)
+
+
+@command()
+@keyfile_option()
+@from_option
+@option(
+    "--use-message-file",
+    "-f",
+    is_flag=True,
+    help="Interpret MESSAGE as a filename where - means stdin",
+)
+@argument(
+    "message",
+    type=Path(),
+    required=True,
+)
+@argument(
+    "signature-file",
+    type=Path(),
+    required=True,
+)
+def verify_signature(
+    key_file: Optional[str],
+    from_str: Optional[str],
+    use_message_file: bool,
+    message: str,
+    signature_file: str,
+) -> None:
+
+    """
+    Verify that the signature in SIGNATURE_FILE` is valid for the
+    message MESSAGE, signed by the owner of the FROM address.
+    Signature must be contained in a file.
+    """
+
+    from autcli.logging import log
+    from autcli.utils import (
+        from_address_from_argument_optional,
+        load_from_file_or_stdin,
+    )
+
+    from hexbytes import HexBytes
+    from eth_account import Account
+    from eth_account.messages import encode_defunct
+
+    if use_message_file:
+        message = load_from_file_or_stdin(message)
+
+    with open(signature_file, "r", encoding="ascii") as signature_f:
+        # TODO: check file size before blindly reading everything
+        signature_hex = signature_f.read().rstrip()
+        signature = HexBytes(signature_hex)
+
+    from_addr = from_address_from_argument_optional(from_str, key_file)
+
+    recovered_addr = Account().recover_message(
+        encode_defunct(text=message), signature=signature
+    )
+
+    if recovered_addr != from_addr:
+        log(f"recovered address was {recovered_addr}, not {from_addr}")
+        raise ClickException("Signature invalid")
+
+    log("signature is valid")
+
+
+account_group.add_command(verify_signature)

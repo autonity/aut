@@ -8,14 +8,17 @@ If aut implements an ipyothon 'console mode', perhaps these are the
 functions meant to be called in that.
 """
 
-from autcli.utils import w3_provider, format_quantity
+from autcli.utils import w3_provider
 
 from autonity import Autonity
+from autonity.utils.denominations import (
+    format_auton_quantity,
+    format_newton_quantity,
+)
 
 from web3 import Web3
 from web3.types import (
     ChecksumAddress,
-    Wei,
     BlockIdentifier,
     BlockData,
     TxParams,
@@ -31,7 +34,7 @@ class AccountStats(TypedDict):
 
     account: ChecksumAddress
     tx_count: int
-    balance: Wei
+    balance: str
     ntn_balance: str
 
 
@@ -54,13 +57,13 @@ def get_account_stats(
             balance = w3.eth.get_balance(acct)
         else:
             balance = w3.eth.get_balance(acct, tag)
-        ntn_balance = format_quantity(autonity.balance_of(acct), autonity.decimals())
+        ntn_balance = autonity.balance_of(acct)
         stats.append(
             {
                 "account": acct,
                 "tx_count": txcount,
-                "balance": balance,
-                "ntn_balance": ntn_balance,
+                "balance": format_auton_quantity(balance),
+                "ntn_balance": format_newton_quantity(ntn_balance),
             }
         )
 

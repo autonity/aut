@@ -1,3 +1,10 @@
+# v0.0.5
+
+- Message signing and signature verification
+- Fixes to help text and parameters specs
+- Output chainId and networkId from `aut node info`
+- Output XTN quantities as units of Auton (instead of Wei)
+
 # v0.0.4
 
 - New token command for queries and operations on ERC20 tokens (including Newton and Liquid Newton).
