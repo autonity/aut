@@ -202,7 +202,8 @@ account_group.add_command(lntn_balances)
 
 
 @command()
-@keyfile_option(required=True, output=True)
+@keystore_option()
+@keyfile_option(required=False, output=True)
 @option(
     "--extra-entropy",
     type=Path(),
@@ -213,13 +214,18 @@ account_group.add_command(lntn_balances)
     is_flag=True,
     help="Echo password input to the terminal",
 )
-def new(keyfile: str, extra_entropy: Optional[str], show_password: bool) -> None:
+def new(
+    keystore: Optional[str],
+    keyfile: Optional[str],
+    extra_entropy: Optional[str],
+    show_password: bool,
+) -> None:
     """
     Create a new key and write it to a keyfile.
     """
 
     from autcli.logging import log
-    from autcli.utils import prompt_for_new_password
+    from autcli.utils import prompt_for_new_password, new_keyfile_from_options
 
     from autonity.utils.keyfile import (
         create_keyfile_from_private_key,
@@ -227,11 +233,7 @@ def new(keyfile: str, extra_entropy: Optional[str], show_password: bool) -> None
     )
 
     import json
-    import os.path
     import eth_account
-
-    if os.path.exists(keyfile):
-        raise ClickException("refusing to overwrite existing keyfile")
 
     # Ask for extra entropy, if requested.
 
@@ -257,6 +259,9 @@ def new(keyfile: str, extra_entropy: Optional[str], show_password: bool) -> None
             f"internal error (address-mismatch) {account.address} != {keyfile_addr}"
         )
 
+    # If keyfile was not given, generate a new keyfile based on
+    # keystore and the new key details.
+    keyfile = new_keyfile_from_options(keystore, keyfile, keyfile_addr)
     with open(keyfile, "w", encoding="utf8") as key_f:
         json.dump(keyfile_data, key_f)
 

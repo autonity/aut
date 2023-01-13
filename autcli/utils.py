@@ -18,7 +18,7 @@ from autonity.utils.tx import (
 import os
 import sys
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from decimal import Decimal
 from click import ClickException
 from getpass import getpass
@@ -490,3 +490,23 @@ def geth_keyfile_name(key_time: datetime, address: ChecksumAddress) -> str:
     # 0xca57....72EC -> ca57....72ec
     keyfile_address = address.lower()[2:]
     return f"UTC--{keyfile_time}--{keyfile_address}"
+
+
+def new_keyfile_from_options(
+    keystore: Optional[str], keyfile: Optional[str], keyfile_addr: ChecksumAddress
+) -> str:
+    """
+    Logic to determine a (new) keyfile name, given keystore and
+    keyfile options, where we fallback to filenames compatible with
+    geth in the keystore.  Also checks for existence of the keyfile.
+    """
+
+    if keyfile is None:
+        key_time = datetime.now(timezone.utc)
+        keystore = config.get_keystore_directory(keystore)
+        keyfile = os.path.join(keystore, geth_keyfile_name(key_time, keyfile_addr))
+
+    if os.path.exists(keyfile):
+        raise ClickException(f"refusing to overwrite existing keyfile {keyfile}")
+
+    return keyfile
