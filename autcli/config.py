@@ -57,16 +57,14 @@ def get_keyfile(keyfile: Optional[str]) -> str:
     keyfile = get_keyfile_optional(keyfile)
     if keyfile is None:
         raise ClickException(
-            f"No keyfile specified (use --key-file, {KEYFILE_ENV_VAR} env var "
+            f"No keyfile specified (use --keyfile, {KEYFILE_ENV_VAR} env var "
             f"or {CONFIG_FILE_NAME})"
         )
 
     return keyfile
 
 
-def get_keyfile_password(
-    password: Optional[str], key_file: Optional[str] = None
-) -> str:
+def get_keyfile_password(password: Optional[str], keyfile: Optional[str] = None) -> str:
     """
     Get the keyfile password, given a cli parameter `password`.  Fall
     back to env vars if cli parameter is not given, then to user
@@ -80,7 +78,7 @@ def get_keyfile_password(
             password = getpass(
                 f"(consider using '{KEYFILE_PASSWORD_ENV_VAR}' env var).\n"
                 + "Enter passphrase "
-                + ("" if key_file is None else f"for {key_file} ")
+                + ("" if keyfile is None else f"for {keyfile} ")
                 + "(or CTRL-d to exit): "
             )
 

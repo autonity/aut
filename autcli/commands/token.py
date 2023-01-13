@@ -141,7 +141,7 @@ def balance_of(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     account_str: Optional[str],
 ) -> None:
     """
@@ -159,7 +159,7 @@ def balance_of(
     from autonity.utils.denominations import format_quantity
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    account_addr = from_address_from_argument(account_str, key_file)
+    account_addr = from_address_from_argument(account_str, keyfile)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
@@ -181,7 +181,7 @@ def allowance(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     owner: str,
 ) -> None:
@@ -201,7 +201,7 @@ def allowance(
     from web3 import Web3
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     owner_addr = Web3.toChecksumAddress(owner)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -226,7 +226,7 @@ def transfer(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -257,7 +257,7 @@ def transfer(
     from web3 import Web3
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     recipient_addr = Web3.toChecksumAddress(recipient_str)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -297,7 +297,7 @@ def approve(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -329,7 +329,7 @@ def approve(
     from web3 import Web3
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     spender = Web3.toChecksumAddress(spender_str)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -370,7 +370,7 @@ def transfer_from(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -404,7 +404,7 @@ def transfer_from(
     from web3 import Web3
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     spender = Web3.toChecksumAddress(spender_str)
     recipient = Web3.toChecksumAddress(recipient_str)
 

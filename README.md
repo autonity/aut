@@ -66,7 +66,7 @@ $ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
 # Create an account
 # !! For demonstration purposes only. Use a HW wallet or other key-management infrastructure. !!
 $ mkdir -p keystore
-$ aut account new --key-file keystore/alice.key
+$ aut account new --keyfile keystore/alice.key
 Password for new account:
 Confirm account password:
 0xd888bc90720757796C72eC2a3A231c81b55e8097

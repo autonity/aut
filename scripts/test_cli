@@ -57,7 +57,7 @@ pushd _test_data
 
     # Sign the tx using Bobs private key.  Intentionally use piping to
     # test this code-path.
-    cat test_ntn_tx | (KEYFILEPWD=bob aut --verbose tx sign --key-file keystore/bob.key -) > test_ntn_tx.signed
+    cat test_ntn_tx | (KEYFILEPWD=bob aut --verbose tx sign --keyfile keystore/bob.key -) > test_ntn_tx.signed
 
     # TODO: Send the above when we can fund dummy accounts with NTN
 

@@ -73,7 +73,7 @@ def autonity_from_endpoint_arg(endpoint_arg: Optional[str]) -> Autonity:
 
 
 def from_address_from_argument_optional(
-    from_str: Optional[str], key_file: Optional[str]
+    from_str: Optional[str], keyfile: Optional[str]
 ) -> Optional[ChecksumAddress]:
     """
     Given an optional command line parameter, create an address,
@@ -87,11 +87,11 @@ def from_address_from_argument_optional(
         from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
     else:
         log("no from-addr given.  attempting to extract from keyfile")
-        key_file = config.get_keyfile_optional(key_file)
-        if key_file:
-            key_data = load_keyfile(key_file)
+        keyfile = config.get_keyfile_optional(keyfile)
+        if keyfile:
+            key_data = load_keyfile(keyfile)
             from_addr = get_address_from_keyfile(key_data)
-            log(f"got keyfile: {key_file}, address: {from_addr}")
+            log(f"got keyfile: {keyfile}, address: {from_addr}")
         else:
             log("no keyfile.  empty from-addr")
             from_addr = None
@@ -100,14 +100,14 @@ def from_address_from_argument_optional(
 
 
 def from_address_from_argument(
-    from_str: Optional[str], key_file: Optional[str]
+    from_str: Optional[str], keyfile: Optional[str]
 ) -> ChecksumAddress:
     """
     Given an optional command line parameter, create an address,
     falling back to the keyfile given in the config.  Throws a
     ClickException if the address cannot be determined.
     """
-    from_addr = from_address_from_argument_optional(from_str, key_file)
+    from_addr = from_address_from_argument_optional(from_str, keyfile)
     if from_addr:
         return from_addr
 

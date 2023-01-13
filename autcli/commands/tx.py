@@ -58,7 +58,7 @@ def make(
     rpc_endpoint: Optional[str],
     ntn: bool,
     token: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     to_str: Optional[str],
     gas: Optional[str],
@@ -103,7 +103,7 @@ def make(
 
     # If from_str is not set, take the address from a keyfile instead
     # (if given)
-    from_addr = from_address_from_argument_optional(from_str, key_file)
+    from_addr = from_address_from_argument_optional(from_str, keyfile)
     log(f"from_addr: {from_addr}")
 
     to_addr = Web3.toChecksumAddress(to_str) if to_str else None
