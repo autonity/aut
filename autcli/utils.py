@@ -18,6 +18,7 @@ from autonity.utils.tx import (
 import os
 import sys
 import json
+from datetime import datetime
 from decimal import Decimal
 from click import ClickException
 from getpass import getpass
@@ -477,3 +478,15 @@ def prompt_for_new_password(show_password: bool) -> str:
         raise ClickException("passwords do not match")
 
     return password
+
+
+def geth_keyfile_name(key_time: datetime, address: ChecksumAddress) -> str:
+    """
+    Given a datetime and an address, construct the base of the file
+    name of the keystore file, as used by geth.
+    """
+    # Convert the key_time into the correct format.
+    keyfile_time = key_time.strftime("%Y-%m-%dT%H-%M-%S.%f000Z")
+    # 0xca57....72EC -> ca57....72ec
+    keyfile_address = address.lower()[2:]
+    return f"UTC--{keyfile_time}--{keyfile_address}"
