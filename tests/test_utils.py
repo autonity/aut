@@ -2,10 +2,16 @@
 Test util functions
 """
 
-from autcli.utils import parse_wei_representation, parse_token_value_representation
+from autcli.utils import (
+    parse_wei_representation,
+    parse_token_value_representation,
+    geth_keyfile_name,
+)
 from autcli.constants import AutonDenoms
 
 from unittest import TestCase
+from datetime import datetime, timezone
+from web3 import Web3
 
 
 class TestUtils(TestCase):
@@ -62,3 +68,20 @@ class TestUtils(TestCase):
         self.assertEqual(312, parse_token_value_representation("3.12345", 2))
         self.assertEqual(31, parse_token_value_representation("3.12345", 1))
         self.assertEqual(3, parse_token_value_representation("3.12345", 0))
+
+    def test_geth_keyfile_name(self) -> None:
+        """
+        Test geth keyfile name generation.
+        """
+
+        # time = datetime.fromisoformat("2022-02-07T17:19:56.517538000Z")
+        key_time = datetime.strptime(
+            "2022-02-07T17-19-56.517538", "%Y-%m-%dT%H-%M-%S.%f"
+        ).replace(tzinfo=timezone.utc)
+
+        key_address = Web3.toChecksumAddress("ca57f3b40b42fcce3c37b8d18adbca5260ca72ec")
+
+        self.assertEqual(
+            "UTC--2022-02-07T17-19-56.517538000Z--ca57f3b40b42fcce3c37b8d18adbca5260ca72ec",
+            geth_keyfile_name(key_time, key_address),
+        )

@@ -1,3 +1,8 @@
+# v0.0.6
+
+- `--key-file` changed to `--keyfile` (for consistency with `--keystore` and the `keyfile` and `keystore` config file entries).
+- Commands that generate new keyfiles (i.e. `aut account new` and `aut account import-private-key`) now fall back to writing to geth-style file names (of the form `UTC--<timestamp>--<address>` if no keyfile is specified.
+
 # v0.0.5
 
 - Message signing and signature verification

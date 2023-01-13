@@ -64,7 +64,7 @@ validator.add_command(info)
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 def bond(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -89,7 +89,7 @@ def bond(
     )
 
     validator_addr = get_validator_address(validator_addr_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
@@ -121,7 +121,7 @@ validator.add_command(bond)
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 def unbond(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -146,7 +146,7 @@ def unbond(
     )
 
     validator_addr = get_validator_address(validator_addr_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     amount = parse_token_value_representation(amount_str, aut.decimals())
@@ -176,7 +176,7 @@ validator.add_command(unbond)
 @argument("enode")
 def register(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -197,7 +197,7 @@ def register(
         create_contract_tx_from_args,
     )
 
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     # TODO: validate enode string?
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -226,7 +226,7 @@ validator.add_command(register)
 @validator_option
 def pause(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -250,7 +250,7 @@ def pause(
     )
 
     validator_addr = get_validator_address(validator_addr_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
@@ -279,7 +279,7 @@ validator.add_command(pause)
 @validator_option
 def activate(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -303,7 +303,7 @@ def activate(
     )
 
     validator_addr = get_validator_address(validator_addr_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
@@ -335,7 +335,7 @@ validator.add_command(activate)
 # @argument("rate", type=float, nargs=1)
 # def change_commission_rate(
 #     rpc_endpoint: Optional[str],
-#     key_file: Optional[str],
+#     keyfile: Optional[str],
 #     from_str: Optional[str],
 #     gas: Optional[str],
 #     gas_price: Optional[str],
@@ -352,7 +352,7 @@ validator.add_command(activate)
 #     Validator.  See `changeCommissionRate` on the Autonity contract.
 #     """
 #     validator_addr = get_validator_address(validator_addr_str)
-#     from_addr = from_address_from_argument(from_str, key_file)
+#     from_addr = from_address_from_argument(from_str, keyfile)
 
 #     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
 #     aut = Autonity(w3)
@@ -384,7 +384,7 @@ validator.add_command(activate)
 @option("--account", help="Delegator account to check")
 def unclaimed_rewards(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     validator_addr_str: Optional[str],
     account: Optional[str],
 ) -> None:
@@ -398,7 +398,7 @@ def unclaimed_rewards(
     from autonity.validator import Validator
 
     validator_addr = get_validator_address(validator_addr_str)
-    account = from_address_from_argument(account, key_file)
+    account = from_address_from_argument(account, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     vdesc = aut.get_validator(validator_addr)
@@ -418,7 +418,7 @@ validator.add_command(unclaimed_rewards)
 @validator_option
 def claim_rewards(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -444,7 +444,7 @@ def claim_rewards(
     from autonity.validator import Validator
 
     validator_addr = get_validator_address(validator_addr_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     aut = Autonity(w3)

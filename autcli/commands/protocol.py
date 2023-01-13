@@ -368,7 +368,7 @@ protocol_group.add_command(get_unbonding_req)
 @argument("base-fee-str", metavar="base-fee", nargs=1)
 def set_minimum_base_fee(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -392,7 +392,7 @@ def set_minimum_base_fee(
     )
 
     base_fee = parse_wei_representation(base_fee_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -420,7 +420,7 @@ protocol_group.add_command(set_minimum_base_fee)
 @argument("committee-size", type=int, nargs=1)
 def set_committee_size(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -442,7 +442,7 @@ def set_committee_size(
         to_json,
     )
 
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -470,7 +470,7 @@ protocol_group.add_command(set_committee_size)
 @argument("unbonding-period", type=int, nargs=1)
 def set_unbonding_period(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -492,7 +492,7 @@ def set_unbonding_period(
         to_json,
     )
 
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -520,7 +520,7 @@ protocol_group.add_command(set_unbonding_period)
 @argument("epoch-period", type=int, nargs=1)
 def set_epoch_period(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -542,7 +542,7 @@ def set_epoch_period(
         to_json,
     )
 
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -570,7 +570,7 @@ protocol_group.add_command(set_epoch_period)
 @argument("operator-address-str", metavar="OPERATOR-ADDRESS", nargs=1)
 def set_operator_account(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -595,7 +595,7 @@ def set_operator_account(
     from eth_utils import to_checksum_address
 
     operator_address = to_checksum_address(operator_address_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -623,7 +623,7 @@ protocol_group.add_command(set_operator_account)
 @argument("treasury-address-str", metavar="treasury-address", nargs=1)
 def set_treasury_account(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -648,7 +648,7 @@ def set_treasury_account(
     from eth_utils import to_checksum_address
 
     treasury_address = to_checksum_address(treasury_address_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -676,7 +676,7 @@ protocol_group.add_command(set_treasury_account)
 @argument("treasury-fee-str", metavar="TREASURY-FEE", nargs=1)
 def set_treasury_fee(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -700,7 +700,7 @@ def set_treasury_fee(
     )
 
     treasury_fee = parse_wei_representation(treasury_fee_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
@@ -729,7 +729,7 @@ protocol_group.add_command(set_treasury_fee)
 @argument("recipient-str", metavar="RECIPIENT", required=False)
 def mint(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -758,7 +758,7 @@ def mint(
     from eth_utils import to_checksum_address
 
     amount = parse_wei_representation(amount_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     recipient = to_checksum_address(recipient_str) if recipient_str else from_addr
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -789,7 +789,7 @@ protocol_group.add_command(mint)
 @argument("account-str", metavar="ACCOUNT", required=False)
 def burn(
     rpc_endpoint: Optional[str],
-    key_file: Optional[str],
+    keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
     gas_price: Optional[str],
@@ -818,7 +818,7 @@ def burn(
     from eth_utils import to_checksum_address
 
     amount = parse_wei_representation(amount_str)
-    from_addr = from_address_from_argument(from_str, key_file)
+    from_addr = from_address_from_argument(from_str, keyfile)
     account = to_checksum_address(account_str) if account_str else from_addr
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 

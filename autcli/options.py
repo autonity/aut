@@ -20,15 +20,31 @@ rpc_endpoint_option: Decorator = option(
 )
 
 
+def keystore_option() -> Decorator:
+    """
+    Option: --keystore <directory>.
+    """
+
+    def decorator(fn: Func) -> Func:
+        return option(
+            "--keystore",
+            "-s",
+            type=Path(exists=True),
+            help="keystore directory (falls back to config file or ~/.autonity/keystore).",
+        )(fn)
+
+    return decorator
+
+
 def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
     """
-    Options: --key-file.  If `required` is True, --key-file is
+    Options: --keyfile.  If `required` is True, --keyfile is
     required.  If `output` is True, the file does not need to exist.
     """
 
     def decorator(fn: Func) -> Func:
         fn = option(
-            "--key-file",
+            "--keyfile",
             "-k",
             required=required,
             type=Path(exists=not output),
@@ -41,8 +57,8 @@ def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
 
 def keyfile_and_password_options(required: bool = False) -> Decorator:
     """
-    Options: --key-file and --password.  If `required` is True,
-    --key-file is required.
+    Options: --keyfile and --password.  If `required` is True,
+    --keyfile is required.
     """
 
     def decorator(fn: Func) -> Func:
