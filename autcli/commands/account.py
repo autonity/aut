@@ -221,7 +221,9 @@ def new(
     show_password: bool,
 ) -> None:
     """
-    Create a new key and write it to a keyfile.
+    Create a new key and write it to a keyfile.  If no keyfile is
+    specified, a default name is used (consistent with GETH keyfiles)
+    in the keystore.
     """
 
     from autcli.logging import log
@@ -291,7 +293,8 @@ def import_private_key(
     """
     Read a plaintext private key file (as hex), and create a new
     encrypted keystore file for it.  Use - to read private key from
-    stdin.
+    stdin.  If no keyfile is specified, a default name is used
+    (consistent with GETH keyfiles) in the keystore.
     """
 
     from autcli.utils import (
