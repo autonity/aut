@@ -29,11 +29,7 @@ def account_group() -> None:
 
 @command(name="list")
 @option("--with-files", is_flag=True, help="also show keyfile names.")
-@option(
-    "--keystore",
-    type=Path(exists=True),
-    help="keystore directory (falls back to config file or ~/.autonity/keystore).",
-)
+@keystore_option()
 def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     """
     List the accounts for files in the keystore directory.
