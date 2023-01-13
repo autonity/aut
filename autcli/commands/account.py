@@ -274,7 +274,8 @@ account_group.add_command(new)
 
 
 @command()
-@keyfile_option(required=True, output=True)
+@keystore_option()
+@keyfile_option(output=True)
 @option(
     "--show-password",
     is_flag=True,
@@ -282,7 +283,10 @@ account_group.add_command(new)
 )
 @argument("private_key_file", type=Path(exists=True))
 def import_private_key(
-    keyfile: str, show_password: bool, private_key_file: str
+    keystore: Optional[str],
+    keyfile: Optional[str],
+    show_password: bool,
+    private_key_file: str,
 ) -> None:
     """
     Read a plaintext private key file (as hex), and create a new
@@ -290,7 +294,11 @@ def import_private_key(
     stdin.
     """
 
-    from autcli.utils import load_from_file_or_stdin, prompt_for_new_password
+    from autcli.utils import (
+        load_from_file_or_stdin,
+        prompt_for_new_password,
+        new_keyfile_from_options,
+    )
     from autcli.logging import log
 
     from autonity.utils.keyfile import (
@@ -301,10 +309,6 @@ def import_private_key(
 
     from hexbytes import HexBytes
     import json
-    import os.path
-
-    if os.path.exists(keyfile):
-        raise ClickException("refusing to overwrite existing keyfile")
 
     private_key = HexBytes.fromhex(load_from_file_or_stdin(private_key_file))
     if len(private_key) != 32:
@@ -313,7 +317,9 @@ def import_private_key(
     password = prompt_for_new_password(show_password)
 
     keyfile_data = create_keyfile_from_private_key(PrivateKey(private_key), password)
+    keyfile_addr = get_address_from_keyfile(keyfile_data)
 
+    keyfile = new_keyfile_from_options(keystore, keyfile, keyfile_addr)
     with open(keyfile, "w", encoding="utf8") as key_f:
         json.dump(keyfile_data, key_f)
 
