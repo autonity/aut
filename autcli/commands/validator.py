@@ -85,18 +85,17 @@ def bond(
         from_address_from_argument,
         to_json,
         create_contract_tx_from_args,
-        parse_token_value_representation,
+        parse_newton_value_representation,
     )
 
+    token_units = parse_newton_value_representation(amount_str)
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
-    amount = parse_token_value_representation(amount_str, aut.decimals())
-
     tx = create_contract_tx_from_args(
-        function=aut.bond(validator_addr, amount),
+        function=aut.bond(validator_addr, token_units),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -142,17 +141,17 @@ def unbond(
         from_address_from_argument,
         to_json,
         create_contract_tx_from_args,
-        parse_token_value_representation,
+        parse_newton_value_representation,
     )
 
+    token_units = parse_newton_value_representation(amount_str)
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
-    amount = parse_token_value_representation(amount_str, aut.decimals())
 
     tx = create_contract_tx_from_args(
-        function=aut.unbond(validator_addr, amount),
+        function=aut.unbond(validator_addr, token_units),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
