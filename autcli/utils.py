@@ -14,6 +14,7 @@ from autonity.utils.tx import (
     create_contract_function_transaction,
     finalize_transaction,
 )
+from autonity.utils.denominations import NEWTON_DECIMALS
 
 import os
 import sys
@@ -306,6 +307,13 @@ def parse_token_value_representation(value_str: str, decimals: int) -> int:
     tokens.
     """
     return int(Decimal(value_str) * Decimal(pow(10, decimals)))
+
+
+def parse_newton_value_representation(newton_value_str: str) -> int:
+    """
+    Parse a value in NTN into Newton units.
+    """
+    return parse_token_value_representation(newton_value_str, NEWTON_DECIMALS)
 
 
 def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:

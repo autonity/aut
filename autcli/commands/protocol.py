@@ -751,20 +751,20 @@ def mint(
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
-        parse_wei_representation,
+        parse_newton_value_representation,
         to_json,
     )
 
     from eth_utils import to_checksum_address
 
-    amount = parse_wei_representation(amount_str)
+    token_units = parse_newton_value_representation(amount_str)
     from_addr = from_address_from_argument(from_str, keyfile)
     recipient = to_checksum_address(recipient_str) if recipient_str else from_addr
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
-        function=aut.mint(recipient, amount),
+        function=aut.mint(recipient, token_units),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -811,19 +811,19 @@ def burn(
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
-        parse_wei_representation,
+        parse_newton_value_representation,
         to_json,
     )
 
     from eth_utils import to_checksum_address
 
-    amount = parse_wei_representation(amount_str)
+    token_units = parse_newton_value_representation(amount_str)
     from_addr = from_address_from_argument(from_str, keyfile)
     account = to_checksum_address(account_str) if account_str else from_addr
     aut = autonity_from_endpoint_arg(rpc_endpoint)
 
     tx = create_contract_tx_from_args(
-        function=aut.burn(account, amount),
+        function=aut.burn(account, token_units),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
