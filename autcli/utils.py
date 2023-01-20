@@ -512,6 +512,8 @@ def new_keyfile_from_options(
     if keyfile is None:
         key_time = datetime.now(timezone.utc)
         keystore = config.get_keystore_directory(keystore)
+        if not os.path.exists(keystore):
+            os.makedirs(keystore)
         keyfile = os.path.join(keystore, geth_keyfile_name(key_time, keyfile_addr))
 
     if os.path.exists(keyfile):

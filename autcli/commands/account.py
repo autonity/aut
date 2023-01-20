@@ -269,7 +269,7 @@ def new(
 
     log(f"Encrypted key written to {keyfile}")
 
-    print(keyfile_addr)
+    print(f"{keyfile_addr}  {keyfile}")
 
 
 account_group.add_command(new)
@@ -328,7 +328,8 @@ def import_private_key(
 
     log(f"Encrypted key written to {keyfile}")
 
-    print(get_address_from_keyfile(keyfile_data))
+    keyfile_addr = get_address_from_keyfile(keyfile_data)
+    print(f"{keyfile_addr}  {keyfile}")
 
 
 account_group.add_command(import_private_key)
