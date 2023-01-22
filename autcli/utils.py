@@ -520,3 +520,32 @@ def new_keyfile_from_options(
         raise ClickException(f"refusing to overwrite existing keyfile {keyfile}")
 
     return keyfile
+
+
+def parse_commission_rate(rate_str: str, rate_precision: int) -> int:
+    """
+    Support multiple rate formats and parse to a fixed-precision int
+    argument.
+    """
+
+    # Handle ambiguous case
+    if rate_str == "1" or rate_str.startswith("1.0"):
+        raise ClickException(
+            f"ambiguous rate.  Use X%, 0.xx or a fixed-point value (out of {rate_precision}"
+        )
+
+    if rate_str.endswith("%"):
+        return int(Decimal(rate_precision) * Decimal(rate_str[:-1]) / Decimal(100))
+
+    rate_dec = Decimal(rate_str)
+    if rate_dec < Decimal(1):
+        return int(Decimal(rate_precision) * rate_dec)
+
+    try:
+        rate_int = int(rate_str)
+    except ValueError:
+        raise ClickException(  # pylint: disable=raise-missing-from
+            f"Expected integer instead of {rate_str}.  See --help text."
+        )
+
+    return rate_int
