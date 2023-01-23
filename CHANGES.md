@@ -1,5 +1,6 @@
-# v0.0.6
+# v0.1.0
 
+- Support for new protocol contract methods in Autonity v0.10.0. (See `aut validator bond --help` and `aut protocol --help` for details.)
 - `--key-file` changed to `--keyfile` (for consistency with `--keystore` and the `keyfile` and `keystore` config file entries).
 - Commands that generate new keyfiles (i.e. `aut account new` and `aut account import-private-key`) now fall back to writing to geth-style file names (of the form `UTC--<timestamp>--<address>` if no keyfile is specified.
 
