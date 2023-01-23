@@ -55,7 +55,7 @@ A very simple `.autrc` file may specify the endpoint for Web3 connections:
 ```console
 # Create a config file holding the rpc endpoint.
 $ echo '[aut]' > .autrc
-$ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
+$ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org/' >> .autrc
 ```
 
 ## Usage Examples
