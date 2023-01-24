@@ -12,38 +12,48 @@ pushd _test_accounts_cli
 export HISTCONTROL=ignorespace
  echo '6173646661647366616473666173646671776572717765727177657271776572' > test_key.priv
 rm -f test_key.key
-echo -e '\n\n' | aut account import-private-key --key-file test_key.key --show-password test_key.priv > test_key_out
+echo -e '\n\n' | aut account import-private-key --keyfile test_key.key --show-password test_key.priv > test_key_out
 test_addr=`grep -oe '0x[0-9A-Za-z]\+' test_key_out`
 if ! [ "${test_addr}" == "0x1e9Ee7293bc304A10a0b33D0FCCBDFF78463bE5c" ] ; then
    echo Private key generated wrong address
    exit 1
 fi
 
+# Create from private key to default file name
+mkdir test_keystore
+echo -e '\n\n' | aut account import-private-key --keystore test_keystore --show-password test_key.priv > test_key_out
+[ "1" == `ls test_keystore/*1e9ee7293bc304a10a0b33d0fccbdff78463be5c | wc -l` ]
+
+# Query commands
 aut account list
 aut account info
-aut account info --key-file keystore/bob.key
+aut account info --keyfile keystore/bob.key
 aut account balance
 
 # Create new key.  Use --show-password to allow stdin to be piped to
 # the password prompts.
 rm -f keystore/dave.key
-echo -e "\n\n" | aut account new --key-file keystore/dave.key --show-password
-(echo -e "\n\n" | aut account new --key-file keystore/dave.key --show-password) && (
+echo -e "\n\n" | aut account new --keyfile keystore/dave.key --show-password
+(echo -e "\n\n" | aut account new --keyfile keystore/dave.key --show-password) && (
     echo "ERROR: account new succeeded with existing file"; exit 1)
 
 # Create account with entropy as file, and via stdin
-echo -e "entropy\n\n\n" | aut account new --extra-entropy - --key-file keystore/dave_entropy_stdin.key --show-password
+echo -e "entropy\n\n\n" | aut account new --extra-entropy - --keyfile keystore/dave_entropy_stdin.key --show-password
 echo "entropy" > entropy.bin
-echo -e "\n\n" | aut account new --extra-entropy entropy.bin --key-file keystore/dave_entropy_file.key --show-password
+echo -e "\n\n" | aut account new --extra-entropy entropy.bin --keyfile keystore/dave_entropy_file.key --show-password
+
+# Create account with default keyfile name
+echo -e "\n\n" | aut account new --extra-entropy entropy.bin --keystore test_keystore --show-password
+[ "2" == `ls test_keystore | wc -l` ]
 
 # Make a fake transaction and test signing using the new key
-aut tx make --key-file keystore/dave.key --to 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf --value '0.001kwei' --gas 1000 > test.tx
-KEYFILEPWD="" aut account signtx --key-file keystore/dave.key test.tx > test.signed.tx
+aut tx make --keyfile keystore/dave.key --to 0x7E5F4552091A69125d5DfCb7b8C2659029395Bdf --value '0.001kwei' --gas 1000 > test.tx
+KEYFILEPWD="" aut account signtx --keyfile keystore/dave.key test.tx > test.signed.tx
 
 # Sign and verify a message
-KEYFILEPWD="" aut account sign-message --key-file keystore/dave.key "A message to be signed" message.sig
-aut account verify-signature --key-file keystore/dave.key "A message to be signed" message.sig
-!(aut account verify-signature --key-file keystore/dave.key "A different message" message.sig)
+KEYFILEPWD="" aut account sign-message --keyfile keystore/dave.key "A message to be signed" message.sig
+aut account verify-signature --keyfile keystore/dave.key "A message to be signed" message.sig
+!(aut account verify-signature --keyfile keystore/dave.key "A different message" message.sig)
 
 # Help text
 aut account balance --help > /dev/null

@@ -5,18 +5,14 @@ A command-line RPC client for Autonity.  Run `aut --help` for the list of all co
 ## Quick Start
 
 Requirements:
-- **Python 3.8 or 3.9** (Install one of these using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv. More versions to be supported later, but for now 3.10+ is incompatible with the latest stable version of the `web3.py` dependency)
+- **Python 3.8 or greater** (Install using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv) ).
+    - (Note that websocket connections are not supported for Python 3.10+ due to an issue in the latest stable version of the `web3.py` dependency)
 - **The** [pipx](https://pypa.github.io/pipx/) **tool**  (Install a recent version with `pip install pipx`)
 
 The `aut` tool can then be installed as a pipx package, isolated in its own environment:
 ```console
-$ pipx install git+ssh://git@github.com/autonity/autcli.git
-```
-or
-```console
 $ pipx install git+https://github.com/autonity/autcli.git
 ```
-(depending on your github setup).
 
 Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
@@ -32,8 +28,6 @@ Once successfully installed, the `aut` command should be available in the `PATH`
 
   - If the `aut` command is not available, ensure that `~/.local/bin` appears in your `PATH`.  Use `pipx ensurepath` to verify.
 
-  - Until it is public, this repository will require `ssh` or `https` credentials with sufficient permissions.  This is not expected to present a problem since the expected use-case is for this tool to be used from the "local" machine (on which your Autonity private keys are available), and communicate with an Autonity node running on a "remote" host.
-
 ## (Optional) Enable command completion (bash and zsh)
 
 Completion is available in `bash` and `zsh` shells as follows.  (Adapt these commands to your particular configuration.)
@@ -45,9 +39,9 @@ $ echo 'source ~/.aut-complete' >> ~/.bashrc
 ```
 Auto-complete should be enabled in new shells.
 
-## `.autrc` files
+## Configuration using `.autrc` files
 
-If the `aut` command find this file, it reads configuration parameters from it.  See the [sample file](.autrc.sample) in this repo.  This avoids the need to enter certain values on the command line. These parameters can be overridden by environment variables and command-line parameters where necessary.
+If the `aut` command finds this file, it reads configuration parameters from it.  See the [sample file](.autrc.sample) in this repo.  This avoids the need to enter certain values on the command line. These parameters can be overridden by environment variables and command-line parameters where necessary.
 
 If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.  Alternatively, this file can be placed in `~/.config/aut/autrc`.
 
@@ -55,7 +49,7 @@ A very simple `.autrc` file may specify the endpoint for Web3 connections:
 ```console
 # Create a config file holding the rpc endpoint.
 $ echo '[aut]' > .autrc
-$ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
+$ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org/' >> .autrc
 ```
 
 ## Usage Examples
@@ -66,7 +60,7 @@ $ echo 'rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/' >> .autrc
 # Create an account
 # !! For demonstration purposes only. Use a HW wallet or other key-management infrastructure. !!
 $ mkdir -p keystore
-$ aut account new --key-file keystore/alice.key
+$ aut account new --keyfile keystore/alice.key
 Password for new account:
 Confirm account password:
 0xd888bc90720757796C72eC2a3A231c81b55e8097

@@ -39,3 +39,19 @@ def get(rpc_endpoint: Optional[str], identifier: str) -> None:
 
 
 block_group.add_command(get)
+
+
+@command()
+@rpc_endpoint_option
+def height(rpc_endpoint: Optional[str]) -> None:
+    """
+    Print the current block height for the chain.
+    """
+
+    from autcli.utils import web3_from_endpoint_arg
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    print(w3.eth.block_number)
+
+
+block_group.add_command(height)

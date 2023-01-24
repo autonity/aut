@@ -1,7 +1,7 @@
 [aut]
 
 # Endpoint URI to use (if not specified on the CLI or via ENV vars)
-rpc_endpoint = https://rpc1.piccadilly.autonity.org:8545/
+rpc_endpoint = https://rpc1.piccadilly.autonity.org/
 
 # Location of keystore directory
 # keystore = path_to_keystore

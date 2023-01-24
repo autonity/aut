@@ -2,10 +2,18 @@
 Test util functions
 """
 
-from autcli.utils import parse_wei_representation, parse_token_value_representation
+from autcli.utils import (
+    parse_wei_representation,
+    parse_token_value_representation,
+    parse_commission_rate,
+    geth_keyfile_name,
+)
 from autcli.constants import AutonDenoms
 
+from click import ClickException
 from unittest import TestCase
+from datetime import datetime, timezone
+from web3 import Web3
 
 
 class TestUtils(TestCase):
@@ -62,3 +70,38 @@ class TestUtils(TestCase):
         self.assertEqual(312, parse_token_value_representation("3.12345", 2))
         self.assertEqual(31, parse_token_value_representation("3.12345", 1))
         self.assertEqual(3, parse_token_value_representation("3.12345", 0))
+
+    def test_parse_commission_rate(self) -> None:
+        """
+        Test parse_commission_rate.
+        """
+
+        self.assertEqual(100, parse_commission_rate("100", 10000))
+        self.assertEqual(9000, parse_commission_rate("0.9", 10000))
+        self.assertEqual(9000, parse_commission_rate("90%", 10000))
+        self.assertEqual(300, parse_commission_rate("0.03", 10000))
+        self.assertEqual(1, parse_commission_rate("0.0001", 10000))
+
+        with self.assertRaises(ClickException):
+            self.assertEqual(1, parse_commission_rate("1", 10000))
+        with self.assertRaises(ClickException):
+            self.assertEqual(1, parse_commission_rate("1.0", 10000))
+        with self.assertRaises(ClickException):
+            self.assertEqual(1, parse_commission_rate("100.01", 10000))
+
+    def test_geth_keyfile_name(self) -> None:
+        """
+        Test geth keyfile name generation.
+        """
+
+        # time = datetime.fromisoformat("2022-02-07T17:19:56.517538000Z")
+        key_time = datetime.strptime(
+            "2022-02-07T17-19-56.517538", "%Y-%m-%dT%H-%M-%S.%f"
+        ).replace(tzinfo=timezone.utc)
+
+        key_address = Web3.toChecksumAddress("ca57f3b40b42fcce3c37b8d18adbca5260ca72ec")
+
+        self.assertEqual(
+            "UTC--2022-02-07T17-19-56.517538000Z--ca57f3b40b42fcce3c37b8d18adbca5260ca72ec",
+            geth_keyfile_name(key_time, key_address),
+        )

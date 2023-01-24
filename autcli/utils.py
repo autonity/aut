@@ -14,10 +14,12 @@ from autonity.utils.tx import (
     create_contract_function_transaction,
     finalize_transaction,
 )
+from autonity.utils.denominations import NEWTON_DECIMALS
 
 import os
 import sys
 import json
+from datetime import datetime, timezone
 from decimal import Decimal
 from click import ClickException
 from getpass import getpass
@@ -73,7 +75,7 @@ def autonity_from_endpoint_arg(endpoint_arg: Optional[str]) -> Autonity:
 
 
 def from_address_from_argument_optional(
-    from_str: Optional[str], key_file: Optional[str]
+    from_str: Optional[str], keyfile: Optional[str]
 ) -> Optional[ChecksumAddress]:
     """
     Given an optional command line parameter, create an address,
@@ -87,11 +89,11 @@ def from_address_from_argument_optional(
         from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
     else:
         log("no from-addr given.  attempting to extract from keyfile")
-        key_file = config.get_keyfile_optional(key_file)
-        if key_file:
-            key_data = load_keyfile(key_file)
+        keyfile = config.get_keyfile_optional(keyfile)
+        if keyfile:
+            key_data = load_keyfile(keyfile)
             from_addr = get_address_from_keyfile(key_data)
-            log(f"got keyfile: {key_file}, address: {from_addr}")
+            log(f"got keyfile: {keyfile}, address: {from_addr}")
         else:
             log("no keyfile.  empty from-addr")
             from_addr = None
@@ -100,14 +102,14 @@ def from_address_from_argument_optional(
 
 
 def from_address_from_argument(
-    from_str: Optional[str], key_file: Optional[str]
+    from_str: Optional[str], keyfile: Optional[str]
 ) -> ChecksumAddress:
     """
     Given an optional command line parameter, create an address,
     falling back to the keyfile given in the config.  Throws a
     ClickException if the address cannot be determined.
     """
-    from_addr = from_address_from_argument_optional(from_str, key_file)
+    from_addr = from_address_from_argument_optional(from_str, keyfile)
     if from_addr:
         return from_addr
 
@@ -307,6 +309,13 @@ def parse_token_value_representation(value_str: str, decimals: int) -> int:
     return int(Decimal(value_str) * Decimal(pow(10, decimals)))
 
 
+def parse_newton_value_representation(newton_value_str: str) -> int:
+    """
+    Parse a value in NTN into Newton units.
+    """
+    return parse_token_value_representation(newton_value_str, NEWTON_DECIMALS)
+
+
 def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
     """
     For directory 'keystore' that contains one or more keyfiles,
@@ -477,3 +486,66 @@ def prompt_for_new_password(show_password: bool) -> str:
         raise ClickException("passwords do not match")
 
     return password
+
+
+def geth_keyfile_name(key_time: datetime, address: ChecksumAddress) -> str:
+    """
+    Given a datetime and an address, construct the base of the file
+    name of the keystore file, as used by geth.
+    """
+    # Convert the key_time into the correct format.
+    keyfile_time = key_time.strftime("%Y-%m-%dT%H-%M-%S.%f000Z")
+    # 0xca57....72EC -> ca57....72ec
+    keyfile_address = address.lower()[2:]
+    return f"UTC--{keyfile_time}--{keyfile_address}"
+
+
+def new_keyfile_from_options(
+    keystore: Optional[str], keyfile: Optional[str], keyfile_addr: ChecksumAddress
+) -> str:
+    """
+    Logic to determine a (new) keyfile name, given keystore and
+    keyfile options, where we fallback to filenames compatible with
+    geth in the keystore.  Also checks for existence of the keyfile.
+    """
+
+    if keyfile is None:
+        key_time = datetime.now(timezone.utc)
+        keystore = config.get_keystore_directory(keystore)
+        if not os.path.exists(keystore):
+            os.makedirs(keystore)
+        keyfile = os.path.join(keystore, geth_keyfile_name(key_time, keyfile_addr))
+
+    if os.path.exists(keyfile):
+        raise ClickException(f"refusing to overwrite existing keyfile {keyfile}")
+
+    return keyfile
+
+
+def parse_commission_rate(rate_str: str, rate_precision: int) -> int:
+    """
+    Support multiple rate formats and parse to a fixed-precision int
+    argument.
+    """
+
+    # Handle ambiguous case
+    if rate_str == "1" or rate_str.startswith("1.0"):
+        raise ClickException(
+            f"ambiguous rate.  Use X%, 0.xx or a fixed-point value (out of {rate_precision}"
+        )
+
+    if rate_str.endswith("%"):
+        return int(Decimal(rate_precision) * Decimal(rate_str[:-1]) / Decimal(100))
+
+    rate_dec = Decimal(rate_str)
+    if rate_dec < Decimal(1):
+        return int(Decimal(rate_precision) * rate_dec)
+
+    try:
+        rate_int = int(rate_str)
+    except ValueError:
+        raise ClickException(  # pylint: disable=raise-missing-from
+            f"Expected integer instead of {rate_str}.  See --help text."
+        )
+
+    return rate_int
