@@ -5,14 +5,14 @@ A command-line RPC client for Autonity.  Run `aut --help` for the list of all co
 ## Quick Start
 
 Requirements:
-- **Python 3.8 or greater** (Install one of these using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv. More versions to be supported later, but for now 3.10+ is incompatible with the latest stable version of the `web3.py` dependency)
+- **Python 3.8 or greater** (Install using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv) ).
+    - (Note that websocket connections are not supported for Python 3.10+ due to an issue in the latest stable version of the `web3.py` dependency)
 - **The** [pipx](https://pypa.github.io/pipx/) **tool**  (Install a recent version with `pip install pipx`)
 
 The `aut` tool can then be installed as a pipx package, isolated in its own environment:
 ```console
 $ pipx install git+https://github.com/autonity/autcli.git
 ```
-(depending on your github setup).
 
 Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
@@ -39,7 +39,7 @@ $ echo 'source ~/.aut-complete' >> ~/.bashrc
 ```
 Auto-complete should be enabled in new shells.
 
-## `.autrc` files
+## Configuration using `.autrc` files
 
 If the `aut` command find this file, it reads configuration parameters from it.  See the [sample file](.autrc.sample) in this repo.  This avoids the need to enter certain values on the command line. These parameters can be overridden by environment variables and command-line parameters where necessary.
 
