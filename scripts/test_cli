@@ -79,7 +79,8 @@ pushd _test_data
 
     # Check Bob's new balances is 1 greater than the starting balance
     bob_balance_new=`aut account balance $BOB`
-    [ "${bob_balance_new}" == "$((${bob_balance_orig} + 1))" ] || (
+    bob_balance_new_expect=`cat ${bob_balance_orig} + 0.000000000000000001 | bc`
+    [ "${bob_balance_new}" == "${bob_balance_new_expect}" ] || (
         echo "Unexpected balance change"; exit 1)
 
     popd
