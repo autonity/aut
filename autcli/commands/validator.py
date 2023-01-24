@@ -9,7 +9,6 @@ from autcli.options import (
     tx_aux_options,
     validator_option,
 )
-from autcli.utils import parse_commission_rate
 from autcli.commands.protocol import protocol_group
 
 from click import group, command, option, argument
@@ -362,6 +361,7 @@ def change_commission_rate(
         from_address_from_argument,
         to_json,
         create_contract_tx_from_args,
+        parse_commission_rate,
     )
 
     validator_addr = get_validator_address(validator_addr_str)
