@@ -5,14 +5,10 @@ A command-line RPC client for Autonity.  Run `aut --help` for the list of all co
 ## Quick Start
 
 Requirements:
-- **Python 3.8 or 3.9** (Install one of these using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv. More versions to be supported later, but for now 3.10+ is incompatible with the latest stable version of the `web3.py` dependency)
+- **Python 3.8 or greater** (Install one of these using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv. More versions to be supported later, but for now 3.10+ is incompatible with the latest stable version of the `web3.py` dependency)
 - **The** [pipx](https://pypa.github.io/pipx/) **tool**  (Install a recent version with `pip install pipx`)
 
 The `aut` tool can then be installed as a pipx package, isolated in its own environment:
-```console
-$ pipx install git+ssh://git@github.com/autonity/autcli.git
-```
-or
 ```console
 $ pipx install git+https://github.com/autonity/autcli.git
 ```
@@ -31,8 +27,6 @@ Once successfully installed, the `aut` command should be available in the `PATH`
     See the `pipx install` help text for details.
 
   - If the `aut` command is not available, ensure that `~/.local/bin` appears in your `PATH`.  Use `pipx ensurepath` to verify.
-
-  - Until it is public, this repository will require `ssh` or `https` credentials with sufficient permissions.  This is not expected to present a problem since the expected use-case is for this tool to be used from the "local" machine (on which your Autonity private keys are available), and communicate with an Autonity node running on a "remote" host.
 
 ## (Optional) Enable command completion (bash and zsh)
 
