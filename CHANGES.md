@@ -1,3 +1,7 @@
+# v0.1.1
+
+- Fixes for path handling in configuration attributes.
+
 # v0.1.0
 
 - Support for new protocol contract methods in Autonity v0.10.0. (See `aut validator bond --help` and `aut protocol --help` for details.)
