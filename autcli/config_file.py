@@ -1,5 +1,5 @@
 """
-Configuration file definition
+Configuration file location and definition.
 """
 
 from __future__ import annotations
@@ -32,12 +32,25 @@ class ConfigFile:
 
     def get_path(self, attribute: str) -> Optional[str]:
         """
-        Return the full path of an attribute specified relative to the
-        config file.  E.e. if config file at ../.autrc contains
-        somedir/somefile, return ../somedir/somefile.
+        For a path attribute, return the full path supporting tilda,
+        absolute paths, or paths relative to the config file
+        directory.  E.g. if a config file with path `../.autrc`
+        contains an attribute with value `somedir/somefile`, return
+        the absolute path of `../somedir/somefile`.
         """
         attr_path = self._section.get(attribute)
         if attr_path:
+            # Handle ~
+            attr_path = os.path.expanduser(attr_path)
+
+            # If an absolute path was given, return as-is.  Else make
+            # the path relative to the config file location
+            # CONFIG_FILE_DIR (which is set when the config file is
+            # first discovered).
+
+            if os.path.isabs(attr_path):
+                return os.path.normpath(attr_path)
+
             return os.path.normpath(os.path.join(CONFIG_FILE_DIR, attr_path))
 
         return None
