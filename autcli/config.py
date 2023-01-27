@@ -8,6 +8,7 @@ from autcli.logging import log
 from autonity.validator import ValidatorAddress
 
 import os
+import os.path
 from click import ClickException
 from getpass import getpass
 from web3 import Web3
@@ -32,7 +33,7 @@ def get_keystore_directory(keystore_directory: Optional[str]) -> str:
         if keystore_directory is None:
             keystore_directory = get_config_file().get_path("keystore")
             if keystore_directory is None:
-                keystore_directory = DEFAULT_KEYFILE_DIRECTORY
+                keystore_directory = os.path.expanduser(DEFAULT_KEYFILE_DIRECTORY)
 
     assert keystore_directory is not None
     return keystore_directory
