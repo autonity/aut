@@ -24,6 +24,12 @@ mkdir test_keystore
 echo -e '\n\n' | aut account import-private-key --keystore test_keystore --show-password test_key.priv > test_key_out
 [ "1" == `ls test_keystore/*1e9ee7293bc304a10a0b33d0fccbdff78463be5c | wc -l` ]
 
+# Create from private key to default file name and keystore
+mv .autrc .autrc.bak
+echo -e '\n\n' | aut account import-private-key --show-password test_key.priv > test_key_out
+[ "1" == `ls ~/.autonity/keystore/*1e9ee7293bc304a10a0b33d0fccbdff78463be5c | wc -l` ]
+mv .autrc.bak .autrc
+
 # Query commands
 aut account list
 aut account info
