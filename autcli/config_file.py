@@ -43,7 +43,7 @@ class ConfigFile:
             # Handle ~
             attr_path = os.path.expanduser(attr_path)
 
-            # Is an absolute path was given, return as-is.  Else make
+            # If an absolute path was given, return as-is.  Else make
             # the path relative to the config file location
             # CONFIG_FILE_DIR (which is set when the config file is
             # first discovered).
