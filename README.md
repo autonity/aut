@@ -36,6 +36,7 @@ Completion is available in `bash` and `zsh` shells as follows.  (Adapt these com
 # For zsh, replace bash_source with zsh_source.
 $ _AUT_COMPLETE=bash_source aut > ~/.aut-complete
 $ echo 'source ~/.aut-complete' >> ~/.bashrc
+$ exec $SHELL
 ```
 Auto-complete should be enabled in new shells.
 
