@@ -56,6 +56,27 @@ validator.add_command(info)
 
 
 @command()
+@argument("enode")
+def compute_address(
+    enode: str,
+) -> None:
+    """
+    Compute the address corresponding to an enode URL.
+    """
+    from urllib import parse as urlparse
+    from web3.types import HexBytes
+    from web3 import Web3
+
+    _, key_at_ip_port, _, _, _, _ = urlparse.urlparse(enode)
+    pubkey, _ = key_at_ip_port.split("@")
+    addr_bytes = Web3.keccak(bytes(HexBytes(pubkey)))[-20:]
+    print(Web3.toChecksumAddress(addr_bytes.hex()))
+
+
+validator.add_command(compute_address)
+
+
+@command()
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -197,6 +218,7 @@ def register(
         to_json,
         create_contract_tx_from_args,
     )
+
     from web3.types import HexBytes
 
     # Check the "proof" is at least valid hex.
