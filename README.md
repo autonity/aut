@@ -37,7 +37,7 @@ Completion is available in `bash` and `zsh` shells as follows.  (Adapt these com
 $ _AUT_COMPLETE=bash_source aut > ~/.aut-complete
 $ echo 'source ~/.aut-complete' >> ~/.bashrc
 ```
-Auto-complete should be enabled in new shells.
+Auto-complete should be enabled in *new* shells.  (Use `source ~/.aut-complete` to activate it in the current shell instance.)
 
 ## Configuration using `.autrc` files
 
