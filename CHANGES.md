@@ -1,3 +1,7 @@
+# v0.1.2
+
+- Added command to generate validator address from enode
+
 # v0.1.1
 
 - Fixes for path handling in configuration attributes.
