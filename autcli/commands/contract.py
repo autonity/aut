@@ -34,8 +34,9 @@ def function_call_from_args(
 ) -> Tuple:
     """
     Take command line arguments and construct a ContractFunction
-    (i.e. a function call).  Returns the ContractFunction object, and
-    the Web3 object created in the process.
+    (i.e. a function call).  Returns the ContractFunction object, the
+    ABIFunction for the method, and the Web3 object created in the
+    process.
     """
 
     from autcli.logging import log
@@ -44,7 +45,7 @@ def function_call_from_args(
         contract_address_and_abi_from_args,
     )
 
-    from autonity.abi_parser import parse_function_arguments
+    from autonity.abi_parser import find_abi_function, parse_arguments
 
     log(f"method: {method}")
     log(f"parameters: {list(parameters)}")
@@ -53,7 +54,8 @@ def function_call_from_args(
         contract_address_str, contract_abi_path
     )
 
-    fn_params = parse_function_arguments(abi, method, parameters)
+    abi_fn = find_abi_function(abi, method)
+    fn_params = parse_arguments(abi_fn, parameters)
     log(f"fn_params (parsed): {fn_params}")
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -61,7 +63,8 @@ def function_call_from_args(
     contract_fn = getattr(contract.functions, method, None)
     if contract_fn is None:
         raise ClickException(f"method '{method}' not found on contract abi")
-    return contract_fn(*fn_params), w3
+
+    return contract_fn(*fn_params), abi_fn, w3
 
 
 @command(name="call")
@@ -82,7 +85,9 @@ def call_cmd(
 
     from autcli.utils import to_json
 
-    function, _ = function_call_from_args(
+    from autonity.abi_parser import parse_return_value
+
+    function, abi_fn, _ = function_call_from_args(
         rpc_endpoint,
         contract_address_str,
         contract_abi_path,
@@ -91,7 +96,8 @@ def call_cmd(
     )
 
     result = function.call()
-    print(to_json(result))
+    parsed_result = parse_return_value(abi_fn, result)
+    print(to_json(parsed_result))
 
 
 contract_group.add_command(call_cmd)
@@ -141,7 +147,7 @@ def tx_cmd(
         to_json,
     )
 
-    function, w3 = function_call_from_args(
+    function, _, w3 = function_call_from_args(
         rpc_endpoint,
         contract_address_str,
         contract_abi_path,
