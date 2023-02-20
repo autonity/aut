@@ -17,7 +17,7 @@
 - Message signing and signature verification
 - Fixes to help text and parameters specs
 - Output chainId and networkId from `aut node info`
-- Output XTN quantities as units of Auton (instead of Wei)
+- Output ATN quantities as units of Auton (instead of Wei)
 
 # v0.0.4
 
