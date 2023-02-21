@@ -78,7 +78,7 @@ $ echo 'keyfile = keystore/alice.key' >> .autrc
 # Check Alice's balance (use address in keystore/alice.key), given in Wei.
 $ aut account balance
 100000000000000000000
-# Check Bob's balance (1 XTN).  Bob's address is 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
+# Check Bob's balance (1 ATN).  Bob's address is 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 $ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 1000000000000000000
 ```
@@ -86,7 +86,7 @@ $ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 ### Create, sign and send a transaction
 
 ```console
-# Send 1 XTN to Bob
+# Send 1 ATN to Bob
 $ aut tx make --to 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f --value 1aut | aut tx sign - | aut tx send -
 Enter passphrase (or CTRL-d to exit):
 0x47f71a94372d00a3066414b80f3b9c78d71b3011479ddc86e37ab86e0fe80d8a
