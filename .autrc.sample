@@ -12,6 +12,10 @@ rpc_endpoint = https://rpc1.piccadilly.autonity.org/
 # Default validator to interact with (for bonding / unbonding / claiming fees etc)
 # validator = <validator-address>
 
+# Default contract details to interact with
+# contract_address = <contract-address>
+# contract_abi = <contract-abi-file>
+
 # TODO:
 # address =
 # chain_id =

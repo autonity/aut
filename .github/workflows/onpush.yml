@@ -40,6 +40,7 @@ jobs:
         pip install pipx
         pip install packaging==21.3  # temp fix for pipx install errors
         pipx install .
+        ./scripts/test_contract
         ./scripts/test_protocol
         ./scripts/test_validator
         ./scripts/test_account
