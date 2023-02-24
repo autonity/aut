@@ -283,7 +283,7 @@ account_group.add_command(new)
     is_flag=True,
     help="Echo password input to the terminal",
 )
-@argument("private_key_file", type=Path(exists=True))
+@argument("private_key_file", type=Path(exists=False))
 def import_private_key(
     keystore: Optional[str],
     keyfile: Optional[str],
@@ -298,7 +298,7 @@ def import_private_key(
     """
 
     from autcli.utils import (
-        load_from_file_or_stdin,
+        load_from_file_or_stdin_line,
         prompt_for_new_password,
         new_keyfile_from_options,
     )
@@ -313,7 +313,7 @@ def import_private_key(
     from hexbytes import HexBytes
     import json
 
-    private_key = HexBytes.fromhex(load_from_file_or_stdin(private_key_file))
+    private_key = HexBytes.fromhex(load_from_file_or_stdin_line(private_key_file))
     if len(private_key) != 32:
         raise ClickException("invalid private key length")
 
