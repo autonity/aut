@@ -1,3 +1,9 @@
+# v0.1.3
+
+- Support for contract calls (queries and tx creation)
+- Fix support for reading private keys from stdin
+- Remove support for Python 3.11 for now
+
 # v0.1.2
 
 - Added command to generate validator address from enode

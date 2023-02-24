@@ -438,6 +438,18 @@ def load_from_file_or_stdin(filename: str) -> str:
         return in_f.read()
 
 
+def load_from_file_or_stdin_line(filename: str) -> str:
+    """
+    Open a file and return the content. '-' means read a single line from stdin.
+    """
+
+    if filename == "-":
+        return sys.stdin.readline()
+
+    with open(filename, "r", encoding="utf8") as in_f:
+        return in_f.read()
+
+
 def newton_or_token_to_address(
     ntn: bool, token: Optional[str]
 ) -> Optional[ChecksumAddress]:

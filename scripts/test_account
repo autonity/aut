@@ -19,6 +19,16 @@ if ! [ "${test_addr}" == "0x1e9Ee7293bc304A10a0b33D0FCCBDFF78463bE5c" ] ; then
    exit 1
 fi
 
+# Create a keyfile from a private key (using stdin) and check the address
+rm -f test_key.key
+ echo -e '6173646661647366616473666173646671776572717765727177657271776572\n\n' | \
+     aut account import-private-key --keyfile test_key.key --show-password - > test_key_out
+test_addr=`grep -oe '0x[0-9A-Za-z]\+' test_key_out`
+if ! [ "${test_addr}" == "0x1e9Ee7293bc304A10a0b33D0FCCBDFF78463bE5c" ] ; then
+   echo Private key generated wrong address
+   exit 1
+fi
+
 # Create from private key to default file name
 mkdir test_keystore
 echo -e '\n\n' | aut account import-private-key --keystore test_keystore --show-password test_key.priv > test_key_out
