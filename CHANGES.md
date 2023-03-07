@@ -1,5 +1,6 @@
 # v0.1.3
 
+- Use the name `aut` (Autonity Utility Tool) for all references to this tool
 - Support for contract calls (queries and tx creation)
 - Fix support for reading private keys from stdin
 - Remove support for Python 3.11 for now

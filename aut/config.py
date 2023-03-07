@@ -4,8 +4,8 @@ line, config and defaults, and handles extracting from the config
 file.
 """
 
-from autcli.config_file import get_config_file, CONFIG_FILE_NAME
-from autcli.logging import log
+from aut.config_file import get_config_file, CONFIG_FILE_NAME
+from aut.logging import log
 
 from autonity.validator import ValidatorAddress
 

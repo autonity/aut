@@ -2,9 +2,9 @@
 Utility functions that are only meant to be called by other functions in this package.
 """
 
-from autcli import config
-from autcli.constants import AutonDenoms
-from autcli.logging import log
+from aut import config
+from aut.constants import AutonDenoms
+from aut.logging import log
 
 from autonity import Autonity
 from autonity.abi_manager import ABIManager

@@ -2,7 +2,7 @@
 The `token` command group.
 """
 
-from autcli.options import (
+from aut.options import (
     from_option,
     rpc_endpoint_option,
     newton_or_token_option,
@@ -36,7 +36,7 @@ def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
     Returns the token name (if available).
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
     )
@@ -63,7 +63,7 @@ def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None
     Returns the token symbol (if available).
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
     )
@@ -90,7 +90,7 @@ def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> No
     Returns the number of decimals used in the token balances.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
     )
@@ -113,7 +113,7 @@ def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -
     """
     Total supply (in units of whole Tokens).
     """
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
     )
@@ -149,7 +149,7 @@ def balance_of(
     specified, the default keyfile is used.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
@@ -189,7 +189,7 @@ def allowance(
     Returns the quantity in tokens that OWNER has granted the caller
     (the "from" address) permission to spend.
     """
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
@@ -243,7 +243,7 @@ def transfer(
     be fractional if the token supports it.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
@@ -315,7 +315,7 @@ def approve(
     fractional if the token supports it.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
@@ -390,7 +390,7 @@ def transfer_from(
     transaction.  AMOUNT can be fractional if the token supports it.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address_require,
         from_address_from_argument,
