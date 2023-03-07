@@ -1,4 +1,4 @@
-# Autonity CLI
+# Autonity Utility Tool (`aut`)
 
 A command-line RPC client for Autonity.  Run `aut --help` for the list of all commands and options.
 
