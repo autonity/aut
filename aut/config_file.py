@@ -4,7 +4,7 @@ Configuration file location and definition.
 
 from __future__ import annotations
 
-from autcli.logging import log
+from aut.logging import log
 
 import os
 import os.path

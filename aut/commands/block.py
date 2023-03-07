@@ -2,7 +2,7 @@
 The "get" command group
 """
 
-from autcli.options import rpc_endpoint_option
+from aut.options import rpc_endpoint_option
 
 from click import group, command, argument
 from typing import Optional
@@ -29,8 +29,8 @@ def get(rpc_endpoint: Optional[str], identifier: str) -> None:
     or hash.  If no argument is given, "latest" is used.
     """
 
-    from autcli.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
-    from autcli.user import get_block
+    from aut.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
+    from aut.user import get_block
 
     block_id = validate_block_identifier(identifier)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -48,7 +48,7 @@ def height(rpc_endpoint: Optional[str]) -> None:
     Print the current block height for the chain.
     """
 
-    from autcli.utils import web3_from_endpoint_arg
+    from aut.utils import web3_from_endpoint_arg
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     print(w3.eth.block_number)

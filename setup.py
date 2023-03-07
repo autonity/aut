@@ -34,7 +34,7 @@ setup(
         ],
     },
     tests_require=["unittest"],
-    entry_points={"console_scripts": ["aut=autcli.__main__:aut"]},
+    entry_points={"console_scripts": ["aut=aut.__main__:aut"]},
     project_urls={
         "Homepage": "http://github.com/autonity/aut",
     },

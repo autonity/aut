@@ -2,14 +2,14 @@
 The `validator` command group.
 """
 
-from autcli.options import (
+from aut.options import (
     rpc_endpoint_option,
     keyfile_option,
     from_option,
     tx_aux_options,
     validator_option,
 )
-from autcli.commands.protocol import protocol_group
+from aut.commands.protocol import protocol_group
 
 from click import group, command, option, argument
 from typing import Optional
@@ -44,8 +44,8 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
     """
     Get information about a validator.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import autonity_from_endpoint_arg, to_json
+    from aut.config import get_validator_address
+    from aut.utils import autonity_from_endpoint_arg, to_json
 
     validator_addr = get_validator_address(validator_addr_str)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -100,8 +100,8 @@ def bond(
     """
     Create transaction to bond Newton to a validator.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import (
+    from aut.config import get_validator_address
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         to_json,
@@ -156,8 +156,8 @@ def unbond(
     """
     Create transaction to unbond Newton from a validator.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import (
+    from aut.config import get_validator_address
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         to_json,
@@ -212,7 +212,7 @@ def register(
     """
     Create transaction to register a validator
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         to_json,
@@ -268,8 +268,8 @@ def pause(
     Create transaction to pause the given validator.  See
     `pauseValidator` on the Autonity contract.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import (
+    from aut.config import get_validator_address
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         to_json,
@@ -321,8 +321,8 @@ def activate(
     Create transaction to activate a paused validator.  See
     `activateValidator` on the Autonity contract.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import (
+    from aut.config import get_validator_address
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         to_json,
@@ -377,8 +377,8 @@ def change_commission_rate(
     Validator.  The rate is given as a decimal, and must be no greater
     than 1 e.g. 3% would be 0.03.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import (
+    from aut.config import get_validator_address
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         to_json,
@@ -425,8 +425,8 @@ def unclaimed_rewards(
     """
     Check the given validator for unclaimed-fees.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import autonity_from_endpoint_arg, from_address_from_argument
+    from aut.config import get_validator_address
+    from aut.utils import autonity_from_endpoint_arg, from_address_from_argument
 
     from autonity.utils.denominations import format_auton_quantity
     from autonity.validator import Validator
@@ -466,8 +466,8 @@ def claim_rewards(
     """
     Create transaction to claim rewards from a Validator.
     """
-    from autcli.config import get_validator_address
-    from autcli.utils import (
+    from aut.config import get_validator_address
+    from aut.utils import (
         web3_from_endpoint_arg,
         from_address_from_argument,
         to_json,

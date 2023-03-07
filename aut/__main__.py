@@ -2,7 +2,7 @@
 Autonity RPC Client
 """
 
-from autcli.commands import (
+from aut.commands import (
     node,
     block,
     tx,
@@ -12,7 +12,7 @@ from autcli.commands import (
     token,
     contract,
 )
-from autcli.logging import enable_logging
+from aut.logging import enable_logging
 
 import sys
 from click import group, option, version_option

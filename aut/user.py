@@ -8,7 +8,7 @@ If aut implements an ipyothon 'console mode', perhaps these are the
 functions meant to be called in that.
 """
 
-from autcli.utils import w3_provider
+from aut.utils import w3_provider
 
 from autonity import Autonity
 from autonity.utils.denominations import (

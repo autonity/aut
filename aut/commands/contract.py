@@ -2,7 +2,7 @@
 The `contract` command group
 """
 
-from autcli.options import (
+from aut.options import (
     from_option,
     rpc_endpoint_option,
     keyfile_option,
@@ -39,8 +39,8 @@ def function_call_from_args(
     process.
     """
 
-    from autcli.logging import log
-    from autcli.utils import (
+    from aut.logging import log
+    from aut.utils import (
         web3_from_endpoint_arg,
         contract_address_and_abi_from_args,
     )
@@ -83,7 +83,7 @@ def call_cmd(
     Execute a contract call on the connected node, and print the result.
     """
 
-    from autcli.utils import to_json
+    from aut.utils import to_json
 
     from autonity.abi_parser import parse_return_value
 
@@ -139,8 +139,8 @@ def tx_cmd(
     by the contract.
     """
 
-    from autcli.logging import log
-    from autcli.utils import (
+    from aut.logging import log
+    from aut.utils import (
         from_address_from_argument,
         create_contract_tx_from_args,
         finalize_tx_from_args,
