@@ -1,4 +1,4 @@
-# Autonity CLI
+# Autonity Utility Tool (AUT)
 
 A command-line RPC client for Autonity.  Run `aut --help` for the list of all commands and options.
 
@@ -11,18 +11,18 @@ Requirements:
 
 The `aut` tool can then be installed as a pipx package, isolated in its own environment:
 ```console
-$ pipx install git+https://github.com/autonity/autcli.git
+$ pipx install git+https://github.com/autonity/aut.git
 ```
 
 Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
 
 **Note:**
 
-  - If `autcli` is already installed, the `--force` flag may be required in order to update.
+  - If `aut` is already installed, the `--force` flag may be required in order to update.
 
   - If `pipx` selects an incompatible version of Python, you may need to specify a specific one. Use the `--python` flag:
     ```console
-    $ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/autcli.git
+    $ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/aut.git
     ```
     See the `pipx install` help text for details.
 
