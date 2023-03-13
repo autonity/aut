@@ -7,24 +7,24 @@ setup:
 check: check-types check-lint check-format check-tests
 
 check-lint:
-	pylint --ignore-patterns='.*flycheck.*' autcli tests
-	flake8 autcli tests
+	pylint --ignore-patterns='.*flycheck.*' aut tests
+	flake8 aut tests
 
 check-format:
-	black --check autcli tests
+	black --check aut tests
 
 check-types:
-	mypy -p autcli -p tests
+	mypy -p aut -p tests
 
 check-tests tests:
 	python -m unittest discover tests
 
 format:
-	black autcli/*
-	black autcli/commands/*
+	black aut/*
+	black aut/commands/*
 
 # tests:
 # 	# bash -c "source scripts/run_tests.sh"
 
 clean:
-	rm -Rf autcli.egg-info/ build/ .pytest_cache autcli/__pycache__ autcli/commands/__pycache__ tests/__pycache__
+	rm -Rf aut.egg-info/ build/ .pytest_cache aut/__pycache__ aut/commands/__pycache__ tests/__pycache__

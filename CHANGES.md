@@ -1,3 +1,10 @@
+# v0.1.3
+
+- Use the name `aut` (Autonity Utility Tool) for all references to this tool
+- Support for contract calls (queries and tx creation)
+- Fix support for reading private keys from stdin
+- Remove support for Python 3.11 for now
+
 # v0.1.2
 
 - Added command to generate validator address from enode
@@ -17,7 +24,7 @@
 - Message signing and signature verification
 - Fixes to help text and parameters specs
 - Output chainId and networkId from `aut node info`
-- Output XTN quantities as units of Auton (instead of Wei)
+- Output ATN quantities as units of Auton (instead of Wei)
 
 # v0.0.4
 

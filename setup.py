@@ -8,8 +8,8 @@ sys.stderr.write(f"local_link={local_link}\n")
 
 
 setup(
-    name="autcli",
-    version="0.1.2",
+    name="aut",
+    version="0.1.3",
     authors=[
         {"name": "Robert Sams", "email": "rs@clearmatics.com"},
         {"name": "Duncan Tebbs", "email": "duncan.tebbs@clearmatics.com"},
@@ -34,8 +34,8 @@ setup(
         ],
     },
     tests_require=["unittest"],
-    entry_points={"console_scripts": ["aut=autcli.__main__:aut"]},
+    entry_points={"console_scripts": ["aut=aut.__main__:aut"]},
     project_urls={
-        "Homepage": "http://github.com/clearmatics/autcli",
+        "Homepage": "http://github.com/autonity/aut",
     },
 )

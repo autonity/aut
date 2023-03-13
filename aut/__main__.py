@@ -2,7 +2,7 @@
 Autonity RPC Client
 """
 
-from autcli.commands import (
+from aut.commands import (
     node,
     block,
     tx,
@@ -10,8 +10,9 @@ from autcli.commands import (
     validator,
     account,
     token,
+    contract,
 )
-from autcli.logging import enable_logging
+from aut.logging import enable_logging
 
 import sys
 from click import group, option, version_option
@@ -22,7 +23,8 @@ from click import group, option, version_option
 @version_option()
 def aut(verbose: bool) -> None:
     """
-    Command line interface to Autonity functionality.
+    Autonity Utility Tool.  RPC client and general toolbox for
+    interacting with Autonity nodes.
     """
 
     if verbose:
@@ -39,6 +41,7 @@ aut.add_command(protocol.protocol_group)
 aut.add_command(validator.validator)
 aut.add_command(account.account_group)
 aut.add_command(token.token_group)
+aut.add_command(contract.contract_group)
 
 
 if __name__ == "__main__":

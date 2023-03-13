@@ -1,9 +1,11 @@
 """
-Configuration-related code
+Configuration-related code.  Determines precedence of command
+line, config and defaults, and handles extracting from the config
+file.
 """
 
-from autcli.config_file import get_config_file, CONFIG_FILE_NAME
-from autcli.logging import log
+from aut.config_file import get_config_file, CONFIG_FILE_NAME
+from aut.logging import log
 
 from autonity.validator import ValidatorAddress
 
@@ -20,6 +22,8 @@ KEYFILE_DIRECTORY_ENV_VAR = "KEYFILEDIR"
 KEYFILE_ENV_VAR = "KEYFILE"
 KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
 WEB3_ENDPOINT_ENV_VAR = "WEB3_ENDPOINT"
+CONTRACT_ADDRESS_ENV_VAR = "CONTRACT_ADDRESS"
+CONTRACT_ABI_ENV_VAR = "CONTRACT_ABI"
 
 
 def get_keystore_directory(keystore_directory: Optional[str]) -> str:
@@ -123,3 +127,39 @@ def get_validator_address(validator_addr_str: Optional[str]) -> ValidatorAddress
             raise ClickException("no validator specified")
 
     return ValidatorAddress(Web3.toChecksumAddress(validator_addr_str))
+
+
+def get_contract_address(contract_address_str: Optional[str]) -> str:
+    """
+    Get the contract address.  Fall back to 'CONTRACT_ADDRESS' env
+    var, then config file 'contract_address' entry, then error.
+    """
+    if contract_address_str is None:
+        contract_address_str = os.getenv(CONTRACT_ADDRESS_ENV_VAR)
+        if contract_address_str is None:
+            contract_address_str = get_config_file().get("contract_address")
+            if contract_address_str is None:
+                raise ClickException(
+                    f"No contract address given (use --address, {CONTRACT_ADDRESS_ENV_VAR} "
+                    f"env var or {CONFIG_FILE_NAME})"
+                )
+
+    return contract_address_str
+
+
+def get_contract_abi(contract_abi_path: Optional[str]) -> str:
+    """
+    Get the contract abi file path.  Fall back to 'CONTRACT_ABI' env
+    var, then config file 'contract_abi' entry, then error.
+    """
+    if contract_abi_path is None:
+        contract_abi_path = os.getenv(CONTRACT_ABI_ENV_VAR)
+        if contract_abi_path is None:
+            contract_abi_path = get_config_file().get("contract_abi")
+            if contract_abi_path is None:
+                raise ClickException(
+                    f"No contract ABI file given (use --abi, {CONTRACT_ABI_ENV_VAR} "
+                    f"env var or {CONFIG_FILE_NAME})"
+                )
+
+    return contract_abi_path

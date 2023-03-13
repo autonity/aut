@@ -2,11 +2,12 @@
 Utility functions that are only meant to be called by other functions in this package.
 """
 
-from autcli import config
-from autcli.constants import AutonDenoms
-from autcli.logging import log
+from aut import config
+from aut.constants import AutonDenoms
+from aut.logging import log
 
 from autonity import Autonity
+from autonity.abi_manager import ABIManager
 from autonity.utils.web3 import create_web3_for_endpoint
 from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
 from autonity.utils.tx import (
@@ -25,7 +26,15 @@ from click import ClickException
 from getpass import getpass
 from web3 import Web3
 from web3.contract import ContractFunction
-from web3.types import Wei, ChecksumAddress, BlockIdentifier, HexBytes, TxParams, Nonce
+from web3.types import (
+    Wei,
+    ChecksumAddress,
+    BlockIdentifier,
+    HexBytes,
+    TxParams,
+    Nonce,
+    ABI,
+)
 from typing import Dict, Mapping, Sequence, Tuple, Optional, Union, TypeVar, Any, cast
 
 
@@ -429,6 +438,18 @@ def load_from_file_or_stdin(filename: str) -> str:
         return in_f.read()
 
 
+def load_from_file_or_stdin_line(filename: str) -> str:
+    """
+    Open a file and return the content. '-' means read a single line from stdin.
+    """
+
+    if filename == "-":
+        return sys.stdin.readline()
+
+    with open(filename, "r", encoding="utf8") as in_f:
+        return in_f.read()
+
+
 def newton_or_token_to_address(
     ntn: bool, token: Optional[str]
 ) -> Optional[ChecksumAddress]:
@@ -520,6 +541,23 @@ def new_keyfile_from_options(
         raise ClickException(f"refusing to overwrite existing keyfile {keyfile}")
 
     return keyfile
+
+
+def contract_address_and_abi_from_args(
+    contract_address_str: Optional[str], contract_abi_path: Optional[str]
+) -> Tuple[ChecksumAddress, ABI]:
+    """
+    Extract the address and ABI of a contract, given the command line
+    args.  If arguments are not given, fall back to entries in the
+    config file, otherwise raise an error.
+    """
+
+    contract_address = Web3.toChecksumAddress(
+        config.get_contract_address(contract_address_str)
+    )
+    contract_abi_path = config.get_contract_abi(contract_abi_path)
+    contract_abi = ABIManager.load_abi_file(contract_abi_path)
+    return contract_address, contract_abi
 
 
 def parse_commission_rate(rate_str: str, rate_precision: int) -> int:

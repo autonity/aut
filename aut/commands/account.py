@@ -2,7 +2,7 @@
 The `account` command group.
 """
 
-from autcli.options import (
+from aut.options import (
     keyfile_and_password_options,
     from_option,
     rpc_endpoint_option,
@@ -35,8 +35,8 @@ def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     List the accounts for files in the keystore directory.
     """
 
-    from autcli import config
-    from autcli.utils import address_keyfile_dict
+    from aut import config
+    from aut.utils import address_keyfile_dict
 
     keystore = config.get_keystore_directory(keystore)
     keyfiles = address_keyfile_dict(keystore)
@@ -69,8 +69,8 @@ def info(
     the default keyfile account if no accounts specified).
     """
 
-    from autcli.user import get_account_stats
-    from autcli.utils import (
+    from aut.user import get_account_stats
+    from aut.utils import (
         to_json,
         web3_from_endpoint_arg,
         from_address_from_argument_optional,
@@ -110,7 +110,7 @@ def balance(
     Print the current balance of the given account.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         web3_from_endpoint_arg,
         newton_or_token_to_address,
         from_address_from_argument_optional,
@@ -165,8 +165,8 @@ def lntn_balances(
     Print the current balance of the given account.
     """
 
-    from autcli.logging import log
-    from autcli.utils import (
+    from aut.logging import log
+    from aut.utils import (
         to_json,
         web3_from_endpoint_arg,
         from_address_from_argument_optional,
@@ -226,8 +226,8 @@ def new(
     in the keystore.
     """
 
-    from autcli.logging import log
-    from autcli.utils import prompt_for_new_password, new_keyfile_from_options
+    from aut.logging import log
+    from aut.utils import prompt_for_new_password, new_keyfile_from_options
 
     from autonity.utils.keyfile import (
         create_keyfile_from_private_key,
@@ -283,7 +283,7 @@ account_group.add_command(new)
     is_flag=True,
     help="Echo password input to the terminal",
 )
-@argument("private_key_file", type=Path(exists=True))
+@argument("private_key_file", type=Path(exists=False))
 def import_private_key(
     keystore: Optional[str],
     keyfile: Optional[str],
@@ -297,12 +297,12 @@ def import_private_key(
     (consistent with GETH keyfiles) in the keystore.
     """
 
-    from autcli.utils import (
-        load_from_file_or_stdin,
+    from aut.utils import (
+        load_from_file_or_stdin_line,
         prompt_for_new_password,
         new_keyfile_from_options,
     )
-    from autcli.logging import log
+    from aut.logging import log
 
     from autonity.utils.keyfile import (
         PrivateKey,
@@ -313,7 +313,7 @@ def import_private_key(
     from hexbytes import HexBytes
     import json
 
-    private_key = HexBytes.fromhex(load_from_file_or_stdin(private_key_file))
+    private_key = HexBytes.fromhex(load_from_file_or_stdin_line(private_key_file))
     if len(private_key) != 32:
         raise ClickException("invalid private key length")
 
@@ -351,9 +351,9 @@ def signtx(keyfile: Optional[str], password: Optional[str], tx_file: str) -> Non
     If that is not set, the user is prompted.
     """
 
-    from autcli.logging import log
-    from autcli import config
-    from autcli.utils import to_json, load_from_file_or_stdin
+    from aut.logging import log
+    from aut import config
+    from aut.utils import to_json, load_from_file_or_stdin
 
     from autonity.utils.tx import sign_tx
 
@@ -407,9 +407,9 @@ def sign_message(
     file). The signature is also written to SIGNATURE_FILE, if given.
     """
 
-    from autcli.logging import log
-    from autcli import config
-    from autcli.utils import load_from_file_or_stdin
+    from aut.logging import log
+    from aut import config
+    from aut.utils import load_from_file_or_stdin
 
     from autonity.utils.keyfile import decrypt_keyfile
 
@@ -481,8 +481,8 @@ def verify_signature(
     Signature must be contained in a file.
     """
 
-    from autcli.logging import log
-    from autcli.utils import (
+    from aut.logging import log
+    from aut.utils import (
         from_address_from_argument_optional,
         load_from_file_or_stdin,
     )

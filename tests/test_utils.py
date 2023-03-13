@@ -2,13 +2,13 @@
 Test util functions
 """
 
-from autcli.utils import (
+from aut.utils import (
     parse_wei_representation,
     parse_token_value_representation,
     parse_commission_rate,
     geth_keyfile_name,
 )
-from autcli.constants import AutonDenoms
+from aut.constants import AutonDenoms
 
 from click import ClickException
 from unittest import TestCase

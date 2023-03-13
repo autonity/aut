@@ -162,3 +162,22 @@ def validator_option(fn: Func) -> Func:
         "validator_addr_str",
         help="Validator address (defaults to value in config file)",
     )(fn)
+
+
+def contract_options(fn: Func) -> Func:
+    """
+    add the `--abi <contract_abi>` and `--address <contract_address>`
+    options.
+    """
+    fn = option(
+        "--address",
+        "contract_address_str",
+        help="Contract address (falls back to 'address' in config file",
+    )(fn)
+    fn = option(
+        "--abi",
+        "contract_abi_path",
+        type=Path(exists=True),
+        help="Contract ABI file (falls back to 'abi' in config file)",
+    )(fn)
+    return fn

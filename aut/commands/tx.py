@@ -2,14 +2,14 @@
 The `tx` command group.
 """
 
-from autcli.options import (
+from aut.options import (
     from_option,
     rpc_endpoint_option,
     newton_or_token_option,
     keyfile_option,
     tx_aux_options,
 )
-from autcli.commands.account import signtx
+from aut.commands.account import signtx
 
 from click import group, command, option, argument, ClickException, Path
 from typing import Optional
@@ -76,8 +76,8 @@ def make(
     Create a transaction given the parameters passed in.
     """
 
-    from autcli.logging import log
-    from autcli.utils import (
+    from aut.logging import log
+    from aut.utils import (
         create_tx_from_args,
         create_contract_tx_from_args,
         finalize_tx_from_args,
@@ -192,7 +192,7 @@ def send(rpc_endpoint: Optional[str], tx_file: str) -> None:
     Outputs the transaction hash if it is successfully sent.
     """
 
-    from autcli.utils import web3_from_endpoint_arg, load_from_file_or_stdin
+    from aut.utils import web3_from_endpoint_arg, load_from_file_or_stdin
 
     from autonity.utils.tx import send_tx
 
@@ -230,7 +230,7 @@ def wait(
     Timeouts also result in a non-zero exit code.
     """
 
-    from autcli.utils import (
+    from aut.utils import (
         to_json,
         web3_from_endpoint_arg,
         validate_32byte_hash_string,

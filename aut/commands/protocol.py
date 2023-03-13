@@ -2,7 +2,7 @@
 The `autonity` command group.
 """
 
-from autcli.options import (
+from aut.options import (
     rpc_endpoint_option,
     keyfile_option,
     from_option,
@@ -35,7 +35,7 @@ def _show_sequence(value: Sequence[Any]) -> str:
 
 
 def _show_json(value: Any) -> str:
-    from autcli.utils import to_json
+    from aut.utils import to_json
 
     return to_json(value, pretty=True)
 
@@ -46,7 +46,7 @@ def commission_rate_precision(rpc_endpoint: Optional[str]) -> None:
     """
     Precision of validator commission rate values
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).commission_rate_precision())
 
@@ -60,7 +60,7 @@ def config(rpc_endpoint: Optional[str]) -> None:
     """
     Print the Autonity contract config
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).config()))
 
@@ -74,7 +74,7 @@ def epoch_id(rpc_endpoint: Optional[str]) -> None:
     """
     ID of current epoch
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_id())
 
@@ -88,7 +88,7 @@ def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     """
     Block number of the last epoch
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).last_epoch_block())
 
@@ -102,7 +102,7 @@ def epoch_total_bonded_stake(rpc_endpoint: Optional[str]) -> None:
     """
     Total stake bonded this epoch
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_total_bonded_stake())
 
@@ -116,7 +116,7 @@ def total_redistributed(rpc_endpoint: Optional[str]) -> None:
     """
     Total fees redistributed
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).total_redistributed())
 
@@ -130,7 +130,7 @@ def epoch_reward(rpc_endpoint: Optional[str]) -> None:
     """
     Reward for this epoch
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_reward())
 
@@ -142,7 +142,7 @@ protocol_group.add_command(epoch_reward)
 @rpc_endpoint_option
 def tail_bonding_id(rpc_endpoint: Optional[str]) -> None:
     """Tail ID of bonding queue"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).tail_bonding_id())
 
@@ -156,7 +156,7 @@ def head_bonding_id(rpc_endpoint: Optional[str]) -> None:
     """
     Head ID of bonding queue
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).head_bonding_id())
 
@@ -170,7 +170,7 @@ def tail_unbonding_id(rpc_endpoint: Optional[str]) -> None:
     """
     Tail ID of unbonding queue
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).tail_unbonding_id())
 
@@ -184,7 +184,7 @@ def head_unbonding_id(rpc_endpoint: Optional[str]) -> None:
     """
     Head ID of unbonding queue
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).head_unbonding_id())
 
@@ -198,7 +198,7 @@ def deployer(rpc_endpoint: Optional[str]) -> None:
     """
     Contract deployer
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).deployer())
 
@@ -212,7 +212,7 @@ def get_last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     """
     Block of last epoch
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_last_epoch_block())
 
@@ -224,7 +224,7 @@ protocol_group.add_command(get_last_epoch_block)
 @rpc_endpoint_option
 def get_version(rpc_endpoint: Optional[str]) -> None:
     """Contract version"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_version())
 
@@ -238,7 +238,7 @@ def get_committee(rpc_endpoint: Optional[str]) -> None:
     """
     Get current committee"
     """
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).get_committee()))
 
@@ -250,7 +250,7 @@ protocol_group.add_command(get_committee)
 @rpc_endpoint_option
 def get_validators(rpc_endpoint: Optional[str]) -> None:
     """Get current validators"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(_show_sequence(autonity_from_endpoint_arg(rpc_endpoint).get_validators()))
 
@@ -262,7 +262,7 @@ protocol_group.add_command(get_validators)
 @rpc_endpoint_option
 def get_max_committee_size(rpc_endpoint: Optional[str]) -> None:
     """Maximum committee size"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_max_committee_size())
 
@@ -274,7 +274,7 @@ protocol_group.add_command(get_max_committee_size)
 @rpc_endpoint_option
 def get_committee_enodes(rpc_endpoint: Optional[str]) -> None:
     """Enodes in current committee"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_committee_enodes())
 
@@ -286,7 +286,7 @@ protocol_group.add_command(get_committee_enodes)
 @rpc_endpoint_option
 def get_minimum_base_fee(rpc_endpoint: Optional[str]) -> None:
     """Minimum base fee"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_minimum_base_fee())
 
@@ -298,7 +298,7 @@ protocol_group.add_command(get_minimum_base_fee)
 @rpc_endpoint_option
 def get_operator(rpc_endpoint: Optional[str]) -> None:
     """Contract operator"""
-    from autcli.utils import autonity_from_endpoint_arg
+    from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_operator())
 
@@ -314,7 +314,7 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     """
     Proposer at the given height and round
     """
-    from autcli.utils import web3_from_endpoint_arg
+    from aut.utils import web3_from_endpoint_arg
     from autonity import Autonity
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
@@ -332,7 +332,7 @@ def get_bonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None:
     """
     Get queued bonding information between start and end ids.
     """
-    from autcli.utils import web3_from_endpoint_arg
+    from aut.utils import web3_from_endpoint_arg
     from autonity import Autonity
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
@@ -350,7 +350,7 @@ def get_unbonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None
     """
     Get queued unbonding information between start and end ids.
     """
-    from autcli.utils import web3_from_endpoint_arg
+    from aut.utils import web3_from_endpoint_arg
     from autonity import Autonity
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
@@ -383,7 +383,7 @@ def set_minimum_base_fee(
     Set the minimum gas price. Restricted to the operator account.
     See `setMinimumBaseFee` on the Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -435,7 +435,7 @@ def set_committee_size(
     Set the maximum size of the consensus committee. Restricted to the
     Operator account.  See `setCommitteeSize` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -485,7 +485,7 @@ def set_unbonding_period(
     Set the unbonding period. Restricted to the Operator account.  See
     `setUnbondingPeriod` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -535,7 +535,7 @@ def set_epoch_period(
     Set the epoch period. Restricted to the Operator account.  See
     `setEpochPeriod` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -585,7 +585,7 @@ def set_operator_account(
     Set the Operator account. Restricted to the Operator account.  See
     `setOperatorAccount` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -638,7 +638,7 @@ def set_treasury_account(
     Set the global treasury account. Restricted to the Operator
     account.  See `setTreasuryAccount` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -691,7 +691,7 @@ def set_treasury_fee(
     Set the treasury fee. Restricted to the Operator account.  See
     `setTreasuryFee` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -747,7 +747,7 @@ def mint(
     Restricted to the Operator account.  See `mint` on Autonity
     contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,
@@ -807,7 +807,7 @@ def burn(
     to the Operator account.  This won't burn associated Liquid
     tokens.  See `burn` on Autonity contract.
     """
-    from autcli.utils import (
+    from aut.utils import (
         autonity_from_endpoint_arg,
         from_address_from_argument,
         create_contract_tx_from_args,

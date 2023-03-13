@@ -36,10 +36,11 @@ jobs:
         make check -j 3
     - name: pipx-install-and-cli-tests
       run: |
-        (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install autcli"
+        (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install aut"
         pip install pipx
         pip install packaging==21.3  # temp fix for pipx install errors
         pipx install .
+        ./scripts/test_contract
         ./scripts/test_protocol
         ./scripts/test_validator
         ./scripts/test_account
