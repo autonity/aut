@@ -9,7 +9,7 @@ sys.stderr.write(f"local_link={local_link}\n")
 
 setup(
     name="aut",
-    version="0.1.3",
+    version="0.1.4",
     authors=[
         {"name": "Robert Sams", "email": "rs@clearmatics.com"},
         {"name": "Duncan Tebbs", "email": "duncan.tebbs@clearmatics.com"},

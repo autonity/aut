@@ -7,6 +7,7 @@ from aut.options import (
     rpc_endpoint_option,
     newton_or_token_option,
     keyfile_option,
+    tx_value_option,
     tx_aux_options,
 )
 from aut.commands.account import signtx
@@ -39,13 +40,8 @@ tx_group.add_command(signtx, name="sign")
 @keyfile_option()
 @from_option
 @option("--to", "-t", "to_str", help="address to which tx is directed.")
+@tx_value_option(required=True)
 @tx_aux_options
-@option(
-    "--value",
-    "-v",
-    required=True,
-    help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
-)
 @option(
     "--data", "-d", help="compiled contract code OR method signature and parameters."
 )
