@@ -102,6 +102,24 @@ def from_option(fn: Func) -> Func:
     )(fn)
 
 
+def tx_value_option(required: bool = False) -> Decorator:
+    """
+    Adds the --value, -v option to specify tx value field.  If `required` is True, the
+    value must be provided.
+    """
+
+    def decorator(fn: Func) -> Func:
+        fn = option(
+            "--value",
+            "-v",
+            required=required,
+            help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
+        )(fn)
+        return fn
+
+    return decorator
+
+
 def tx_aux_options(fn: Callable) -> Callable:
     """
     Remaining options which may be specified for any transaction.

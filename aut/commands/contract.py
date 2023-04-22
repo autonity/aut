@@ -6,6 +6,7 @@ from aut.options import (
     from_option,
     rpc_endpoint_option,
     keyfile_option,
+    tx_value_option,
     tx_aux_options,
     contract_options,
 )
@@ -71,12 +72,8 @@ def function_call_from_args(
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
+@tx_value_option()
 @tx_aux_options
-@option(
-    "--value",
-    "-v",
-    help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
-)
 @option(
     "--contract",
     "contract_path",
@@ -103,7 +100,7 @@ def deploy_cmd(
     """
     Deploy a contract, given the compiled JSON file.  Note that the
     contract's address will appear in the 'contractAddress' field of
-    the transactin receipt (see aut tx wait).
+    the transaction receipt (see aut tx wait).
     """
 
     from aut.logging import log
@@ -200,12 +197,8 @@ contract_group.add_command(call_cmd)
 @keyfile_option()
 @from_option
 @contract_options
+@tx_value_option()
 @tx_aux_options
-@option(
-    "--value",
-    "-v",
-    help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
-)
 @argument("method")
 @argument("parameters", nargs=-1)
 def tx_cmd(
