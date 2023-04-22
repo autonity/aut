@@ -103,7 +103,7 @@ def deploy_cmd(
     """
     Deploy a contract, given the compiled JSON file.  Note that the
     contract's address will appear in the 'contractAddress' field of
-    the transactin receipt (see aut tx wait).
+    the transaction receipt (see aut tx wait).
     """
 
     from aut.logging import log
