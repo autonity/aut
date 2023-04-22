@@ -1,3 +1,8 @@
+# v0.1.4
+
+- Added `contract deploy` command
+- Fixed output of `node info` while node is syncing
+
 # v0.1.3
 
 - Use the name `aut` (Autonity Utility Tool) for all references to this tool
