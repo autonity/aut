@@ -10,8 +10,8 @@ from aut.options import (
     contract_options,
 )
 
-from click import group, command, option, argument, ClickException
-from typing import Optional, List, Tuple
+from click import group, command, option, argument, ClickException, Path
+from typing import Optional, List, Tuple, cast
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
@@ -65,6 +65,98 @@ def function_call_from_args(
         raise ClickException(f"method '{method}' not found on contract abi")
 
     return contract_fn(*fn_params), abi_fn, w3
+
+
+@command(name="deploy")
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@option(
+    "--value",
+    "-v",
+    help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
+)
+@option(
+    "--contract",
+    "contract_path",
+    required=True,
+    type=Path(),
+    help="Path to JSON file holding contact abi and bytecode",
+)
+@argument("parameters", nargs=-1)
+def deploy_cmd(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    contract_path: str,
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    value: Optional[str],
+    chain_id: Optional[int],
+    parameters: List[str],
+) -> None:
+    """
+    Deploy a contract, given the compiled JSON file.  Note that the
+    contract's address will appear in the 'contractAddress' field of
+    the transactin receipt (see aut tx wait).
+    """
+
+    from aut.logging import log
+    from aut.utils import (
+        web3_from_endpoint_arg,
+        from_address_from_argument,
+        create_contract_tx_from_args,
+        finalize_tx_from_args,
+        to_json,
+    )
+
+    from autonity.abi_parser import find_abi_constructor, parse_arguments
+
+    import json
+    from web3.contract import ContractFunction
+
+    log(f"parameters: {list(parameters)}")
+
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+
+    # load contract
+    with open(contract_path, "r", encoding="utf8") as contract_f:
+        compiled = json.load(contract_f)
+
+    contract = w3.eth.contract(abi=compiled["abi"], bytecode=compiled["bytecode"])
+
+    abi_fn = find_abi_constructor(contract.abi)
+    fn_params = parse_arguments(abi_fn, parameters)
+    log(f"fn_params (parsed): {fn_params}")
+    deploy_fn = cast(ContractFunction, contract.constructor(*fn_params))
+
+    from_addr = from_address_from_argument(from_str, keyfile)
+
+    deploy_tx = create_contract_tx_from_args(
+        function=deploy_fn,
+        from_addr=from_addr,
+        value=value,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+
+    del deploy_tx["to"]
+
+    tx = finalize_tx_from_args(w3, rpc_endpoint, deploy_tx, from_addr)
+    print(to_json(tx))
+
+
+contract_group.add_command(deploy_cmd)
 
 
 @command(name="call")
