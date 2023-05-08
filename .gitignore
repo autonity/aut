@@ -1,8 +1,10 @@
+__pycache__
+_test_*env
+*.orig
+**/__version__.py
+*~
 aut.egg-info
 build
+dist
 notes.org
 scripts/examples/*
-_test_*env
-__pycache__
-*~
-*.orig
