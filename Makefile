@@ -1,8 +1,4 @@
-.PHONY: tests
-
-setup:
-	pip --require-virtualenv install -e .[dev]
-	pip --require-virtualenv install -e external/autonity.py
+.PHONY: test check lint format clean
 
 check: lint test 
 

@@ -39,7 +39,7 @@ class AccountStats(TypedDict):
 
 
 def get_account_stats(
-    w3: Web3, accounts: List[ChecksumAddress], tag: Optional[str] = None
+    w3: Web3, accounts: List[ChecksumAddress], tag: Optional[BlockIdentifier] = None
 ) -> List[AccountStats]:
     """
     For a list of accounts, return a dictionary with accounts as keys

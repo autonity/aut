@@ -102,7 +102,7 @@ def make(
     from_addr = from_address_from_argument_optional(from_str, keyfile)
     log(f"from_addr: {from_addr}")
 
-    to_addr = Web3.toChecksumAddress(to_str) if to_str else None
+    to_addr = Web3.to_checksum_address(to_str) if to_str else None
 
     if to_addr is None:
         raise ClickException(
@@ -197,7 +197,7 @@ def send(rpc_endpoint: Optional[str], tx_file: str) -> None:
     signed_tx = SignedTransaction(**json.loads(load_from_file_or_stdin(tx_file)))
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     tx_hash = send_tx(w3, signed_tx)
-    print(Web3.toHex(tx_hash))
+    print(Web3.to_hex(tx_hash))
 
 
 tx_group.add_command(send)

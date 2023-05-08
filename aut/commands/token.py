@@ -48,7 +48,7 @@ def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
     erc = ERC20(w3, token_addresss)
     token_name = erc.name()
     if token_name is None:
-        raise Exception("Token does not implement the name call")
+        raise ValueError("Token does not implement the name call")
     print(token_name)
 
 
@@ -202,7 +202,7 @@ def allowance(
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
-    owner_addr = Web3.toChecksumAddress(owner)
+    owner_addr = Web3.to_checksum_address(owner)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
@@ -258,7 +258,7 @@ def transfer(
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
-    recipient_addr = Web3.toChecksumAddress(recipient_str)
+    recipient_addr = Web3.to_checksum_address(recipient_str)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
@@ -330,7 +330,7 @@ def approve(
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
-    spender = Web3.toChecksumAddress(spender_str)
+    spender = Web3.to_checksum_address(spender_str)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
@@ -405,8 +405,8 @@ def transfer_from(
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
-    spender = Web3.toChecksumAddress(spender_str)
-    recipient = Web3.toChecksumAddress(recipient_str)
+    spender = Web3.to_checksum_address(spender_str)
+    recipient = Web3.to_checksum_address(recipient_str)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
