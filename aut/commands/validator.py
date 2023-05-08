@@ -70,7 +70,7 @@ def compute_address(
     _, key_at_ip_port, _, _, _, _ = urlparse.urlparse(enode)
     pubkey, _ = key_at_ip_port.split("@")
     addr_bytes = Web3.keccak(bytes(HexBytes(pubkey)))[-20:]
-    print(Web3.toChecksumAddress(addr_bytes.hex()))
+    print(Web3.to_checksum_address(addr_bytes.hex()))
 
 
 validator.add_command(compute_address)
@@ -436,7 +436,7 @@ def unclaimed_rewards(
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     vdesc = aut.get_validator(validator_addr)
-    val = Validator(aut.contract.web3, vdesc)
+    val = Validator(aut.contract.w3, vdesc)
     unclaimed_wei = val.unclaimed_rewards(account)
     print(format_auton_quantity(unclaimed_wei))
 
