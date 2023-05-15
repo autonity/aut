@@ -7,3 +7,4 @@ build
 dist
 notes.org
 scripts/examples/*
+_test_*
