@@ -474,7 +474,6 @@ def verify_signature(
     message: str,
     signature_file: str,
 ) -> None:
-
     """
     Verify that the signature in SIGNATURE_FILE` is valid for the
     message MESSAGE, signed by the owner of the FROM address.

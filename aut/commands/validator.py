@@ -11,7 +11,7 @@ from aut.options import (
 )
 from aut.commands.protocol import protocol_group
 
-from click import group, command, option, argument
+from click import group, command, option, argument, echo
 from typing import Optional
 
 # Disable pylint warning about imports outside top-level.  We do this
@@ -49,7 +49,14 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
 
     validator_addr = get_validator_address(validator_addr_str)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
-    print(to_json(aut.get_validator(validator_addr), pretty=True))
+    validator_data = aut.get_validator(validator_addr)
+    if validator_data is None or validator_data.get("addr", "") != validator_addr_str:
+        echo(
+            f"The address {validator_addr_str} is not registered as a validator.",
+            err=True,
+        )
+        return
+    echo(to_json(aut.get_validator(validator_addr), pretty=True))
 
 
 validator.add_command(info)
