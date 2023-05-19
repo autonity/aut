@@ -14,6 +14,8 @@ from aut.commands.protocol import protocol_group
 from click import group, command, option, argument, echo
 from typing import Optional
 
+import sys
+
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
 
@@ -55,7 +57,7 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
             f"The address {validator_addr_str} is not registered as a validator.",
             err=True,
         )
-        return
+        sys.exit(1)
     echo(to_json(aut.get_validator(validator_addr), pretty=True))
 
 
