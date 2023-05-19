@@ -52,9 +52,9 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
     validator_addr = get_validator_address(validator_addr_str)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     validator_data = aut.get_validator(validator_addr)
-    if validator_data is None or validator_data.get("addr", "") != validator_addr_str:
+    if validator_data is None or validator_data.get("addr", "") != validator_addr:
         echo(
-            f"The address {validator_addr_str} is not registered as a validator.",
+            f"The address {validator_addr} is not registered as a validator.",
             err=True,
         )
         sys.exit(1)
