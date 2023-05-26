@@ -11,7 +11,6 @@ from aut.commands import (
     account,
     token,
     contract,
-    info,
 )
 from aut.logging import enable_logging
 
@@ -43,7 +42,6 @@ aut.add_command(validator.validator)
 aut.add_command(account.account_group)
 aut.add_command(token.token_group)
 aut.add_command(contract.contract_group)
-aut.add_command(info.info_group)
 
 
 if __name__ == "__main__":
