@@ -2,6 +2,7 @@
 The `validator` command group.
 """
 
+from aut.constants import UnixExitStatus
 from aut.options import (
     rpc_endpoint_option,
     keyfile_option,
@@ -57,7 +58,7 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
             f"The address {validator_addr} is not registered as a validator.",
             err=True,
         )
-        sys.exit(1)
+        sys.exit(UnixExitStatus.WEB3_RESOURCE_NOT_FOUND)
     echo(to_json(aut.get_validator(validator_addr), pretty=True))
 
 
