@@ -118,7 +118,6 @@ def make(
     # use create_transaction and finalize_transaction wrappers.
 
     if token_addresss:
-
         if not from_addr:
             raise ClickException("from address not given")
 
@@ -139,7 +138,6 @@ def make(
         )
 
     else:
-
         if not from_addr:
             raise ClickException("from address not given")
 

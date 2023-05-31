@@ -2,6 +2,7 @@
 The `validator` command group.
 """
 
+from aut.constants import UnixExitStatus
 from aut.options import (
     rpc_endpoint_option,
     keyfile_option,
@@ -11,8 +12,10 @@ from aut.options import (
 )
 from aut.commands.protocol import protocol_group
 
-from click import group, command, option, argument
+from click import group, command, option, argument, echo
 from typing import Optional
+
+import sys
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -49,7 +52,14 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
 
     validator_addr = get_validator_address(validator_addr_str)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
-    print(to_json(aut.get_validator(validator_addr), pretty=True))
+    validator_data = aut.get_validator(validator_addr)
+    if validator_data is None or validator_data.get("addr", "") != validator_addr:
+        echo(
+            f"The address {validator_addr} is not registered as a validator.",
+            err=True,
+        )
+        sys.exit(UnixExitStatus.WEB3_RESOURCE_NOT_FOUND)
+    echo(to_json(aut.get_validator(validator_addr), pretty=True))
 
 
 validator.add_command(info)
