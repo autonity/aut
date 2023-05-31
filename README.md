@@ -108,6 +108,47 @@ $ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 2000000000000000000
 ```
 
+### Call contracts
+
+Contract calls are possible using the following syntax:
+```console
+aut contract call --address CONTRACT_ADDRESS --abi ABI_FILE METHOD [PARAMETERS]...
+```
+
+As an example, assuming that the RPC URL has been set in the `.autrc`  file, calling the `getProposer` function of the Autonity contract is
+```
+$ aut  contract call --abi $(aut protocol contract-abi-path) --address $(aut protocol contract-address) \
+  getProposer 10000 1 
+"0x31870f96212787D181B3B2771F58AF2BeD0019Aa"
+```
+
+#### Complex types
+
+The types `array` and `tuple` are supported as parameters as single quoted strings.
+
+For example, giving a contract function `arrayLength` that takes a `string[]` input, the command will look like the following: 
+```
+$ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS \
+  arrayLength '["a","b","c","d","e","f","g"]'
+7
+```
+
+The same applies to `tuple` types, giving a struct:
+```
+struct Payment {
+    address from; 
+    uint256 blockNumber;
+    uint256 amount;  
+}
+```
+A contract call `printHeight` that accepts a `Payment` as input will be:
+
+```
+$ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS  \
+  printHeight '["0x31870f96212787D181B3B2771F58AF2BeD0019Aa", 183413, 1000000000000000000]'
+183413
+```
+
 ## Development
 
 The [autonity.py](https://github.com/autonity/autonity.py) dependency
