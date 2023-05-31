@@ -126,7 +126,7 @@ def get_validator_address(validator_addr_str: Optional[str]) -> ValidatorAddress
         if not validator_addr_str:
             raise ClickException("no validator specified")
 
-    return ValidatorAddress(Web3.toChecksumAddress(validator_addr_str))
+    return ValidatorAddress(Web3.to_checksum_address(validator_addr_str))
 
 
 def get_contract_address(contract_address_str: Optional[str]) -> str:

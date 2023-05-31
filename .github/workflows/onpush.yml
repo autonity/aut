@@ -10,38 +10,27 @@ env:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
-
   install-and-test:
     strategy:
       matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, macos-11]
-        python-ver: [ '3.8', '3.9' ]
+        os: [ubuntu-22.04, macos-latest]
+        python-ver: ["3.8", "3.9", "3.10", "3.11"]
     runs-on: ${{ matrix.os }}
     steps:
-    - uses: actions/checkout@v2
-      with:
-        submodules: recursive
-    - uses: actions/setup-python@v4
-      with:
-        python-version: ${{ matrix.python-ver }}
-    - name: dependencies
-      if: matrix.os == 'macos-11'
-      run: |
-        brew install ${HOMEBREW_PACKAGES}
-    - name: dev install and check
-      run: |
-        python -m venv env
-        . env/bin/activate
-        make
-        make check -j 3
-    - name: pipx-install-and-cli-tests
-      run: |
-        (which aut && (echo "unexpected aut command in path"; exit 1)) || echo "ready to install aut"
-        pip install pipx
-        pip install packaging==21.3  # temp fix for pipx install errors
-        pipx install .
-        ./scripts/test_contract
-        ./scripts/test_protocol
-        ./scripts/test_validator
-        ./scripts/test_account
-        ./scripts/test_token
+      - uses: actions/checkout@v3
+        with:
+          submodules: recursive
+      - uses: actions/setup-python@v4
+        with:
+          python-version: ${{ matrix.python-ver }}
+      - name: MacOS dependencies
+        if: matrix.os == 'macos-11'
+        run: |
+          brew install ${HOMEBREW_PACKAGES}
+      - name: Install hatch
+        run: | 
+          pip install --upgrade hatch
+      - name: Lint
+        run: make lint
+      - name: Test
+        run: make test

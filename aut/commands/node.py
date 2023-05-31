@@ -49,7 +49,7 @@ def info(rpc_endpoint: Optional[str]) -> None:
         "net_listening": w3.net.listening,
         "net_peerCount": w3.net.peer_count,
         "net_networkId": w3.net.version,
-        "web3_clientVersion": w3.clientVersion,
+        "web3_clientVersion": w3.client_version,
         "admin_enode": admin_node_info["enode"],
         "admin_id": admin_node_info["id"],
     }
