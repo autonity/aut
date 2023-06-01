@@ -176,9 +176,11 @@ Several test scripts (which invoke the `aut` command itself) are available in th
 
 #### Autonity.py
 
-The `aut` CLI depends on the [`autonity.py`](https://github.com/autonity/autonity.py) package, to develop using a local version of the `autonity.py` package you need to update the `pyproject.toml`:
+The `aut` CLI depends on the [`autonity.py`](https://github.com/autonity/autonity.py) package, and will pull in the right version as specified in `pyproject.toml`.
 
-For the `project.dependency` set the path to the local `autonity.py` project:
+The instructions in this section are only required if you need to develop against a local version of the `autonity.py` package.
+
+To support this workflow, you first need to update the `pyproject.toml` setting for `project.dependency` to set the path of the local `autonity.py` project:
 
 ```toml
 ...
