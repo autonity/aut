@@ -2,4 +2,4 @@
 Module version information.
 """
 
-__version__ = "0.1.5.dev1"
+__version__ = "0.2.0"
