@@ -108,37 +108,102 @@ $ aut account balance 0x4EcE2e62E67a7B64a83D3E180dC86962145b762f
 2000000000000000000
 ```
 
+### Call contracts
+
+Contract calls are possible using the following syntax:
+
+```console
+aut contract call --address CONTRACT_ADDRESS --abi ABI_FILE METHOD [PARAMETERS]...
+```
+
+As an example, assuming that the RPC URL has been set in the `.autrc`  file, calling the `getProposer` function of the Autonity contract is
+
+```console
+$ aut  contract call --abi $(aut protocol contract-abi-path) --address $(aut protocol contract-address) \
+  getProposer 10000 1 
+"0x31870f96212787D181B3B2771F58AF2BeD0019Aa"
+```
+
+#### Complex types
+
+The types `array` and `tuple` are supported as parameters as single quoted strings.
+
+For example, giving a contract function `arrayLength` that takes a `string[]` input, the command will look like the following: 
+```console
+$ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS \
+  arrayLength '["a","b","c","d","e","f","g"]'
+7
+```
+
+The same applies to `tuple` types, giving a struct:
+```solidity
+struct Payment {
+    address from; 
+    uint256 blockNumber;
+    uint256 amount;  
+}
+```
+A contract call `printHeight` that accepts a `Payment` as input will be:
+
+```console
+$ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS  \
+  printHeight '["0x31870f96212787D181B3B2771F58AF2BeD0019Aa", 183413, 1000000000000000000]'
+183413
+```
+
 ## Development
 
-The [autonity.py](https://github.com/autonity/autonity.py) dependency
-is included as a submodule, for ease of development.  Sync all submodules, e.g.:
+The project is managed using [hatch](https://hatch.pypa.io/latest/). Check the installation instructions [here](https://hatch.pypa.io/latest/install/).
+
+Hatch will automatically manage a virtual environment for the project. To run the command in development mode use:
+
 ```console
-$ git submodule update --init --recursive
+$ hatch run aut ....
 ```
 
-Create and activate a virtual-env for development:
+alternatively, you can open a shell in the `hatch` environment by executing 
+
 ```console
-$ python -m venv env
-$ . env/bin/activate
+$ hatch shell
 ```
-
-(Note the `(env)` prefix to your prompt.  Activate the venv from other
-terminals using the same `. env/bin/activate` command.)
-
-Install both `autetl` and `autonity.py` in "editable" mode, within this virtual-env:
-development:
-```console
-(env)$ make
-```
-
-(Note that the `aut` command is also installed in the virtual-env.)
 
 To run all code checks (linters, type-checker, unit tests, etc):
 ```console
-(env)$ make check
+$ make check
 ```
 
-Several tests scripts (which invoke the `aut` command itself) are available in the [scripts](./scripts) directory.  The are intended to be run within the Python virtual-env, from the repository root directory.
+Several test scripts (which invoke the `aut` command itself) are available in the [scripts](./scripts) directory.  They are intended to be run within the Python virtual-env, from the repository root directory.
+
+#### Autonity.py
+
+The `aut` CLI depends on the [`autonity.py`](https://github.com/autonity/autonity.py) package, and will pull in the right version as specified in `pyproject.toml`.
+
+The instructions in this section are only required if you need to develop against a local version of the `autonity.py` package.
+
+To support this workflow, you first need to update the `pyproject.toml` setting for `project.dependency` to set the path of the local `autonity.py` project:
+
+```toml
+...
+dependencies = [
+    # "autonity==1.0.0",                    # comment this line 
+    "autonity @ {root:uri}/../autonity.py", # un-comment and set the path to the local autonity.py project
+    "click==8.1.3",
+]
+...
+```
+
+and enable the option to allow direct references by setting the `allow-direct-references` to `true`
+
+```toml
+[tool.hatch.metadata]
+allow-direct-references = false
+```
+
+At the time of writing, `hatch` does not support [editable dependencies](https://github.com/pypa/hatch/issues/588), therefore, the project must be refreshed manually upon changes to the `autonity.py` library using the command:
+
+```console
+$ make refresh-env
+```
 
 ## Reporting a Vulnerability
 

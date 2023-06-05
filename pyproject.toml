@@ -29,10 +29,11 @@ dependencies = [
     "click==8.1.3",
 ]
 
-## this settings is to enable linking the autonity library directly from the autonity repo
-# [tool.hatch.metadata]
-# allow-direct-references = true
-##
+# this settings is to enable linking the autonity library directly from the autonity repo
+# set it to true if you want to develop autonity and aut at the same time 
+[tool.hatch.metadata]
+allow-direct-references = false
+
 [project.urls]
 Homepage = "https://github.com/autonity/aut"
 Source = "https://github.com/autonity/aut"
