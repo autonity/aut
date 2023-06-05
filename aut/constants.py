@@ -6,7 +6,6 @@ Constants
 class Defaults:
     """Default configuration variables."""
 
-    DEFAULT_CHAIN_ID = 65010000  # bakerloo
     DEFAULT_RPC_ENDPOINT = "http://localhost:8545"
 
 
