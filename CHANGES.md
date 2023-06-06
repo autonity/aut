@@ -1,3 +1,27 @@
+# v0.2.0
+
+- Add subcommand `aut protocol contract-abi-path` to print the path of the bundled ABI for the Autonity contract
+- Add subcommand `aut protocol contract-src` to print the URL to the source of the Autonity contract used to generate the bundled ABI
+- Add subcommand `aut protocol contract-version` to print the git commit of the Autonity contract used to generate the bundled ABI
+- Add subcommand `aut protocol contract-address` to print the address of the Autonity contract 
+- Add support for python 3.11 ([gh-107](https://github.com/autonity/aut/issues/107))
+- Improve messaging when querying validator info for an address that is not in the validator committee ([gh-113](https://github.com/autonity/aut/issues/113))
+- Add support for complex types in contract calls ([gh-120](https://github.com/autonity/aut/issues/120))
+
+### Docs
+
+- Add examples how to execute contract calls 
+- Update the development explanation for contributors
+
+### Chore
+
+- Use hatch as python tool to manage builds  ([gh-116](https://github.com/autonity/aut/issues/116))
+- Update dependency to autonity.py v1.0.0
+
+### BREAKING CHANGES
+
+- Remove DEFAULT_CHAIN_ID constants
+
 # v0.1.4
 
 - Added `contract deploy` command
