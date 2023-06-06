@@ -115,7 +115,7 @@ def deploy_cmd(
     from autonity.abi_parser import find_abi_constructor, parse_arguments
 
     import json
-    from web3.contract import ContractFunction
+    from web3.contract.contract import ContractFunction
 
     log(f"parameters: {list(parameters)}")
 

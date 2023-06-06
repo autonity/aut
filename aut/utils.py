@@ -25,7 +25,7 @@ from decimal import Decimal
 from click import ClickException
 from getpass import getpass
 from web3 import Web3
-from web3.contract import ContractFunction
+from web3.contract.contract import ContractFunction
 from web3.types import (
     Wei,
     ChecksumAddress,
@@ -66,7 +66,6 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     if w3 is None:
         # TODO: For now, ignore the chain ID by default.  Later, this
         # check should be enabled and controllable by a flag.
-
         return create_web3_for_endpoint(
             config.get_rpc_endpoint(endpoint_arg), ignore_chain_id=True
         )
@@ -95,7 +94,7 @@ def from_address_from_argument_optional(
     # If from_str is not set, take the address from a keyfile instead
     # (if given)
     if from_str:
-        from_addr: Optional[ChecksumAddress] = Web3.toChecksumAddress(from_str)
+        from_addr: Optional[ChecksumAddress] = Web3.to_checksum_address(from_str)
     else:
         log("no from-addr given.  attempting to extract from keyfile")
         keyfile = config.get_keyfile_optional(keyfile)
@@ -215,7 +214,7 @@ def create_contract_tx_from_args(
     # TODO: abstract this calculation out
 
     if fee_factor:
-        w3 = function.web3
+        w3 = function.w3
         block_number = w3.eth.block_number
         block_data = w3.eth.get_block(block_number)
         # Note, keep this in units of whole Auton.  It will be
@@ -242,7 +241,7 @@ def create_contract_tx_from_args(
             nonce=Nonce(nonce) if nonce else None,
             chain_id=chain_id,
         )
-        return finalize_transaction(lambda: function.web3, tx, from_addr)
+        return finalize_transaction(lambda: function.w3, tx, from_addr)
 
     except ValueError as err:
         raise ClickException(err.args[0]) from err
@@ -263,7 +262,7 @@ def w3_provider_is_connected(w3: Web3) -> bool:
     to the provider, otherwise throw exception.
     """
     # identifier = w3_provider_endpoint()
-    if not w3.isConnected():
+    if not w3.is_connected():
         raise OSError("Web3 is not connected")
 
     return True
@@ -303,7 +302,7 @@ def parse_wei_representation(wei_str: str) -> Wei:
         else:
             wei = _parse_numerical_part(wei_str, AutonDenoms.AUTON_VALUE_IN_WEI)
     except Exception as exc:
-        raise Exception(
+        raise ValueError(
             f"{wei_str} is not a valid string representation of wei"
         ) from exc
     return Wei(wei)
@@ -338,7 +337,7 @@ def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
         keyfile_path = keystore_dir + "/" + fn
         keyfile = load_keyfile(keyfile_path)
         addr_lower = keyfile["address"]
-        addr_keyfile_dict[Web3.toChecksumAddress("0x" + addr_lower)] = keyfile_path
+        addr_keyfile_dict[Web3.to_checksum_address("0x" + addr_lower)] = keyfile_path
 
     return addr_keyfile_dict
 
@@ -357,7 +356,7 @@ def to_checksum_address(address: str) -> ChecksumAddress:
     Take a blockchain address as string, convert the string into
     an EIP55 checksum address and return that.
     """
-    checksum_address = Web3.toChecksumAddress(address)
+    checksum_address = Web3.to_checksum_address(address)
     return checksum_address
 
 
@@ -371,7 +370,7 @@ def to_json(data: Union[Mapping[str, V], Sequence[V]], pretty: bool = False) -> 
     if pretty:
         return json.dumps(cast(Dict[Any, Any], data), indent=2)
 
-    return Web3.toJSON(cast(Dict[Any, Any], data))
+    return Web3.to_json(cast(Dict[Any, Any], data))
 
 
 def string_is_32byte_hash(hash_str: str) -> bool:
@@ -396,7 +395,7 @@ def validate_32byte_hash_string(hash_str: str) -> str:
     otherwise raise exception.
     """
     if not string_is_32byte_hash(hash_str):
-        raise Exception(f"{hash_str} is not a 32-byte hash")
+        raise ValueError(f"{hash_str} is not a 32-byte hash")
     return hash_str
 
 
@@ -470,7 +469,7 @@ def newton_or_token_to_address(
         return Autonity.address()
 
     if token:
-        return Web3.toChecksumAddress(token)
+        return Web3.to_checksum_address(token)
 
     return None
 
@@ -552,7 +551,7 @@ def contract_address_and_abi_from_args(
     config file, otherwise raise an error.
     """
 
-    contract_address = Web3.toChecksumAddress(
+    contract_address = Web3.to_checksum_address(
         config.get_contract_address(contract_address_str)
     )
     contract_abi_path = config.get_contract_abi(contract_abi_path)

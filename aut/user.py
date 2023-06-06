@@ -39,7 +39,7 @@ class AccountStats(TypedDict):
 
 
 def get_account_stats(
-    w3: Web3, accounts: List[ChecksumAddress], tag: Optional[str] = None
+    w3: Web3, accounts: List[ChecksumAddress], tag: Optional[BlockIdentifier] = None
 ) -> List[AccountStats]:
     """
     For a list of accounts, return a dictionary with accounts as keys
@@ -72,11 +72,6 @@ def get_account_stats(
 
 # TODO: Properly typed object.
 # TODO: Move to autonity.py
-
-
-# TODO: Move to autonity.py
-
-
 def get_block(w3: Web3, identifier: BlockIdentifier) -> BlockData:
     """
     Returns a dictionary of block data for the block identified by
@@ -88,8 +83,6 @@ def get_block(w3: Web3, identifier: BlockIdentifier) -> BlockData:
 
 
 # TODO: support this?
-
-
 def server_signtx(tx: TxParams) -> SignedTx:
     """
     Sign the transaction data contained in dictionary 'tx' by

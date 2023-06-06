@@ -99,7 +99,9 @@ class TestUtils(TestCase):
             "2022-02-07T17-19-56.517538", "%Y-%m-%dT%H-%M-%S.%f"
         ).replace(tzinfo=timezone.utc)
 
-        key_address = Web3.toChecksumAddress("ca57f3b40b42fcce3c37b8d18adbca5260ca72ec")
+        key_address = Web3.to_checksum_address(
+            "ca57f3b40b42fcce3c37b8d18adbca5260ca72ec"
+        )
 
         self.assertEqual(
             "UTC--2022-02-07T17-19-56.517538000Z--ca57f3b40b42fcce3c37b8d18adbca5260ca72ec",

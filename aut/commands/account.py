@@ -12,6 +12,7 @@ from aut.options import (
 )
 from click import group, command, option, argument, ClickException, Path
 from typing import Dict, List, Optional
+from web3.types import BlockIdentifier
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -62,7 +63,7 @@ def info(
     rpc_endpoint: Optional[str],
     keyfile: Optional[str],
     accounts: List[str],
-    asof: Optional[str],
+    asof: Optional[BlockIdentifier],
 ) -> None:
     """
     Print some information about the given account (falling back to
@@ -84,7 +85,7 @@ def info(
             raise ClickException("No accounts specified")
         accounts = [account]
 
-    addresses = [Web3.toChecksumAddress(act) for act in accounts]
+    addresses = [Web3.to_checksum_address(act) for act in accounts]
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     account_stats = get_account_stats(w3, addresses, asof)
@@ -474,7 +475,6 @@ def verify_signature(
     message: str,
     signature_file: str,
 ) -> None:
-
     """
     Verify that the signature in SIGNATURE_FILE` is valid for the
     message MESSAGE, signed by the owner of the FROM address.
