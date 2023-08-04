@@ -31,6 +31,6 @@ jobs:
         run: | 
           pip install --upgrade hatch
       - name: Lint
-        run: make lint
+        run: hatch run lint:check
       - name: Test
-        run: make test
+        run: hatch run test
