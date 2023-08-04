@@ -22,7 +22,7 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
 ]
-dependencies = ["autonity==1.0.1", "click==8.1.3"]
+dependencies = ["autonity{env:AUTPY_VERSION:==1.0.1}", "click==8.1.3"]
 
 [project.urls]
 homepage = "https://github.com/autonity/aut"
@@ -38,6 +38,9 @@ path = "aut/__version__.py"
 [tool.hatch.build]
 packages = ["aut"]
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.hatch.envs.default]
 description = "The standard dev, build, and test environment"
 
@@ -52,6 +55,15 @@ script-tests = [
     "hatch run ./scripts/test_account",
     "hatch run ./scripts/test_token",
 ]
+
+[tool.hatch.envs.github]
+description = "Develop and build against autonity.py from Github"
+
+[tool.hatch.envs.github.scripts]
+build = "hatch build -t wheel"
+
+[tool.hatch.envs.github.env-vars]
+AUTPY_VERSION = " @ git+https://github.com/autonity/autonity.py@{env:AUTPY_GIT_COMMIT:develop}"
 
 [tool.hatch.envs.lint]
 description = "Run static analyzers over code and tests"
