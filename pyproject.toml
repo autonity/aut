@@ -24,7 +24,7 @@ classifiers = [
     "Programming Language :: Python :: 3.11"
 ]
 dependencies = [
-    "autonity==1.0.0",
+    "autonity==1.0.1",
     # "autonity @ {root:uri}/../autonity.py", # for local development only
     "click==8.1.3",
 ]
