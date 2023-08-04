@@ -1,51 +1,74 @@
 # Autonity Utility Tool (`aut`)
 
-A command-line RPC client for Autonity.  Run `aut --help` for the list of all commands and options.
+A command-line RPC client for Autonity. Run `aut --help` for the list of all
+commands and options.
 
 ## Quick Start
 
 Requirements:
-- **Python 3.8 or greater** (Install using the package manager for your OS or [pyenv](https://github.com/pyenv/pyenv) ).
-    - (Note that websocket connections are not supported for Python 3.10+ due to an issue in the latest stable version of the `web3.py` dependency)
-- **The** [pipx](https://pypa.github.io/pipx/) **tool**  (Install a recent version with `pip install pipx`)
 
-The `aut` tool can then be installed as a pipx package, isolated in its own environment:
+- **Python 3.8 or greater** (Install using the package manager for your OS or
+  [pyenv](https://github.com/pyenv/pyenv) ).
+  - (Note that websocket connections are not supported for Python 3.10+ due to
+    an issue in the latest stable version of the `web3.py` dependency)
+- **The** [pipx](https://pypa.github.io/pipx/) **tool** (Install a recent
+  version with `pip install pipx`)
+
+The `aut` tool can then be installed as a pipx package, isolated in its own
+environment:
+
 ```console
-$ pipx install git+https://github.com/autonity/aut.git
+pipx install git+https://github.com/autonity/aut.git
 ```
 
-Once successfully installed, the `aut` command should be available in the `PATH`.  All commands are discoverable from the help text.  Type `aut --help`, `aut <command> --help` etc. for details.
+Once successfully installed, the `aut` command should be available in the
+`PATH`. All commands are discoverable from the help text. Type `aut --help`,
+`aut <command> --help` etc. for details.
 
 **Note:**
 
-  - If `aut` is already installed, the `--force` flag may be required in order to update.
+- If `aut` is already installed, the `--force` flag may be required in order to
+  update.
 
-  - If `pipx` selects an incompatible version of Python, you may need to specify a specific one. Use the `--python` flag:
-    ```console
-    $ pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/aut.git
-    ```
-    See the `pipx install` help text for details.
+- If `pipx` selects an incompatible version of Python, you may need to specify a
+  specific one. Use the `--python` flag:
 
-  - If the `aut` command is not available, ensure that `~/.local/bin` appears in your `PATH`.  Use `pipx ensurepath` to verify.
+  ```console
+  pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/aut.git
+  ```
+
+  See the `pipx install` help text for details.
+
+- If the `aut` command is not available, ensure that `~/.local/bin` appears in
+  your `PATH`. Use `pipx ensurepath` to verify.
 
 ## (Optional) Enable command completion (bash and zsh)
 
-Completion is available in `bash` and `zsh` shells as follows.  (Adapt these commands to your particular configuration.)
+Completion is available in `bash` and `zsh` shells as follows. (Adapt these
+commands to your particular configuration.)
 
 ```console
 # For zsh, replace bash_source with zsh_source.
 $ _AUT_COMPLETE=bash_source aut > ~/.aut-complete
 $ echo 'source ~/.aut-complete' >> ~/.bashrc
 ```
-Auto-complete should be enabled in *new* shells.  (Use `source ~/.aut-complete` to activate it in the current shell instance.)
+
+Auto-complete should be enabled in _new_ shells. (Use `source ~/.aut-complete`
+to activate it in the current shell instance.)
 
 ## Configuration using `.autrc` files
 
-If the `aut` command finds this file, it reads configuration parameters from it.  See the [sample file](.autrc.sample) in this repo.  This avoids the need to enter certain values on the command line. These parameters can be overridden by environment variables and command-line parameters where necessary.
+If the `aut` command finds this file, it reads configuration parameters from it.
+See the [sample file](.autrc.sample) in this repo. This avoids the need to enter
+certain values on the command line. These parameters can be overridden by
+environment variables and command-line parameters where necessary.
 
-If `.autrc` is not found in the current directory, all parent directories are searched in turn and the first `.autrc` file found is used.  Alternatively, this file can be placed in `~/.config/aut/autrc`.
+If `.autrc` is not found in the current directory, all parent directories are
+searched in turn and the first `.autrc` file found is used. Alternatively, this
+file can be placed in `~/.config/aut/autrc`.
 
 A very simple `.autrc` file may specify the endpoint for Web3 connections:
+
 ```console
 # Create a config file holding the rpc endpoint.
 $ echo '[aut]' > .autrc
@@ -66,10 +89,11 @@ Confirm account password:
 0xd888bc90720757796C72eC2a3A231c81b55e8097
 ```
 
-This can be added as the default key for transaction signing (and default address for queries) in the `.autrc` file:
+This can be added as the default key for transaction signing (and default
+address for queries) in the `.autrc` file:
 
 ```console
-$ echo 'keyfile = keystore/alice.key' >> .autrc
+echo 'keyfile = keystore/alice.key' >> .autrc
 ```
 
 ### Check account balance (after funding the account)
@@ -92,9 +116,19 @@ Enter passphrase (or CTRL-d to exit):
 0x47f71a94372d00a3066414b80f3b9c78d71b3011479ddc86e37ab86e0fe80d8a
 ```
 
-Explanation of the above: The `maketx` command extracts the `from` address from the default keyfile, and automatically sets the `gas`, `nonce` and other fields by querying the RPC endpoint in the config file.  It then writes this to `stdout`, which is piped to the `signtx` command, using the `-` argument to indicate `stdin`.  The sign `signtx` decrypts the default keyfile after querying the user for the password, and writes the signed transaction to `stdout`.  This is then piped to the `sendtx` command, which connects to the RPC endpoint given in the config file and passes the signed transaction to the node for broadcast.  `sendtx` then outputs the transaction hash to `stdout`.
+Explanation of the above: The `maketx` command extracts the `from` address from
+the default keyfile, and automatically sets the `gas`, `nonce` and other fields
+by querying the RPC endpoint in the config file. It then writes this to
+`stdout`, which is piped to the `signtx` command, using the `-` argument to
+indicate `stdin`. The sign `signtx` decrypts the default keyfile after querying
+the user for the password, and writes the signed transaction to `stdout`. This
+is then piped to the `sendtx` command, which connects to the RPC endpoint given
+in the config file and passes the signed transaction to the node for broadcast.
+`sendtx` then outputs the transaction hash to `stdout`.
 
-All configuration options can be set using command-line parameters to override the configuration file. Use the `--help` flag with any command to see all available options.
+All configuration options can be set using command-line parameters to override
+the configuration file. Use the `--help` flag with any command to see all
+available options.
 
 ### Wait for the transaction
 
@@ -116,19 +150,23 @@ Contract calls are possible using the following syntax:
 aut contract call --address CONTRACT_ADDRESS --abi ABI_FILE METHOD [PARAMETERS]...
 ```
 
-As an example, assuming that the RPC URL has been set in the `.autrc`  file, calling the `getProposer` function of the Autonity contract is
+As an example, assuming that the RPC URL has been set in the `.autrc` file,
+calling the `getProposer` function of the Autonity contract is
 
 ```console
 $ aut  contract call --abi $(aut protocol contract-abi-path) --address $(aut protocol contract-address) \
-  getProposer 10000 1 
+  getProposer 10000 1
 "0x31870f96212787D181B3B2771F58AF2BeD0019Aa"
 ```
 
 #### Complex types
 
-The types `array` and `tuple` are supported as parameters as single quoted strings.
+The types `array` and `tuple` are supported as parameters as single quoted
+strings.
 
-For example, giving a contract function `arrayLength` that takes a `string[]` input, the command will look like the following: 
+For example, giving a contract function `arrayLength` that takes a `string[]`
+input, the command will look like the following:
+
 ```console
 $ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS \
   arrayLength '["a","b","c","d","e","f","g"]'
@@ -136,13 +174,15 @@ $ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS \
 ```
 
 The same applies to `tuple` types, giving a struct:
+
 ```solidity
 struct Payment {
-    address from; 
+    address from;
     uint256 blockNumber;
-    uint256 amount;  
+    uint256 amount;
 }
 ```
+
 A contract call `printHeight` that accepts a `Payment` as input will be:
 
 ```console
@@ -153,65 +193,80 @@ $ aut contract call --abi ABI_FILE_PATH --address CONTRACT_ADDRESS  \
 
 ## Development
 
-The project is managed using [hatch](https://hatch.pypa.io/latest/). Check the installation instructions [here](https://hatch.pypa.io/latest/install/).
+The project is managed using [hatch](https://hatch.pypa.io/latest/). Check the
+installation instructions [here](https://hatch.pypa.io/latest/install/).
 
-Hatch will automatically manage a virtual environment for the project. To run the command in development mode use:
+Hatch will automatically manage a virtual environment for the project. To run
+the command in development mode use:
 
 ```console
-$ hatch run aut ....
+hatch run aut ....
 ```
 
-alternatively, you can open a shell in the `hatch` environment by executing 
+alternatively, you can open a shell in the `hatch` environment by executing
 
 ```console
-$ hatch shell
+hatch shell
 ```
 
 To run all code checks (linters, type-checker, unit tests, etc):
+
 ```console
-$ make check
+make check
 ```
 
-Several test scripts (which invoke the `aut` command itself) are available in the [scripts](./scripts) directory.  They are intended to be run within the Python virtual-env, from the repository root directory.
+Several test scripts (which invoke the `aut` command itself) are available in
+the [scripts](./scripts) directory. They are intended to be run within the
+Python virtual-env, from the repository root directory.
 
 #### Autonity.py
 
-The `aut` CLI depends on the [`autonity.py`](https://github.com/autonity/autonity.py) package, and will pull in the right version as specified in `pyproject.toml`.
+The `aut` CLI depends on the
+[`autonity.py`](https://github.com/autonity/autonity.py) package, and will pull
+in the right version as specified in `pyproject.toml`.
 
-The instructions in this section are only required if you need to develop against a local version of the `autonity.py` package.
+The instructions in this section are only required if you need to develop
+against a local version of the `autonity.py` package.
 
-To support this workflow, you first need to update the `pyproject.toml` setting for `project.dependency` to set the path of the local `autonity.py` project:
+To support this workflow, you first need to update the `pyproject.toml` setting
+for `project.dependency` to set the path of the local `autonity.py` project:
 
 ```toml
 ...
 dependencies = [
-    # "autonity==1.0.0",                    # comment this line 
+    # "autonity==1.0.0",                    # comment this line
     "autonity @ {root:uri}/../autonity.py", # un-comment and set the path to the local autonity.py project
     "click==8.1.3",
 ]
 ...
 ```
 
-and enable the option to allow direct references by setting the `allow-direct-references` to `true`
+and enable the option to allow direct references by setting the
+`allow-direct-references` to `true`
 
 ```toml
 [tool.hatch.metadata]
 allow-direct-references = false
 ```
 
-At the time of writing, `hatch` does not support [editable dependencies](https://github.com/pypa/hatch/issues/588), therefore, the project must be refreshed manually upon changes to the `autonity.py` library using the command:
+At the time of writing, `hatch` does not support
+[editable dependencies](https://github.com/pypa/hatch/issues/588), therefore,
+the project must be refreshed manually upon changes to the `autonity.py` library
+using the command:
 
 ```console
-$ make refresh-env
+make refresh-env
 ```
 
 ## Reporting a Vulnerability
 
 **Please do not file a public ticket** mentioning the vulnerability.
 
-Instead, please send an email to <security@autonity.org> to report a security issue.
+Instead, please send an email to <security@autonity.org> to report a security
+issue.
 
-The following PGP key may be used to communicate sensitive information to developers:
+The following PGP key may be used to communicate sensitive information to
+developers:
 
 Fingerprint: `6006 CCC3 DD11 7885 1A23 4290 7486 F832 6320 219E`
 
