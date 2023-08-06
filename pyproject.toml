@@ -8,9 +8,8 @@ description = "Python command line interface for interacting with Autonity nodes
 readme = "README.md"
 license = "MIT"
 keywords = ["autonity", "web3", "rpc", "cli"]
-authors = [
-    { name = "Robert Sams", email = "rs@clearmatics.com" },
-    { name = "Duncan Tebbs", email = "duncan.tebbs@clearmatics.com" },
+maintainers = [
+    { name = "Clearmatics Technologies Ltd", email = "ping@clearmatics.com" },
 ]
 dynamic = ["version"]
 requires-python = ">=3.8"
