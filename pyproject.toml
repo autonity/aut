@@ -56,10 +56,15 @@ script-tests = [
 [tool.hatch.envs.lint]
 description = "Run static analyzers over code and tests"
 detached = true
-dependencies = ["black", "mypy", "ruff"]
+dependencies = ["black", "check-wheel-contents", "mypy", "ruff"]
 
 [tool.hatch.envs.lint.scripts]
-check = ["ruff check {args:.}", "black --check {args:.}", "mypy {args:.}"]
+all = ["check-code", "check-wheel"]
+check-code = ["ruff check {args:.}", "black --check {args:.}", "mypy {args:.}"]
+check-wheel = [
+    "hatch build",
+    "check-wheel-contents dist/aut-$(hatch version)-py3-none-any.whl",
+]
 format = ["black {args:.}", "ruff check --fix --select I {args:.}"]
 
 [tool.mypy]

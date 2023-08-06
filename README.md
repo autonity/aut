@@ -212,7 +212,7 @@ hatch shell
 To run all code checks (linters, type-checker, unit tests, etc):
 
 ```console
-hatch run lint:check
+hatch run lint:all
 ```
 
 Several test scripts (which invoke the `aut` command itself) are available in
