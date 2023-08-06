@@ -1,10 +1,5 @@
-__pycache__
-_test_*env
-*.orig
-*~
-aut.egg-info
-build
-dist
-notes.org
-scripts/examples/*
-_test_*
+# Global directories
+__pycache__/
+
+# Root directories
+/dist/
