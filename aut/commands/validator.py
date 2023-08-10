@@ -48,13 +48,16 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
     """
     Get information about a validator.
     """
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import autonity_from_endpoint_arg, to_json
 
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     validator_data = aut.get_validator(validator_addr)
-    if validator_data is None or validator_data.get("addr", "") != validator_addr:
+    if (
+        validator_data is None
+        or validator_data.get("node_address", "") != validator_addr
+    ):
         echo(
             f"The address {validator_addr} is not registered as a validator.",
             err=True,
@@ -112,7 +115,7 @@ def bond(
     """
     Create transaction to bond Newton to a validator.
     """
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
@@ -122,7 +125,7 @@ def bond(
     )
 
     token_units = parse_newton_value_representation(amount_str)
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -168,7 +171,7 @@ def unbond(
     """
     Create transaction to unbond Newton from a validator.
     """
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
@@ -178,7 +181,7 @@ def unbond(
     )
 
     token_units = parse_newton_value_representation(amount_str)
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -282,7 +285,7 @@ def pause(
     Create transaction to pause the given validator.  See
     `pauseValidator` on the Autonity contract.
     """
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
@@ -290,7 +293,7 @@ def pause(
         to_json,
     )
 
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -335,7 +338,7 @@ def activate(
     Create transaction to activate a paused validator.  See
     `activateValidator` on the Autonity contract.
     """
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
@@ -343,7 +346,7 @@ def activate(
         to_json,
     )
 
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -391,7 +394,7 @@ def change_commission_rate(
     Validator.  The rate is given as a decimal, and must be no greater
     than 1 e.g. 3% would be 0.03.
     """
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
@@ -400,7 +403,7 @@ def change_commission_rate(
         to_json,
     )
 
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -442,10 +445,10 @@ def unclaimed_rewards(
     from autonity.utils.denominations import format_auton_quantity
     from autonity.validator import Validator
 
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import autonity_from_endpoint_arg, from_address_from_argument
 
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     account = from_address_from_argument(account, keyfile)
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -483,7 +486,7 @@ def claim_rewards(
     from autonity.autonity import Autonity
     from autonity.validator import Validator
 
-    from aut.config import get_validator_address
+    from aut.config import get_node_address
     from aut.utils import (
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -491,7 +494,7 @@ def claim_rewards(
         web3_from_endpoint_arg,
     )
 
-    validator_addr = get_validator_address(validator_addr_str)
+    validator_addr = get_node_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)

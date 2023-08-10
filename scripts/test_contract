@@ -31,7 +31,7 @@ CONTRACT_ADDRESS=${AUTONITY_ADDRESS} CONTRACT_ABI="${AUTONITY_ABI}" \
     aut contract call \
     getValidator `cat validator0` > validator0.json
 
-validator0_id=`jq -r '.addr' validator0.json`
+validator0_id=`jq -r '.nodeAddress' validator0.json`
 
 [ `cat validator0` == ${validator0_id} ]
 

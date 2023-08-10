@@ -140,60 +140,6 @@ protocol_group.add_command(epoch_reward)
 
 @command()
 @rpc_endpoint_option
-def tail_bonding_id(rpc_endpoint: Optional[str]) -> None:
-    """Tail ID of bonding queue"""
-    from aut.utils import autonity_from_endpoint_arg
-
-    print(autonity_from_endpoint_arg(rpc_endpoint).tail_bonding_id())
-
-
-protocol_group.add_command(tail_bonding_id)
-
-
-@command()
-@rpc_endpoint_option
-def head_bonding_id(rpc_endpoint: Optional[str]) -> None:
-    """
-    Head ID of bonding queue
-    """
-    from aut.utils import autonity_from_endpoint_arg
-
-    print(autonity_from_endpoint_arg(rpc_endpoint).head_bonding_id())
-
-
-protocol_group.add_command(head_bonding_id)
-
-
-@command()
-@rpc_endpoint_option
-def tail_unbonding_id(rpc_endpoint: Optional[str]) -> None:
-    """
-    Tail ID of unbonding queue
-    """
-    from aut.utils import autonity_from_endpoint_arg
-
-    print(autonity_from_endpoint_arg(rpc_endpoint).tail_unbonding_id())
-
-
-protocol_group.add_command(tail_unbonding_id)
-
-
-@command()
-@rpc_endpoint_option
-def head_unbonding_id(rpc_endpoint: Optional[str]) -> None:
-    """
-    Head ID of unbonding queue
-    """
-    from aut.utils import autonity_from_endpoint_arg
-
-    print(autonity_from_endpoint_arg(rpc_endpoint).head_unbonding_id())
-
-
-protocol_group.add_command(head_unbonding_id)
-
-
-@command()
-@rpc_endpoint_option
 def deployer(rpc_endpoint: Optional[str]) -> None:
     """
     Contract deployer
@@ -323,44 +269,6 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
 
 
 protocol_group.add_command(get_proposer)
-
-
-@command()
-@rpc_endpoint_option
-@argument("start", type=int, nargs=1)
-@argument("end", type=int, nargs=1)
-def get_bonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None:
-    """
-    Get queued bonding information between start and end ids.
-    """
-    from autonity import Autonity
-
-    from aut.utils import web3_from_endpoint_arg
-
-    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
-    print(_show_json(aut.get_bonding_req(start, end)))
-
-
-protocol_group.add_command(get_bonding_req)
-
-
-@command()
-@rpc_endpoint_option
-@argument("start", type=int, nargs=1)
-@argument("end", type=int, nargs=1)
-def get_unbonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None:
-    """
-    Get queued unbonding information between start and end ids.
-    """
-    from autonity import Autonity
-
-    from aut.utils import web3_from_endpoint_arg
-
-    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
-    print(_show_json(aut.get_unbonding_req(start, end)))
-
-
-protocol_group.add_command(get_unbonding_req)
 
 
 @command()

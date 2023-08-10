@@ -23,9 +23,6 @@ aut protocol epoch-reward
 echo "aut protocol epoch-total-bonded-stake"
 aut protocol epoch-total-bonded-stake
 
-echo "aut protocol get-bonding-req"
-aut protocol get-bonding-req 100 110
-
 echo "aut protocol get-committee"
 aut protocol get-committee
 
@@ -47,29 +44,14 @@ aut protocol get-operator
 echo "aut protocol get-proposer"
 aut protocol get-proposer 100 3
 
-echo "aut protocol get-unbonding-req"
-aut protocol get-unbonding-req 200 220
-
 echo "aut protocol get-validators"
 aut protocol get-validators
 
 echo "aut protocol get-version"
 aut protocol get-version
 
-echo "aut protocol head-bonding-id"
-aut protocol head-bonding-id
-
-echo "aut protocol head-unbonding-id"
-aut protocol head-unbonding-id
-
 echo "aut protocol last-epoch-block"
 aut protocol last-epoch-block
-
-echo "aut protocol tail-bonding-id"
-aut protocol tail-bonding-id
-
-echo "aut protocol tail-unbonding-id"
-aut protocol tail-unbonding-id
 
 echo "aut protocol total-redistributed"
 aut protocol total-redistributed
@@ -80,7 +62,6 @@ aut protocol deployer --help > /dev/null
 aut protocol epoch-id --help > /dev/null
 aut protocol epoch-reward --help > /dev/null
 aut protocol epoch-total-bonded-stake --help > /dev/null
-aut protocol get-bonding-req --help > /dev/null
 aut protocol get-committee --help > /dev/null
 aut protocol get-committee-enodes --help > /dev/null
 aut protocol get-last-epoch-block --help > /dev/null
@@ -88,14 +69,9 @@ aut protocol get-max-committee-size --help > /dev/null
 aut protocol get-minimum-base-fee --help > /dev/null
 aut protocol get-operator --help > /dev/null
 aut protocol get-proposer --help > /dev/null
-aut protocol get-unbonding-req --help > /dev/null
 aut protocol get-validators --help > /dev/null
 aut protocol get-version --help > /dev/null
-aut protocol head-bonding-id --help > /dev/null
-aut protocol head-unbonding-id --help > /dev/null
 aut protocol last-epoch-block --help > /dev/null
-aut protocol tail-bonding-id --help > /dev/null
-aut protocol tail-unbonding-id --help > /dev/null
 aut protocol total-redistributed --help > /dev/null
 aut protocol set-minimum-base-fee --help > /dev/null
 aut protocol set-committee-size --help > /dev/null
