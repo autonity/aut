@@ -193,8 +193,8 @@ def lntn_balances(
     balances: Dict[str, str] = {}
     for validator in validators:
         log("computing holdings for validators {validator['addr']}")
-        lnew = ERC20(w3, validator["liquid_contract"])
-        bal = lnew.balance_of(account_addr)
+        lntn = ERC20(w3, validator["liquid_contract"])
+        bal = lntn.balance_of(account_addr)
         if bal:
             balances[validator["addr"]] = format_newton_quantity(bal)
 

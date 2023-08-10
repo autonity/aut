@@ -24,7 +24,7 @@ from aut.options import (
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
 
-# TODO: consider caching the LNEW addresses of Validators
+# TODO: consider caching the LNTN addresses of Validators
 
 
 @group()
