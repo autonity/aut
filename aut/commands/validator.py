@@ -5,6 +5,7 @@ The `validator` command group.
 import sys
 from typing import Optional
 
+from autonity.validator import OracleAddress
 from click import argument, command, echo, group, option
 
 from aut.commands.protocol import protocol_group
@@ -205,6 +206,7 @@ validator.add_command(unbond)
 @from_option
 @tx_aux_options
 @argument("enode")
+@argument("oracle")
 @argument("proof")
 def register(
     rpc_endpoint: Optional[str],
@@ -218,6 +220,7 @@ def register(
     nonce: Optional[int],
     chain_id: Optional[int],
     enode: str,
+    oracle: OracleAddress,
     proof: str,
 ) -> None:
     """
@@ -240,7 +243,7 @@ def register(
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     tx = create_contract_tx_from_args(
-        function=aut.register_validator(enode, proof_bytes),
+        function=aut.register_validator(enode, oracle, proof_bytes),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
