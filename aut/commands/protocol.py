@@ -154,6 +154,42 @@ protocol_group.add_command(deployer)
 
 @command()
 @rpc_endpoint_option
+def get_epoch_period(rpc_endpoint: Optional[str]) -> None:
+    """Epoch period in blocks"""
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).get_epoch_period())
+
+
+protocol_group.add_command(get_epoch_period)
+
+
+@command()
+@rpc_endpoint_option
+def get_block_period(rpc_endpoint: Optional[str]) -> None:
+    """Block period in seconds"""
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).get_block_period())
+
+
+protocol_group.add_command(get_block_period)
+
+
+@command()
+@rpc_endpoint_option
+def get_unbonding_period(rpc_endpoint: Optional[str]) -> None:
+    """Unbonding period in blocks"""
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).get_unbonding_period())
+
+
+protocol_group.add_command(get_unbonding_period)
+
+
+@command()
+@rpc_endpoint_option
 def get_last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     """
     Block of last epoch
@@ -202,6 +238,30 @@ def get_validators(rpc_endpoint: Optional[str]) -> None:
 
 
 protocol_group.add_command(get_validators)
+
+
+@command()
+@rpc_endpoint_option
+def get_treasury_account(rpc_endpoint: Optional[str]) -> None:
+    """Treasury account address"""
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_account())
+
+
+protocol_group.add_command(get_treasury_account)
+
+
+@command()
+@rpc_endpoint_option
+def get_treasury_fee(rpc_endpoint: Optional[str]) -> None:
+    """Treasury fee"""
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_fee())
+
+
+protocol_group.add_command(get_treasury_fee)
 
 
 @command()
@@ -269,6 +329,22 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
 
 
 protocol_group.add_command(get_proposer)
+
+
+@command()
+@rpc_endpoint_option
+@argument("block", type=int, nargs=1)
+def get_epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
+    """Get the epoch of the given block"""
+    from autonity import Autonity
+
+    from aut.utils import web3_from_endpoint_arg
+
+    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
+    print(aut.get_epoch_from_block(block))
+
+
+protocol_group.add_command(get_epoch_from_block)
 
 
 @command()
@@ -629,6 +705,271 @@ def set_treasury_fee(
 
 
 protocol_group.add_command(set_treasury_fee)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+def set_accountability_contract(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    contract_address_str: str,
+) -> None:
+    """
+    Set the Accountability Contract address. Restricted to the Operator account.  See
+    `setAccountabilityContract` on Autonity contract.
+    """
+    from eth_utils import to_checksum_address
+
+    from aut.utils import (
+        autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+    )
+
+    contract_address = to_checksum_address(contract_address_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    tx = create_contract_tx_from_args(
+        function=aut.set_accountability_contract(contract_address),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+protocol_group.add_command(set_accountability_contract)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+def set_oracle_contract(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    contract_address_str: str,
+) -> None:
+    """
+    Set the Oracle Contract address. Restricted to the Operator account.  See
+    `setOracleContract` on Autonity contract.
+    """
+    from eth_utils import to_checksum_address
+
+    from aut.utils import (
+        autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+    )
+
+    contract_address = to_checksum_address(contract_address_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    tx = create_contract_tx_from_args(
+        function=aut.set_oracle_contract(contract_address),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+protocol_group.add_command(set_oracle_contract)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+def set_acu_contract(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    contract_address_str: str,
+) -> None:
+    """
+    Set the ACU Contract address. Restricted to the Operator account.  See
+    `setAcuContract` on Autonity contract.
+    """
+    from eth_utils import to_checksum_address
+
+    from aut.utils import (
+        autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+    )
+
+    contract_address = to_checksum_address(contract_address_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    tx = create_contract_tx_from_args(
+        function=aut.set_acu_contract(contract_address),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+protocol_group.add_command(set_acu_contract)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+def set_supply_control_contract(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    contract_address_str: str,
+) -> None:
+    """
+    Set the Supply Control Contract address. Restricted to the Operator account.  See
+    `setSupplyControlContract` on Autonity contract.
+    """
+    from eth_utils import to_checksum_address
+
+    from aut.utils import (
+        autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+    )
+
+    contract_address = to_checksum_address(contract_address_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    tx = create_contract_tx_from_args(
+        function=aut.set_supply_control_contract(contract_address),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+protocol_group.add_command(set_supply_control_contract)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+def set_stabilization_contract(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    contract_address_str: str,
+) -> None:
+    """
+    Set the Supply Control Contract address. Restricted to the Operator account.  See
+    `setSupplyControlContract` on Autonity contract.
+    """
+    from eth_utils import to_checksum_address
+
+    from aut.utils import (
+        autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+    )
+
+    contract_address = to_checksum_address(contract_address_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    tx = create_contract_tx_from_args(
+        function=aut.set_stabilization_contract(contract_address),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+protocol_group.add_command(set_stabilization_contract)
 
 
 @command()
