@@ -43,7 +43,3 @@ aut.add_command(validator.validator)
 aut.add_command(account.account_group)
 aut.add_command(token.token_group)
 aut.add_command(contract.contract_group)
-
-
-if __name__ == "__main__":
-    aut()  # pylint: disable=no-value-for-parameter
