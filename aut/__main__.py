@@ -19,7 +19,7 @@ from aut.commands import (
 from aut.logging import enable_logging
 
 
-@group()
+@group(context_settings=dict(help_option_names=["-h", "--help"]))
 @option("--verbose", "-v", is_flag=True, help="Enable additional output (to stderr)")
 @version_option()
 def aut(verbose: bool) -> None:
