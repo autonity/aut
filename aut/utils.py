@@ -334,7 +334,10 @@ def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
     keyfile_list = os.listdir(keystore_dir)
     for fn in keyfile_list:
         keyfile_path = keystore_dir + "/" + fn
-        keyfile = load_keyfile(keyfile_path)
+        try:
+            keyfile = load_keyfile(keyfile_path)
+        except json.JSONDecodeError:
+            continue
         addr_lower = keyfile["address"]
         addr_keyfile_dict[Web3.to_checksum_address("0x" + addr_lower)] = keyfile_path
 
