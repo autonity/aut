@@ -478,7 +478,7 @@ def verify_signature(
     signature_file: str,
 ) -> None:
     """
-    Verify that the signature in SIGNATURE_FILE` is valid for the
+    Verify that the signature in `SIGNATURE_FILE` is valid for the
     message MESSAGE, signed by the owner of the FROM address.
     Signature must be contained in a file.
     """
