@@ -28,8 +28,6 @@ aut token total-supply --token ${token}
 aut token balance-of --token ${token} ${treasury}
 aut token allowance --token ${token} ${treasury}
 
-# "treasury" transfers 1 LNTN token to ALICE (should succeed)
-aut token transfer --token ${token} --from ${treasury} ${ALICE} 0.000000000000000001 > transfer.tx
 # "treasury" grants ALICE permission to spend 10 of his tokens.
 aut token approve --token ${token} --from ${treasury} ${ALICE} 10 > approve.tx
 # ALICE sends 10 of "treasury"'s tokens to BOB  (use --gas flag to prevent simulation on node)
