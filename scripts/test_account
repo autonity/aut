@@ -30,12 +30,14 @@ if ! [ "${test_addr}" == "0x1e9Ee7293bc304A10a0b33D0FCCBDFF78463bE5c" ] ; then
 fi
 
 # Create from private key to default file name
-mkdir test_keystore
+mkdir -p test_keystore
+rm -f test_keystore/*
 echo -e '\n\n' | aut account import-private-key --keystore test_keystore --show-password test_key.priv > test_key_out
 [ "1" == `ls test_keystore/*1e9ee7293bc304a10a0b33d0fccbdff78463be5c | wc -l` ]
 
 # Create from private key to default file name and keystore
 mv .autrc .autrc.bak
+rm  -vf ~/.autonity/keystore/*1e9ee7293bc304a10a0b33d0fccbdff78463be5c
 echo -e '\n\n' | aut account import-private-key --show-password test_key.priv > test_key_out
 [ "1" == `ls ~/.autonity/keystore/*1e9ee7293bc304a10a0b33d0fccbdff78463be5c | wc -l` ]
 mv .autrc.bak .autrc
@@ -54,6 +56,7 @@ echo -e "\n\n" | aut account new --keyfile keystore/dave.key --show-password
     echo "ERROR: account new succeeded with existing file"; exit 1)
 
 # Create account with entropy as file, and via stdin
+rm -f keystore/dave_entropy_*.key
 echo -e "entropy\n\n\n" | aut account new --extra-entropy - --keyfile keystore/dave_entropy_stdin.key --show-password
 echo "entropy" > entropy.bin
 echo -e "\n\n" | aut account new --extra-entropy entropy.bin --keyfile keystore/dave_entropy_file.key --show-password
