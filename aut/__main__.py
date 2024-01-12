@@ -2,20 +2,21 @@
 Autonity RPC Client
 """
 
+import sys
+
+from click import group, option, version_option
+
 from aut.commands import (
-    node,
-    block,
-    tx,
-    protocol,
-    validator,
     account,
-    token,
+    block,
     contract,
+    node,
+    protocol,
+    token,
+    tx,
+    validator,
 )
 from aut.logging import enable_logging
-
-import sys
-from click import group, option, version_option
 
 
 @group()

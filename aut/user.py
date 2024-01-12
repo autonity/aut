@@ -8,23 +8,23 @@ If aut implements an ipyothon 'console mode', perhaps these are the
 functions meant to be called in that.
 """
 
-from aut.utils import w3_provider
+from typing import List, Optional, TypedDict
 
 from autonity import Autonity
 from autonity.utils.denominations import (
     format_auton_quantity,
     format_newton_quantity,
 )
-
 from web3 import Web3
 from web3.types import (
-    ChecksumAddress,
-    BlockIdentifier,
     BlockData,
-    TxParams,
+    BlockIdentifier,
+    ChecksumAddress,
     SignedTx,
+    TxParams,
 )
-from typing import TypedDict, List, Optional
+
+from aut.utils import w3_provider
 
 
 class AccountStats(TypedDict):

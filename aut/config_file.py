@@ -4,12 +4,12 @@ Configuration file location and definition.
 
 from __future__ import annotations
 
-from aut.logging import log
-
 import os
 import os.path
 from configparser import ConfigParser
-from typing import Mapping, Optional, Any
+from typing import Any, Mapping, Optional
+
+from aut.logging import log
 
 # pylint: disable=global-statement
 

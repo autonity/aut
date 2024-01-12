@@ -2,18 +2,19 @@
 Test util functions
 """
 
-from aut.utils import (
-    parse_wei_representation,
-    parse_token_value_representation,
-    parse_commission_rate,
-    geth_keyfile_name,
-)
-from aut.constants import AutonDenoms
+from datetime import datetime, timezone
+from unittest import TestCase
 
 from click import ClickException
-from unittest import TestCase
-from datetime import datetime, timezone
 from web3 import Web3
+
+from aut.constants import AutonDenoms
+from aut.utils import (
+    geth_keyfile_name,
+    parse_commission_rate,
+    parse_token_value_representation,
+    parse_wei_representation,
+)
 
 
 class TestUtils(TestCase):

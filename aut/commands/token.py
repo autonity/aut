@@ -2,16 +2,17 @@
 The `token` command group.
 """
 
+from typing import Optional
+
+from click import ClickException, argument, command, group
+
 from aut.options import (
     from_option,
-    rpc_endpoint_option,
-    newton_or_token_option,
     keyfile_option,
+    newton_or_token_option,
+    rpc_endpoint_option,
     tx_aux_options,
 )
-
-from click import group, command, argument, ClickException
-from typing import Optional
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -36,12 +37,12 @@ def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
     Returns the token name (if available).
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-    )
-
     from autonity.erc20 import ERC20
+
+    from aut.utils import (
+        newton_or_token_to_address_require,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -63,12 +64,12 @@ def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None
     Returns the token symbol (if available).
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-    )
-
     from autonity.erc20 import ERC20
+
+    from aut.utils import (
+        newton_or_token_to_address_require,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -90,12 +91,12 @@ def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> No
     Returns the number of decimals used in the token balances.
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-    )
-
     from autonity.erc20 import ERC20
+
+    from aut.utils import (
+        newton_or_token_to_address_require,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -113,13 +114,13 @@ def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -
     """
     Total supply (in units of whole Tokens).
     """
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-    )
-
     from autonity.erc20 import ERC20
     from autonity.utils.denominations import format_quantity
+
+    from aut.utils import (
+        newton_or_token_to_address_require,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -149,14 +150,14 @@ def balance_of(
     specified, the default keyfile is used.
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-        from_address_from_argument,
-    )
-
     from autonity.erc20 import ERC20
     from autonity.utils.denominations import format_quantity
+
+    from aut.utils import (
+        from_address_from_argument,
+        newton_or_token_to_address_require,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     account_addr = from_address_from_argument(account_str, keyfile)
@@ -189,16 +190,15 @@ def allowance(
     Returns the quantity in tokens that OWNER has granted the caller
     (the "from" address) permission to spend.
     """
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-        from_address_from_argument,
-    )
-
     from autonity.erc20 import ERC20
     from autonity.utils.denominations import format_quantity
-
     from web3 import Web3
+
+    from aut.utils import (
+        from_address_from_argument,
+        newton_or_token_to_address_require,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -243,18 +243,17 @@ def transfer(
     be fractional if the token supports it.
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-        from_address_from_argument,
-        parse_token_value_representation,
-        create_contract_tx_from_args,
-        to_json,
-    )
-
     from autonity.erc20 import ERC20
-
     from web3 import Web3
+
+    from aut.utils import (
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        newton_or_token_to_address_require,
+        parse_token_value_representation,
+        to_json,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -315,18 +314,17 @@ def approve(
     fractional if the token supports it.
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-        from_address_from_argument,
-        parse_token_value_representation,
-        create_contract_tx_from_args,
-        to_json,
-    )
-
     from autonity.erc20 import ERC20
-
     from web3 import Web3
+
+    from aut.utils import (
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        newton_or_token_to_address_require,
+        parse_token_value_representation,
+        to_json,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -390,18 +388,17 @@ def transfer_from(
     transaction.  AMOUNT can be fractional if the token supports it.
     """
 
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        newton_or_token_to_address_require,
-        from_address_from_argument,
-        parse_token_value_representation,
-        create_contract_tx_from_args,
-        to_json,
-    )
-
     from autonity.erc20 import ERC20
-
     from web3 import Web3
+
+    from aut.utils import (
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        newton_or_token_to_address_require,
+        parse_token_value_representation,
+        to_json,
+        web3_from_endpoint_arg,
+    )
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_str, keyfile)

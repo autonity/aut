@@ -2,20 +2,20 @@
 The `validator` command group.
 """
 
+import sys
+from typing import Optional
+
+from click import argument, command, echo, group, option
+
+from aut.commands.protocol import protocol_group
 from aut.constants import UnixExitStatus
 from aut.options import (
-    rpc_endpoint_option,
-    keyfile_option,
     from_option,
+    keyfile_option,
+    rpc_endpoint_option,
     tx_aux_options,
     validator_option,
 )
-from aut.commands.protocol import protocol_group
-
-from click import group, command, option, argument, echo
-from typing import Optional
-
-import sys
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -74,8 +74,9 @@ def compute_address(
     Compute the address corresponding to an enode URL.
     """
     from urllib import parse as urlparse
-    from web3.types import HexBytes
+
     from web3 import Web3
+    from web3.types import HexBytes
 
     _, key_at_ip_port, _, _, _, _ = urlparse.urlparse(enode)
     pubkey, _ = key_at_ip_port.split("@")
@@ -113,10 +114,10 @@ def bond(
     from aut.config import get_validator_address
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
-        to_json,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_newton_value_representation,
+        to_json,
     )
 
     token_units = parse_newton_value_representation(amount_str)
@@ -169,10 +170,10 @@ def unbond(
     from aut.config import get_validator_address
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
-        to_json,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_newton_value_representation,
+        to_json,
     )
 
     token_units = parse_newton_value_representation(amount_str)
@@ -222,14 +223,14 @@ def register(
     """
     Create transaction to register a validator
     """
+    from web3.types import HexBytes
+
     from aut.utils import (
         autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
         from_address_from_argument,
         to_json,
-        create_contract_tx_from_args,
     )
-
-    from web3.types import HexBytes
 
     # Check the "proof" is at least valid hex.
     proof_bytes = HexBytes(proof)
@@ -281,9 +282,9 @@ def pause(
     from aut.config import get_validator_address
     from aut.utils import (
         autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
         from_address_from_argument,
         to_json,
-        create_contract_tx_from_args,
     )
 
     validator_addr = get_validator_address(validator_addr_str)
@@ -334,9 +335,9 @@ def activate(
     from aut.config import get_validator_address
     from aut.utils import (
         autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
         from_address_from_argument,
         to_json,
-        create_contract_tx_from_args,
     )
 
     validator_addr = get_validator_address(validator_addr_str)
@@ -390,10 +391,10 @@ def change_commission_rate(
     from aut.config import get_validator_address
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
-        to_json,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_commission_rate,
+        to_json,
     )
 
     validator_addr = get_validator_address(validator_addr_str)
@@ -435,11 +436,11 @@ def unclaimed_rewards(
     """
     Check the given validator for unclaimed-fees.
     """
-    from aut.config import get_validator_address
-    from aut.utils import autonity_from_endpoint_arg, from_address_from_argument
-
     from autonity.utils.denominations import format_auton_quantity
     from autonity.validator import Validator
+
+    from aut.config import get_validator_address
+    from aut.utils import autonity_from_endpoint_arg, from_address_from_argument
 
     validator_addr = get_validator_address(validator_addr_str)
     account = from_address_from_argument(account, keyfile)
@@ -476,16 +477,16 @@ def claim_rewards(
     """
     Create transaction to claim rewards from a Validator.
     """
-    from aut.config import get_validator_address
-    from aut.utils import (
-        web3_from_endpoint_arg,
-        from_address_from_argument,
-        to_json,
-        create_contract_tx_from_args,
-    )
-
     from autonity.autonity import Autonity
     from autonity.validator import Validator
+
+    from aut.config import get_validator_address
+    from aut.utils import (
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+        web3_from_endpoint_arg,
+    )
 
     validator_addr = get_validator_address(validator_addr_str)
     from_addr = from_address_from_argument(from_str, keyfile)

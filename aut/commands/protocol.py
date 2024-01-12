@@ -2,17 +2,17 @@
 The `autonity` command group.
 """
 
-from aut.options import (
-    rpc_endpoint_option,
-    keyfile_option,
-    from_option,
-    tx_aux_options,
-)
+from typing import Any, Optional, Sequence
 
 # from autonity import Autonity
+from click import argument, command, echo, group
 
-from click import group, command, argument, echo
-from typing import Sequence, Optional, Any
+from aut.options import (
+    from_option,
+    keyfile_option,
+    rpc_endpoint_option,
+    tx_aux_options,
+)
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -314,8 +314,9 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     """
     Proposer at the given height and round
     """
-    from aut.utils import web3_from_endpoint_arg
     from autonity import Autonity
+
+    from aut.utils import web3_from_endpoint_arg
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(aut.get_proposer(height, round_))
@@ -332,8 +333,9 @@ def get_bonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None:
     """
     Get queued bonding information between start and end ids.
     """
-    from aut.utils import web3_from_endpoint_arg
     from autonity import Autonity
+
+    from aut.utils import web3_from_endpoint_arg
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(_show_json(aut.get_bonding_req(start, end)))
@@ -350,8 +352,9 @@ def get_unbonding_req(rpc_endpoint: Optional[str], start: int, end: int) -> None
     """
     Get queued unbonding information between start and end ids.
     """
-    from aut.utils import web3_from_endpoint_arg
     from autonity import Autonity
+
+    from aut.utils import web3_from_endpoint_arg
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(_show_json(aut.get_unbonding_req(start, end)))
@@ -385,8 +388,8 @@ def set_minimum_base_fee(
     """
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_wei_representation,
         to_json,
     )
@@ -437,8 +440,8 @@ def set_committee_size(
     """
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         to_json,
     )
 
@@ -487,8 +490,8 @@ def set_unbonding_period(
     """
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         to_json,
     )
 
@@ -537,8 +540,8 @@ def set_epoch_period(
     """
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         to_json,
     )
 
@@ -585,14 +588,14 @@ def set_operator_account(
     Set the Operator account. Restricted to the Operator account.  See
     `setOperatorAccount` on Autonity contract.
     """
+    from eth_utils import to_checksum_address
+
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         to_json,
     )
-
-    from eth_utils import to_checksum_address
 
     operator_address = to_checksum_address(operator_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -638,14 +641,14 @@ def set_treasury_account(
     Set the global treasury account. Restricted to the Operator
     account.  See `setTreasuryAccount` on Autonity contract.
     """
+    from eth_utils import to_checksum_address
+
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         to_json,
     )
-
-    from eth_utils import to_checksum_address
 
     treasury_address = to_checksum_address(treasury_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -693,8 +696,8 @@ def set_treasury_fee(
     """
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_wei_representation,
         to_json,
     )
@@ -747,15 +750,15 @@ def mint(
     Restricted to the Operator account.  See `mint` on Autonity
     contract.
     """
+    from eth_utils import to_checksum_address
+
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_newton_value_representation,
         to_json,
     )
-
-    from eth_utils import to_checksum_address
 
     token_units = parse_newton_value_representation(amount_str)
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -807,15 +810,15 @@ def burn(
     to the Operator account.  This won't burn associated Liquid
     tokens.  See `burn` on Autonity contract.
     """
+    from eth_utils import to_checksum_address
+
     from aut.utils import (
         autonity_from_endpoint_arg,
-        from_address_from_argument,
         create_contract_tx_from_args,
+        from_address_from_argument,
         parse_newton_value_representation,
         to_json,
     )
-
-    from eth_utils import to_checksum_address
 
     token_units = parse_newton_value_representation(amount_str)
     from_addr = from_address_from_argument(from_str, keyfile)

@@ -4,18 +4,17 @@ line, config and defaults, and handles extracting from the config
 file.
 """
 
-from aut.config_file import get_config_file, CONFIG_FILE_NAME
-from aut.logging import log
-
-from autonity.validator import ValidatorAddress
-
 import os
 import os.path
-from click import ClickException
 from getpass import getpass
-from web3 import Web3
 from typing import Optional
 
+from autonity.validator import ValidatorAddress
+from click import ClickException
+from web3 import Web3
+
+from aut.config_file import CONFIG_FILE_NAME, get_config_file
+from aut.logging import log
 
 DEFAULT_KEYFILE_DIRECTORY = "~/.autonity/keystore"
 KEYFILE_DIRECTORY_ENV_VAR = "KEYFILEDIR"

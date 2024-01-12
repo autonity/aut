@@ -2,41 +2,40 @@
 Utility functions that are only meant to be called by other functions in this package.
 """
 
-from aut import config
-from aut.constants import AutonDenoms
-from aut.logging import log
+import json
+import os
+import sys
+from datetime import datetime, timezone
+from decimal import Decimal
+from getpass import getpass
+from typing import Any, Dict, Mapping, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 from autonity import Autonity
 from autonity.abi_manager import ABIManager
-from autonity.utils.web3 import create_web3_for_endpoint
-from autonity.utils.keyfile import load_keyfile, get_address_from_keyfile
+from autonity.utils.denominations import NEWTON_DECIMALS
+from autonity.utils.keyfile import get_address_from_keyfile, load_keyfile
 from autonity.utils.tx import (
-    create_transaction,
     create_contract_function_transaction,
+    create_transaction,
     finalize_transaction,
 )
-from autonity.utils.denominations import NEWTON_DECIMALS
-
-import os
-import sys
-import json
-from datetime import datetime, timezone
-from decimal import Decimal
+from autonity.utils.web3 import create_web3_for_endpoint
 from click import ClickException
-from getpass import getpass
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 from web3.types import (
-    Wei,
-    ChecksumAddress,
-    BlockIdentifier,
-    HexBytes,
-    TxParams,
-    Nonce,
     ABI,
+    BlockIdentifier,
+    ChecksumAddress,
+    HexBytes,
+    Nonce,
+    TxParams,
+    Wei,
 )
-from typing import Dict, Mapping, Sequence, Tuple, Optional, Union, TypeVar, Any, cast
 
+from aut import config
+from aut.constants import AutonDenoms
+from aut.logging import log
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals

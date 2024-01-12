@@ -2,9 +2,9 @@
 Command line option sets used by multiple commands.
 """
 
-from click import option, Path
-from typing import Callable, TypeVar, Any
+from typing import Any, Callable, TypeVar
 
+from click import Path, option
 
 Func = TypeVar("Func", bound=Callable[..., Any])
 
