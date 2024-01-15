@@ -843,48 +843,6 @@ protocol_group.add_command(burn)
 
 
 @command()
-def contract_version() -> None:
-    """
-    Print the git commit hash of the bundled Autonity contract.
-    """
-    from autonity import get_autonity_contract_version
-
-    echo(get_autonity_contract_version())
-
-
-protocol_group.add_command(contract_version)
-
-
-@command()
-def contract_src() -> None:
-    """
-    Print the source code URL of the bundled Autonity contract.
-    """
-    from autonity import get_autonity_contract_version
-
-    _v_ = get_autonity_contract_version()
-    echo(
-        f"https://github.com/autonity/autonity/blob/{_v_}/autonity/solidity/contracts/Autonity.sol"
-    )
-
-
-protocol_group.add_command(contract_src)
-
-
-@command()
-def contract_abi_path() -> None:
-    """
-    Print the bundled Autonity contract's ABI path.
-    """
-    from autonity import get_autonity_contract_abi_path
-
-    echo(get_autonity_contract_abi_path(), nl=False)
-
-
-protocol_group.add_command(contract_abi_path)
-
-
-@command()
 def contract_address() -> None:
     """
     Print the default Autonity contract address.
