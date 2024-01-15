@@ -4,3 +4,4 @@ __pycache__/
 # Root directories
 /autonity.py
 /dist/
+/_test_*_cli/
