@@ -209,54 +209,9 @@ alternatively, you can open a shell in the `hatch` environment by executing
 hatch shell
 ```
 
-To run all code checks (linters, type-checker, unit tests, etc):
-
-```console
-hatch run lint:all
-```
-
-Several test scripts (which invoke the `aut` command itself) are available in
-the [scripts](./scripts) directory. They are intended to be run within the
-Python virtual-env, from the repository root directory.
-
-#### Autonity.py
-
-The `aut` CLI depends on the
-[`autonity.py`](https://github.com/autonity/autonity.py) package, and will pull
-in the right version as specified in `pyproject.toml`.
-
-The instructions in this section are only required if you need to develop
-against a local version of the `autonity.py` package.
-
-To support this workflow, you first need to update the `pyproject.toml` setting
-for `project.dependency` to set the path of the local `autonity.py` project:
-
-```toml
-...
-dependencies = [
-    # "autonity==1.0.0",                    # comment this line
-    "autonity @ {root:uri}/../autonity.py", # un-comment and set the path to the local autonity.py project
-    "click==8.1.3",
-]
-...
-```
-
-and enable the option to allow direct references by setting the
-`allow-direct-references` to `true`
-
-```toml
-[tool.hatch.metadata]
-allow-direct-references = false
-```
-
-At the time of writing, `hatch` does not support
-[editable dependencies](https://github.com/pypa/hatch/issues/588), therefore,
-the project must be refreshed manually upon changes to the `autonity.py` library
-using the command:
-
-```console
-make refresh-env
-```
+To run the unit and script-based tests, use `hatch run test`. To check for
+linting errors, use `hatch run lint:all`. To reformat the code, use
+`hatch run lint:format`.
 
 ## Reporting a Vulnerability
 
