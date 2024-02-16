@@ -210,6 +210,7 @@ validator.add_command(unbond)
 @tx_aux_options
 @argument("enode")
 @argument("oracle")
+@argument("consensus_key")
 @argument("proof")
 def register(
     rpc_endpoint: Optional[str],
@@ -224,6 +225,7 @@ def register(
     chain_id: Optional[int],
     enode: str,
     oracle: OracleAddress,
+    consensus_key: str,
     proof: str,
 ) -> None:
     """
@@ -238,7 +240,7 @@ def register(
         to_json,
     )
 
-    # Check the "proof" is at least valid hex.
+    consensus_key_bytes = HexBytes(consensus_key)
     proof_bytes = HexBytes(proof)
 
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -246,7 +248,9 @@ def register(
 
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     tx = create_contract_tx_from_args(
-        function=aut.register_validator(enode, oracle, proof_bytes),
+        function=aut.register_validator(
+            enode, oracle, consensus_key_bytes, proof_bytes
+        ),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
