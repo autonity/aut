@@ -2,22 +2,24 @@
 The `contract` command group
 """
 
+import json
 from typing import List, Optional, Tuple, cast
 
+from autonity.abi_parser import (find_abi_constructor, find_abi_function,
+                                 parse_arguments, parse_return_value)
 from click import ClickException, Path, argument, command, group, option
+from web3.contract.contract import ContractFunction
 
-from aut.options import (
-    contract_options,
-    from_option,
-    keyfile_option,
-    rpc_endpoint_option,
-    tx_aux_options,
-    tx_value_option,
-)
+from aut.logging import log
+from aut.options import (contract_options, from_option, keyfile_option,
+                         rpc_endpoint_option, tx_aux_options, tx_value_option)
+from aut.utils import (contract_address_and_abi_from_args,
+                       create_contract_tx_from_args, finalize_tx_from_args,
+                       from_address_from_argument, to_json,
+                       web3_from_endpoint_arg)
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
-# pylint: disable=import-outside-toplevel
 
 
 @group(name="contract")
@@ -40,14 +42,6 @@ def function_call_from_args(
     ABIFunction for the method, and the Web3 object created in the
     process.
     """
-
-    from autonity.abi_parser import find_abi_function, parse_arguments
-
-    from aut.logging import log
-    from aut.utils import (
-        contract_address_and_abi_from_args,
-        web3_from_endpoint_arg,
-    )
 
     log(f"method: {method}")
     log(f"parameters: {list(parameters)}")
@@ -104,20 +98,6 @@ def deploy_cmd(
     the transaction receipt (see aut tx wait).
     """
 
-    import json
-
-    from autonity.abi_parser import find_abi_constructor, parse_arguments
-    from web3.contract.contract import ContractFunction
-
-    from aut.logging import log
-    from aut.utils import (
-        create_contract_tx_from_args,
-        finalize_tx_from_args,
-        from_address_from_argument,
-        to_json,
-        web3_from_endpoint_arg,
-    )
-
     log(f"parameters: {list(parameters)}")
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -173,10 +153,6 @@ def call_cmd(
     Execute a contract call on the connected node, and print the result.
     """
 
-    from autonity.abi_parser import parse_return_value
-
-    from aut.utils import to_json
-
     function, abi_fn, _ = function_call_from_args(
         rpc_endpoint,
         contract_address_str,
@@ -224,14 +200,6 @@ def tx_cmd(
     passing any parameters.  The parameters must match those required
     by the contract.
     """
-
-    from aut.logging import log
-    from aut.utils import (
-        create_contract_tx_from_args,
-        finalize_tx_from_args,
-        from_address_from_argument,
-        to_json,
-    )
 
     function, _, w3 = function_call_from_args(
         rpc_endpoint,
