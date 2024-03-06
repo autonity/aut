@@ -4,7 +4,8 @@
 
 ### Changed
 
-- Require consensus key for validator registration ([`10cc9c6`](https://github.com/autonity/aut/commit/10cc9c6))
+- Support the Autonity Sumida protocol ([#146](https://github.com/autonity/aut/issues/146))
+- Require consensus key for validator registration ([`380b6be`](https://github.com/autonity/aut/commit/380b6be))
 
 ### Added
 
