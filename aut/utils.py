@@ -158,14 +158,16 @@ def create_tx_from_args(
                 data=HexBytes(data) if data else None,
                 gas=parse_wei_representation(gas) if gas else None,
                 gas_price=parse_wei_representation(gas_price) if gas_price else None,
-                max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
-                if max_fee_per_gas
-                else None,
-                max_priority_fee_per_gas=parse_wei_representation(
-                    max_priority_fee_per_gas
-                )
-                if max_priority_fee_per_gas
-                else None,
+                max_fee_per_gas=(
+                    parse_wei_representation(max_fee_per_gas)
+                    if max_fee_per_gas
+                    else None
+                ),
+                max_priority_fee_per_gas=(
+                    parse_wei_representation(max_priority_fee_per_gas)
+                    if max_priority_fee_per_gas
+                    else None
+                ),
                 nonce=Nonce(nonce) if nonce else None,
                 chain_id=chain_id,
             ),
@@ -231,12 +233,14 @@ def create_contract_tx_from_args(
             value=parse_wei_representation(value) if value else None,
             gas=parse_wei_representation(gas) if gas else None,
             gas_price=parse_wei_representation(gas_price) if gas_price else None,
-            max_fee_per_gas=parse_wei_representation(max_fee_per_gas)
-            if max_fee_per_gas
-            else None,
-            max_priority_fee_per_gas=parse_wei_representation(max_priority_fee_per_gas)
-            if max_priority_fee_per_gas
-            else None,
+            max_fee_per_gas=(
+                parse_wei_representation(max_fee_per_gas) if max_fee_per_gas else None
+            ),
+            max_priority_fee_per_gas=(
+                parse_wei_representation(max_priority_fee_per_gas)
+                if max_priority_fee_per_gas
+                else None
+            ),
             nonce=Nonce(nonce) if nonce else None,
             chain_id=chain_id,
         )
