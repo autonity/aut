@@ -3,9 +3,8 @@ The `validator` command group.
 """
 
 import sys
-from typing import Optional
+from typing import Optional, cast
 
-from autonity.validator import OracleAddress
 from click import argument, command, echo, group, option
 
 from aut.commands.protocol import protocol_group
@@ -224,7 +223,7 @@ def register(
     nonce: Optional[int],
     chain_id: Optional[int],
     enode: str,
-    oracle: OracleAddress,
+    oracle: str,
     consensus_key: str,
     proof: str,
 ) -> None:
@@ -233,6 +232,7 @@ def register(
     """
     from web3.types import HexBytes
 
+    from autonity.validator import OracleAddress
     from aut.utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
@@ -246,10 +246,12 @@ def register(
     from_addr = from_address_from_argument(from_str, keyfile)
     # TODO: validate enode string?
 
+    oracle_addr = cast(OracleAddress, oracle)
+
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     tx = create_contract_tx_from_args(
         function=aut.register_validator(
-            enode, oracle, consensus_key_bytes, proof_bytes
+            enode, oracle_addr, consensus_key_bytes, proof_bytes
         ),
         from_addr=from_addr,
         gas=gas,
