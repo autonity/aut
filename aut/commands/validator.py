@@ -521,3 +521,65 @@ def claim_rewards(
 
 
 validator.add_command(claim_rewards)
+
+
+@command()
+@rpc_endpoint_option
+@validator_option
+def accusation(
+    rpc_endpoint: Optional[str],
+    validator_addr_str: Optional[str],
+) -> None:
+    """Get the most recent pending accusation reported for the given validator.
+
+    See `getValidatorAccusation` on the Accountability contract.
+    """
+    from web3.exceptions import ContractLogicError
+
+    from autonity import Accountability
+    from aut.config import get_node_address
+    from aut.utils import to_json, web3_from_endpoint_arg
+
+    validator_addr = get_node_address(validator_addr_str)
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    accountability = Accountability(w3)
+
+    try:
+        event = accountability.get_validator_accusation(validator_addr)
+        print(to_json(event))
+    except ContractLogicError as err:
+        # Execution being reverted because of "no accusation" is expected
+        # outcome and not an error
+        if err.message is not None and err.message.endswith("no accusation"):
+            print("{}")
+        else:
+            raise err
+
+
+validator.add_command(accusation)
+
+
+@command()
+@rpc_endpoint_option
+@validator_option
+def faults(
+    rpc_endpoint: Optional[str],
+    validator_addr_str: Optional[str],
+) -> None:
+    """Get proven misbehaviour faults reported for the given validator.
+
+    See `getValidatorFaults` on the Accountability contract.
+    """
+    from autonity import Accountability
+    from aut.config import get_node_address
+    from aut.utils import to_json, web3_from_endpoint_arg
+
+    validator_addr = get_node_address(validator_addr_str)
+    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
+    accountability = Accountability(w3)
+
+    events = accountability.get_validator_faults(validator_addr)
+    print(to_json(events))
+
+
+validator.add_command(faults)
