@@ -14,11 +14,16 @@ Requirements:
 - **The** [pipx](https://pypa.github.io/pipx/) **tool** (Install a recent
   version with `pip install pipx`)
 
-The `aut` tool can then be installed as a pipx package, isolated in its own
-environment:
+To install the `aut` tool as a pipx package, isolated in its own environment, run:
 
 ```console
 pipx install git+https://github.com/autonity/aut.git
+```
+
+To upgrade from an earlier `pipx` installation of `aut`, use the `--force` flag:
+
+```console
+pipx install --force git+https://github.com/autonity/aut.git
 ```
 
 Once successfully installed, the `aut` command should be available in the
@@ -26,9 +31,6 @@ Once successfully installed, the `aut` command should be available in the
 `aut <command> --help` etc. for details.
 
 **Note:**
-
-- If `aut` is already installed, the `--force` flag may be required in order to
-  update.
 
 - If `pipx` selects an incompatible version of Python, you may need to specify a
   specific one. Use the `--python` flag:
@@ -40,7 +42,7 @@ Once successfully installed, the `aut` command should be available in the
   See the `pipx install` help text for details.
 
 - If the `aut` command is not available, ensure that `~/.local/bin` appears in
-  your `PATH`. Use `pipx ensurepath` to verify.
+  your `PATH`. Run `pipx ensurepath` to verify.
 
 ## (Optional) Enable command completion (bash and zsh)
 
