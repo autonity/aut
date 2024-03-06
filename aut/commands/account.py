@@ -16,7 +16,7 @@ from autonity.utils.keyfile import (PrivateKey,
                                     create_keyfile_from_private_key,
                                     decrypt_keyfile, get_address_from_keyfile)
 from autonity.utils.tx import sign_tx
-from click import ClickException, Path, argument, command, group, option
+from click import ClickException, Path, argument, command, option
 from eth_account import Account
 from eth_account.messages import encode_defunct
 from hexbytes import HexBytes
@@ -39,13 +39,6 @@ from aut.utils import (address_keyfile_dict,
 # pylint: disable=too-many-locals
 
 
-@group(name="account")
-def account_group() -> None:
-    """
-    Commands related to specific accounts.
-    """
-
-
 @command(name="list")
 @option("--with-files", is_flag=True, help="also show keyfile names.")
 @keystore_option()
@@ -61,9 +54,6 @@ def list_cmd(keystore: Optional[str], with_files: bool) -> None:
             print(addr + " " + keyfile)
         else:
             print(addr)
-
-
-account_group.add_command(list_cmd)
 
 
 @command()
@@ -96,9 +86,6 @@ def info(
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     account_stats = get_account_stats(w3, addresses, asof)
     print(to_json(account_stats, pretty=True))
-
-
-account_group.add_command(info)
 
 
 @command()
@@ -144,9 +131,6 @@ def balance(
         print(format_auton_quantity(w3.eth.get_balance(account_addr)))
 
 
-account_group.add_command(balance)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -178,9 +162,6 @@ def lntn_balances(
             balances[validator["node_address"]] = format_newton_quantity(bal)
 
     print(to_json(balances, pretty=True))
-
-
-account_group.add_command(lntn_balances)
 
 
 @command()
@@ -243,9 +224,6 @@ def new(
     print(f"{keyfile_addr}  {keyfile}")
 
 
-account_group.add_command(new)
-
-
 @command()
 @keystore_option()
 @keyfile_option(output=True)
@@ -287,9 +265,6 @@ def import_private_key(
     print(f"{keyfile_addr}  {keyfile}")
 
 
-account_group.add_command(import_private_key)
-
-
 @command()
 @keyfile_and_password_options()
 @argument(
@@ -322,9 +297,6 @@ def signtx(keyfile: Optional[str], password: Optional[str], tx_file: str) -> Non
     signed_tx = sign_tx(tx, encrypted_key, password)
 
     print(to_json(signed_tx._asdict()))
-
-
-account_group.add_command(signtx)
 
 
 @command()
@@ -382,9 +354,6 @@ def sign_message(
     print(signature)
 
 
-account_group.add_command(sign_message)
-
-
 @command()
 @keyfile_option()
 @from_option
@@ -436,6 +405,3 @@ def verify_signature(
         raise ClickException("Signature invalid")
 
     log("signature is valid")
-
-
-account_group.add_command(verify_signature)

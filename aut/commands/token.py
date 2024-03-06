@@ -6,7 +6,7 @@ from typing import Optional
 
 from autonity.erc20 import ERC20
 from autonity.utils.denominations import format_quantity
-from click import ClickException, argument, command, group
+from click import ClickException, argument, command
 from web3 import Web3
 
 from aut.options import (from_option, keyfile_option, newton_or_token_option,
@@ -19,13 +19,6 @@ from aut.utils import (create_contract_tx_from_args,
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
-
-
-@group(name="token")
-def token_group() -> None:
-    """
-    Commands for working with ERC20 tokens.
-    """
 
 
 @command()
@@ -45,9 +38,6 @@ def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
     print(token_name)
 
 
-token_group.add_command(name)
-
-
 @command()
 @rpc_endpoint_option
 @newton_or_token_option
@@ -65,9 +55,6 @@ def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None
     print(token_symbol)
 
 
-token_group.add_command(symbol)
-
-
 @command()
 @rpc_endpoint_option
 @newton_or_token_option
@@ -80,9 +67,6 @@ def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> No
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     print(erc.decimals())
-
-
-token_group.add_command(decimals)
 
 
 @command()
@@ -99,9 +83,6 @@ def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -
     token_decimals = erc.decimals()
     token_total_supply = erc.total_supply()
     print(format_quantity(token_total_supply, token_decimals))
-
-
-token_group.add_command(total_supply)
 
 
 @command()
@@ -129,9 +110,6 @@ def balance_of(
     balance = erc.balance_of(account_addr)
     token_decimals = erc.decimals()
     print(format_quantity(balance, token_decimals))
-
-
-token_group.add_command(balance_of)
 
 
 @command()
@@ -162,9 +140,6 @@ def allowance(
     token_allowance = erc.allowance(owner_addr, from_addr)
     token_decimals = erc.decimals()
     print(format_quantity(token_allowance, token_decimals))
-
-
-token_group.add_command(allowance)
 
 
 @command()
@@ -222,9 +197,6 @@ def transfer(
     print(to_json(tx))
 
 
-token_group.add_command(transfer)
-
-
 @command()
 @rpc_endpoint_option
 @newton_or_token_option
@@ -279,9 +251,6 @@ def approve(
     )
 
     print(to_json(tx))
-
-
-token_group.add_command(approve)
 
 
 @command()
@@ -342,6 +311,3 @@ def transfer_from(
     )
 
     print(to_json(tx))
-
-
-token_group.add_command(transfer_from)

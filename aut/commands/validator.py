@@ -9,11 +9,10 @@ from urllib import parse as urlparse
 from autonity.autonity import Autonity
 from autonity.utils.denominations import format_auton_quantity
 from autonity.validator import OracleAddress, Validator
-from click import argument, command, echo, group, option
+from click import argument, command, echo, option
 from web3 import Web3
 from web3.types import HexBytes
 
-from aut.commands.protocol import protocol_group
 from aut.config import get_node_address
 from aut.constants import UnixExitStatus
 from aut.options import (from_option, keyfile_option, rpc_endpoint_option,
@@ -28,19 +27,6 @@ from aut.utils import (autonity_from_endpoint_arg,
 # pylint: disable=too-many-locals
 
 # TODO: consider caching the LNTN addresses of Validators
-
-
-@group()
-def validator() -> None:
-    """
-    Commands related to the validators.
-    """
-
-
-validator.add_command(
-    protocol_group.get_command(None, "get-validators"),  # type: ignore
-    name="list",
-)
 
 
 @command()
@@ -66,9 +52,6 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
     echo(to_json(aut.get_validator(validator_addr), pretty=True))
 
 
-validator.add_command(info)
-
-
 @command()
 @argument("enode")
 def compute_address(
@@ -82,9 +65,6 @@ def compute_address(
     pubkey, _ = key_at_ip_port.split("@")
     addr_bytes = Web3.keccak(bytes(HexBytes(pubkey)))[-20:]
     print(Web3.to_checksum_address(addr_bytes.hex()))
-
-
-validator.add_command(compute_address)
 
 
 @command()
@@ -132,9 +112,6 @@ def bond(
     print(to_json(tx))
 
 
-validator.add_command(bond)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -178,9 +155,6 @@ def unbond(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-validator.add_command(unbond)
 
 
 @command()
@@ -235,9 +209,6 @@ def register(
     print(to_json(tx))
 
 
-validator.add_command(register)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -281,9 +252,6 @@ def pause(
     print(to_json(tx))
 
 
-validator.add_command(pause)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -325,9 +293,6 @@ def activate(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-validator.add_command(activate)
 
 
 @command()
@@ -379,9 +344,6 @@ def change_commission_rate(
     print(to_json(tx))
 
 
-validator.add_command(change_commission_rate)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -405,9 +367,6 @@ def unclaimed_rewards(
     val = Validator(aut.contract.w3, vdesc)
     unclaimed_wei = val.unclaimed_rewards(account)
     print(format_auton_quantity(unclaimed_wei))
-
-
-validator.add_command(unclaimed_rewards)
 
 
 @command()
@@ -453,6 +412,3 @@ def claim_rewards(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-validator.add_command(claim_rewards)

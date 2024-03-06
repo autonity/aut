@@ -5,7 +5,7 @@ The `autonity` command group.
 from typing import Any, Optional, Sequence
 
 from autonity import AUTONITY_CONTRACT_ADDRESS, Autonity
-from click import argument, command, echo, group
+from click import argument, command, echo
 from eth_utils import to_checksum_address
 
 from aut.options import (from_option, keyfile_option, rpc_endpoint_option,
@@ -18,14 +18,6 @@ from aut.utils import (autonity_from_endpoint_arg,
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
-
-
-@group(name="protocol")
-def protocol_group() -> None:
-    """
-    Commands related to Autonity-specific protocol operations.  See
-    the Autonity contract reference for details.
-    """
 
 
 def _show_sequence(value: Sequence[Any]) -> str:
@@ -46,9 +38,6 @@ def commission_rate_precision(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).commission_rate_precision())
 
 
-protocol_group.add_command(commission_rate_precision)
-
-
 @command()
 @rpc_endpoint_option
 def config(rpc_endpoint: Optional[str]) -> None:
@@ -57,9 +46,6 @@ def config(rpc_endpoint: Optional[str]) -> None:
     """
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).config()))
-
-
-protocol_group.add_command(config)
 
 
 @command()
@@ -72,9 +58,6 @@ def epoch_id(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_id())
 
 
-protocol_group.add_command(epoch_id)
-
-
 @command()
 @rpc_endpoint_option
 def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
@@ -83,9 +66,6 @@ def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     """
 
     print(autonity_from_endpoint_arg(rpc_endpoint).last_epoch_block())
-
-
-protocol_group.add_command(last_epoch_block)
 
 
 @command()
@@ -98,9 +78,6 @@ def epoch_total_bonded_stake(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_total_bonded_stake())
 
 
-protocol_group.add_command(epoch_total_bonded_stake)
-
-
 @command()
 @rpc_endpoint_option
 def total_redistributed(rpc_endpoint: Optional[str]) -> None:
@@ -109,9 +86,6 @@ def total_redistributed(rpc_endpoint: Optional[str]) -> None:
     """
 
     print(autonity_from_endpoint_arg(rpc_endpoint).total_redistributed())
-
-
-protocol_group.add_command(total_redistributed)
 
 
 @command()
@@ -124,9 +98,6 @@ def epoch_reward(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_reward())
 
 
-protocol_group.add_command(epoch_reward)
-
-
 @command()
 @rpc_endpoint_option
 def deployer(rpc_endpoint: Optional[str]) -> None:
@@ -137,18 +108,12 @@ def deployer(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).deployer())
 
 
-protocol_group.add_command(deployer)
-
-
 @command()
 @rpc_endpoint_option
 def get_epoch_period(rpc_endpoint: Optional[str]) -> None:
     """Epoch period in blocks"""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_epoch_period())
-
-
-protocol_group.add_command(get_epoch_period)
 
 
 @command()
@@ -159,18 +124,12 @@ def get_block_period(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).get_block_period())
 
 
-protocol_group.add_command(get_block_period)
-
-
 @command()
 @rpc_endpoint_option
 def get_unbonding_period(rpc_endpoint: Optional[str]) -> None:
     """Unbonding period in blocks"""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_unbonding_period())
-
-
-protocol_group.add_command(get_unbonding_period)
 
 
 @command()
@@ -183,18 +142,12 @@ def get_last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).get_last_epoch_block())
 
 
-protocol_group.add_command(get_last_epoch_block)
-
-
 @command()
 @rpc_endpoint_option
 def get_version(rpc_endpoint: Optional[str]) -> None:
     """Contract version"""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_version())
-
-
-protocol_group.add_command(get_version)
 
 
 @command()
@@ -207,18 +160,12 @@ def get_committee(rpc_endpoint: Optional[str]) -> None:
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).get_committee()))
 
 
-protocol_group.add_command(get_committee)
-
-
 @command()
 @rpc_endpoint_option
 def get_validators(rpc_endpoint: Optional[str]) -> None:
     """Get current validators"""
 
     print(_show_sequence(autonity_from_endpoint_arg(rpc_endpoint).get_validators()))
-
-
-protocol_group.add_command(get_validators)
 
 
 @command()
@@ -229,18 +176,12 @@ def get_treasury_account(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_account())
 
 
-protocol_group.add_command(get_treasury_account)
-
-
 @command()
 @rpc_endpoint_option
 def get_treasury_fee(rpc_endpoint: Optional[str]) -> None:
     """Treasury fee"""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_fee())
-
-
-protocol_group.add_command(get_treasury_fee)
 
 
 @command()
@@ -251,18 +192,12 @@ def get_max_committee_size(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).get_max_committee_size())
 
 
-protocol_group.add_command(get_max_committee_size)
-
-
 @command()
 @rpc_endpoint_option
 def get_committee_enodes(rpc_endpoint: Optional[str]) -> None:
     """Enodes in current committee"""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_committee_enodes())
-
-
-protocol_group.add_command(get_committee_enodes)
 
 
 @command()
@@ -273,18 +208,12 @@ def get_minimum_base_fee(rpc_endpoint: Optional[str]) -> None:
     print(autonity_from_endpoint_arg(rpc_endpoint).get_minimum_base_fee())
 
 
-protocol_group.add_command(get_minimum_base_fee)
-
-
 @command()
 @rpc_endpoint_option
 def get_operator(rpc_endpoint: Optional[str]) -> None:
     """Contract operator"""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_operator())
-
-
-protocol_group.add_command(get_operator)
 
 
 @command()
@@ -300,9 +229,6 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     print(aut.get_proposer(height, round_))
 
 
-protocol_group.add_command(get_proposer)
-
-
 @command()
 @rpc_endpoint_option
 @argument("block", type=int, nargs=1)
@@ -311,9 +237,6 @@ def get_epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(aut.get_epoch_from_block(block))
-
-
-protocol_group.add_command(get_epoch_from_block)
 
 
 @command()
@@ -358,9 +281,6 @@ def set_minimum_base_fee(
     print(to_json(tx))
 
 
-protocol_group.add_command(set_minimum_base_fee)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -400,9 +320,6 @@ def set_committee_size(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-protocol_group.add_command(set_committee_size)
 
 
 @command()
@@ -446,9 +363,6 @@ def set_unbonding_period(
     print(to_json(tx))
 
 
-protocol_group.add_command(set_unbonding_period)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -488,9 +402,6 @@ def set_epoch_period(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-protocol_group.add_command(set_epoch_period)
 
 
 @command()
@@ -535,9 +446,6 @@ def set_operator_account(
     print(to_json(tx))
 
 
-protocol_group.add_command(set_operator_account)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -578,9 +486,6 @@ def set_treasury_account(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-protocol_group.add_command(set_treasury_account)
 
 
 @command()
@@ -625,9 +530,6 @@ def set_treasury_fee(
     print(to_json(tx))
 
 
-protocol_group.add_command(set_treasury_fee)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -668,9 +570,6 @@ def set_accountability_contract(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-protocol_group.add_command(set_accountability_contract)
 
 
 @command()
@@ -715,9 +614,6 @@ def set_oracle_contract(
     print(to_json(tx))
 
 
-protocol_group.add_command(set_oracle_contract)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -758,9 +654,6 @@ def set_acu_contract(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-protocol_group.add_command(set_acu_contract)
 
 
 @command()
@@ -805,9 +698,6 @@ def set_supply_control_contract(
     print(to_json(tx))
 
 
-protocol_group.add_command(set_supply_control_contract)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -848,9 +738,6 @@ def set_stabilization_contract(
         chain_id=chain_id,
     )
     print(to_json(tx))
-
-
-protocol_group.add_command(set_stabilization_contract)
 
 
 @command()
@@ -901,9 +788,6 @@ def mint(
     print(to_json(tx))
 
 
-protocol_group.add_command(mint)
-
-
 @command()
 @rpc_endpoint_option
 @keyfile_option()
@@ -951,9 +835,6 @@ def burn(
     print(to_json(tx))
 
 
-protocol_group.add_command(burn)
-
-
 @command()
 def contract_address() -> None:
     """
@@ -961,6 +842,3 @@ def contract_address() -> None:
     """
 
     echo(AUTONITY_CONTRACT_ADDRESS, nl=False)
-
-
-protocol_group.add_command(contract_address)

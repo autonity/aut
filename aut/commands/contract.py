@@ -7,7 +7,7 @@ from typing import List, Optional, Tuple, cast
 
 from autonity.abi_parser import (find_abi_constructor, find_abi_function,
                                  parse_arguments, parse_return_value)
-from click import ClickException, Path, argument, command, group, option
+from click import ClickException, Path, argument, command, option
 from web3.contract.contract import ContractFunction
 
 from aut.logging import log
@@ -20,13 +20,6 @@ from aut.utils import (contract_address_and_abi_from_args,
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals
-
-
-@group(name="contract")
-def contract_group() -> None:
-    """
-    Command for interacting with arbitrary contracts.
-    """
 
 
 def function_call_from_args(
@@ -134,9 +127,6 @@ def deploy_cmd(
     print(to_json(tx))
 
 
-contract_group.add_command(deploy_cmd)
-
-
 @command(name="call")
 @rpc_endpoint_option
 @contract_options
@@ -164,9 +154,6 @@ def call_cmd(
     result = function.call()
     parsed_result = parse_return_value(abi_fn, result)
     print(to_json(parsed_result))
-
-
-contract_group.add_command(call_cmd)
 
 
 @command(name="tx")
@@ -229,6 +216,3 @@ def tx_cmd(
 
     tx = finalize_tx_from_args(w3, rpc_endpoint, tx, from_addr)
     print(to_json(tx))
-
-
-contract_group.add_command(tx_cmd)

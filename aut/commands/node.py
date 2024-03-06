@@ -4,19 +4,12 @@ Implementation of `node` subcommands
 
 from typing import Optional, Union
 
-from click import command, group
+from click import command
 from web3.datastructures import AttributeDict
 from web3.types import SyncStatus
 
 from aut.options import rpc_endpoint_option
 from aut.utils import to_json, web3_from_endpoint_arg
-
-
-@group(name="node")
-def node_group() -> None:
-    """
-    Commands related to querying specific Autonity nodes.
-    """
 
 
 @command()
@@ -51,6 +44,3 @@ def info(rpc_endpoint: Optional[str]) -> None:
     }
 
     print(to_json(node_info, pretty=True))
-
-
-node_group.add_command(info)

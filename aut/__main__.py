@@ -6,16 +6,8 @@ import sys
 
 from click import group, option, version_option
 
-from aut.commands import (
-    account,
-    block,
-    contract,
-    node,
-    protocol,
-    token,
-    tx,
-    validator,
-)
+from aut import commands
+from aut.lazy_group import LazyGroup
 from aut.logging import enable_logging
 
 
@@ -35,11 +27,11 @@ def aut(verbose: bool) -> None:
         sys.tracebacklimit = 0
 
 
-aut.add_command(node.node_group)
-aut.add_command(block.block_group)
-aut.add_command(tx.tx_group)
-aut.add_command(protocol.protocol_group)
-aut.add_command(validator.validator)
-aut.add_command(account.account_group)
-aut.add_command(token.token_group)
-aut.add_command(contract.contract_group)
+aut.add_command(commands.node_group)
+aut.add_command(commands.block_group)
+aut.add_command(commands.tx_group)
+aut.add_command(commands.protocol_group)
+aut.add_command(commands.validator_group)
+aut.add_command(commands.account_group)
+aut.add_command(commands.token_group)
+aut.add_command(commands.contract_group)

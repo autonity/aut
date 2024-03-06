@@ -7,12 +7,11 @@ import json
 from typing import Optional
 
 from autonity.utils.tx import send_tx, wait_for_tx
-from click import ClickException, Path, argument, command, group, option
+from click import ClickException, Path, argument, command, option
 from eth_account.account import SignedTransaction
 from web3 import Web3
 from web3.types import HexBytes, HexStr
 
-from aut.commands.account import signtx
 from aut.logging import log
 from aut.options import (from_option, keyfile_option, newton_or_token_option,
                          rpc_endpoint_option, tx_aux_options, tx_value_option)
@@ -25,17 +24,6 @@ from aut.utils import (create_contract_tx_from_args, create_tx_from_args,
 
 # pylint: disable=too-many-locals
 # pylint: disable=too-many-arguments
-
-
-@group(name="tx")
-def tx_group() -> None:
-    """
-    Commands for transaction creation and processing.
-    """
-
-
-# Re-use the `account signtx` command as `tx sign`
-tx_group.add_command(signtx, name="sign")
 
 
 @command()
@@ -160,9 +148,6 @@ def make(
     print(to_json(tx))
 
 
-tx_group.add_command(make)
-
-
 @command()
 @rpc_endpoint_option
 @argument("tx-file", type=Path())
@@ -177,9 +162,6 @@ def send(rpc_endpoint: Optional[str], tx_file: str) -> None:
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     tx_hash = send_tx(w3, signed_tx)
     print(Web3.to_hex(tx_hash))
-
-
-tx_group.add_command(send)
 
 
 @command()
@@ -218,6 +200,3 @@ def wait(
         raise ClickException(  # pylint: disable=raise-missing-from
             "Tx {tx_hash} timed out"
         )
-
-
-tx_group.add_command(wait)
