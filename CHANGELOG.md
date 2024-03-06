@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.4.0] - 2024-03-06
+
+### Changed
+
+- Require consensus key for validator registration ([`10cc9c6`](https://github.com/autonity/aut/commit/10cc9c6))
+
+### Added
+
+- Support Python 3.12 ([#138](https://github.com/autonity/aut/issues/138))
+
+### Fixed
+
+- Fix `AssertionError` when `contract call` returns multiple values ([#127](https://github.com/autonity/aut/issues/127))
+- Fix `TypeError` when `contract call` returns bytes values ([#141](https://github.com/autonity/aut/issues/141))
+
 ## [v0.3.0] - 2024-01-15
 
 ### Changed
@@ -17,4 +32,5 @@
 - Fix potential crash when listing accounts ([`1886121`](https://github.com/autonity/aut/commit/1886121))
 - Fix startup crash due to `ModuleNotFoundError` from eth_rlp ([#137](https://github.com/autonity/aut/issues/137))
 
+[v0.4.0]: https://github.com/autonity/aut/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/autonity/aut/releases/tag/v0.3.0
