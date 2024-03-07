@@ -177,8 +177,9 @@ def validator_option(fn: Func) -> Func:
     """
     return option(
         "--validator",
+        "-V",
         "validator_addr_str",
-        help="Validator address (defaults to value in config file)",
+        help="Validator address (falls back to 'validator' in config file)",
     )(fn)
 
 
