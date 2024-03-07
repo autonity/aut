@@ -191,7 +191,7 @@ def contract_options(fn: Func) -> Func:
     fn = option(
         "--address",
         "contract_address_str",
-        help="Contract address (falls back to 'address' in config file",
+        help="Contract address (falls back to 'address' in config file)",
     )(fn)
     fn = option(
         "--abi",
