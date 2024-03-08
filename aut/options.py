@@ -177,8 +177,9 @@ def validator_option(fn: Func) -> Func:
     """
     return option(
         "--validator",
+        "-V",
         "validator_addr_str",
-        help="Validator address (defaults to value in config file)",
+        help="Validator address (falls back to 'validator' in config file)",
     )(fn)
 
 
@@ -190,7 +191,7 @@ def contract_options(fn: Func) -> Func:
     fn = option(
         "--address",
         "contract_address_str",
-        help="Contract address (falls back to 'address' in config file",
+        help="Contract address (falls back to 'address' in config file)",
     )(fn)
     fn = option(
         "--abi",
