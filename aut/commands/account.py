@@ -2,10 +2,9 @@
 The `account` command group.
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, cast
 
 from click import ClickException, Path, argument, command, group, option
-from web3.types import BlockIdentifier
 
 from aut.options import (
     from_option,
@@ -65,7 +64,7 @@ def info(
     rpc_endpoint: Optional[str],
     keyfile: Optional[str],
     accounts: List[str],
-    asof: Optional[BlockIdentifier],
+    asof: Optional[str],
 ) -> None:
     """
     Print some information about the given account (falling back to
@@ -73,6 +72,7 @@ def info(
     """
 
     from web3 import Web3
+    from web3.types import BlockIdentifier
 
     from aut.user import get_account_stats
     from aut.utils import (
@@ -88,9 +88,10 @@ def info(
         accounts = [account]
 
     addresses = [Web3.to_checksum_address(act) for act in accounts]
+    block = cast(BlockIdentifier, asof) if asof is not None else None
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    account_stats = get_account_stats(w3, addresses, asof)
+    account_stats = get_account_stats(w3, addresses, block)
     print(to_json(account_stats, pretty=True))
 
 
