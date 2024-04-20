@@ -218,7 +218,7 @@ protocol_group.add_command(get_version)
 @rpc_endpoint_option
 def get_committee(rpc_endpoint: Optional[str]) -> None:
     """
-    Get current committee"
+    Get current committee
     """
     from aut.utils import autonity_from_endpoint_arg
 
