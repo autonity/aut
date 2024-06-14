@@ -7,6 +7,7 @@ from typing import Optional, Union
 from click import command, group
 
 from aut.options import rpc_endpoint_option
+from web3.exceptions import MethodUnavailable
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -26,6 +27,9 @@ def node_group() -> None:
 def info(rpc_endpoint: Optional[str]) -> None:
     """
     Print general information about the RPC node configuration and state.
+
+    Note: some fields of the returned JSON object are only present if the 'admin'
+    JSON-RPC API is available.
     """
     from web3.datastructures import AttributeDict
     from web3.types import SyncStatus
@@ -33,7 +37,10 @@ def info(rpc_endpoint: Optional[str]) -> None:
     from aut.utils import to_json, web3_from_endpoint_arg
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
-    admin_node_info = w3.geth.admin.node_info()
+    try:
+        admin_node_info = w3.geth.admin.node_info()
+    except MethodUnavailable:
+        admin_node_info = None
 
     # Handle eth_syncing as an AttributeDict or boolean
     syncing: Union[SyncStatus, bool] = w3.eth.syncing
@@ -52,9 +59,15 @@ def info(rpc_endpoint: Optional[str]) -> None:
         "net_peerCount": w3.net.peer_count,
         "net_networkId": w3.net.version,
         "web3_clientVersion": w3.client_version,
-        "admin_enode": admin_node_info["enode"],
-        "admin_id": admin_node_info["id"],
     }
+
+    if admin_node_info:
+        node_info.update(
+            {
+                "admin_enode": admin_node_info["enode"],
+                "admin_id": admin_node_info["id"],
+            }
+        )
 
     print(to_json(node_info, pretty=True))
 
