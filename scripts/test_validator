@@ -48,6 +48,7 @@ aut validator bond --help > /dev/null
 aut validator unbond --help > /dev/null
 aut validator pause --help > /dev/null
 aut validator activate --help > /dev/null
+aut validator update-enode --help > /dev/null
 
 set -e
 set -x
