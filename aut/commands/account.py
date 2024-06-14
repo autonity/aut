@@ -165,7 +165,7 @@ def lntn_balances(
     rpc_endpoint: Optional[str], account_str: Optional[str], keyfile: Optional[str]
 ) -> None:
     """
-    Print the current balance of the given account.
+    Print all Liquid Newton balances of the given account.
     """
 
     from autonity.autonity import Autonity
