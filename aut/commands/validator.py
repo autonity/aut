@@ -436,17 +436,22 @@ validator.add_command(change_commission_rate)
 @rpc_endpoint_option
 @keyfile_option()
 @validator_option
+@option("--ntn", is_flag=True, help="Check Newton (NTN) instead of Auton")
 @option("--account", help="Delegator account to check")
 def unclaimed_rewards(
     rpc_endpoint: Optional[str],
     keyfile: Optional[str],
+    ntn: bool,
     validator_addr_str: Optional[str],
     account: Optional[str],
 ) -> None:
     """
-    Check the given validator for unclaimed-fees.
+    Check the given validator for unclaimed fees.
     """
-    from autonity.utils.denominations import format_auton_quantity
+    from autonity.utils.denominations import (
+        format_auton_quantity,
+        format_newton_quantity,
+    )
     from autonity.validator import Validator
 
     from aut.config import get_node_address
@@ -458,8 +463,12 @@ def unclaimed_rewards(
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     vdesc = aut.get_validator(validator_addr)
     val = Validator(aut.contract.w3, vdesc)
-    unclaimed_wei = val.unclaimed_rewards(account)
-    print(format_auton_quantity(unclaimed_wei))
+    unclaimed_atn, unclaimed_ntn = val.unclaimed_rewards(account)
+    print(
+        format_newton_quantity(unclaimed_ntn)
+        if ntn
+        else format_auton_quantity(unclaimed_atn)
+    )
 
 
 validator.add_command(unclaimed_rewards)
