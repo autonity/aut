@@ -53,8 +53,8 @@ aut protocol get-version
 echo "aut protocol last-epoch-block"
 aut protocol last-epoch-block
 
-echo "aut protocol total-redistributed"
-aut protocol total-redistributed
+echo "aut protocol atn-total-redistributed"
+aut protocol atn-total-redistributed
 
 # Test help text (does some parameter validation)
 aut protocol config --help > /dev/null

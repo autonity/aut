@@ -112,16 +112,16 @@ protocol_group.add_command(epoch_total_bonded_stake)
 
 @command()
 @rpc_endpoint_option
-def total_redistributed(rpc_endpoint: Optional[str]) -> None:
+def atn_total_redistributed(rpc_endpoint: Optional[str]) -> None:
     """
     Total fees redistributed
     """
     from aut.utils import autonity_from_endpoint_arg
 
-    print(autonity_from_endpoint_arg(rpc_endpoint).total_redistributed())
+    print(autonity_from_endpoint_arg(rpc_endpoint).atn_total_redistributed())
 
 
-protocol_group.add_command(total_redistributed)
+protocol_group.add_command(atn_total_redistributed)
 
 
 @command()
