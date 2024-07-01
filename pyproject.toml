@@ -54,6 +54,7 @@ script-tests = [
     "rm -rf test_*",
     "hatch run ./scripts/test_contract",
     "hatch run ./scripts/test_protocol",
+    "hatch run ./scripts/test_governance",
     "hatch run ./scripts/test_validator",
     "hatch run ./scripts/test_account",
     "hatch run ./scripts/test_token",

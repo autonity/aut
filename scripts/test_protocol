@@ -73,15 +73,6 @@ aut protocol get-validators --help > /dev/null
 aut protocol get-version --help > /dev/null
 aut protocol last-epoch-block --help > /dev/null
 aut protocol total-redistributed --help > /dev/null
-aut protocol set-minimum-base-fee --help > /dev/null
-aut protocol set-committee-size --help > /dev/null
-aut protocol set-unbonding-period --help > /dev/null
-aut protocol set-epoch-period --help > /dev/null
-aut protocol set-operator-account --help > /dev/null
-aut protocol set-treasury-account --help > /dev/null
-aut protocol set-treasury-fee --help > /dev/null
-aut protocol mint --help > /dev/null
-aut protocol burn --help > /dev/null
 
 set +e
 set +x

@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+
+set -x
+set -e
+
+mkdir -p _test_governance_cli
+pushd _test_governance_cli
+
+../scripts/setup_config_file.sh
+
+# Test help text (does some parameter validation)
+aut protocol set-minimum-base-fee --help > /dev/null
+aut protocol set-committee-size --help > /dev/null
+aut protocol set-unbonding-period --help > /dev/null
+aut protocol set-epoch-period --help > /dev/null
+aut protocol set-operator-account --help > /dev/null
+aut protocol set-treasury-account --help > /dev/null
+aut protocol set-treasury-fee --help > /dev/null
+aut protocol mint --help > /dev/null
+aut protocol burn --help > /dev/null
+
+set +e
+set +x
+
+popd
