@@ -10,6 +10,7 @@ from aut.commands import (
     account,
     block,
     contract,
+    governance,
     node,
     protocol,
     token,
@@ -39,6 +40,7 @@ aut.add_command(node.node_group)
 aut.add_command(block.block_group)
 aut.add_command(tx.tx_group)
 aut.add_command(protocol.protocol_group)
+protocol.protocol_group.add_command(governance.governance_group)
 aut.add_command(validator.validator)
 aut.add_command(account.account_group)
 aut.add_command(token.token_group)

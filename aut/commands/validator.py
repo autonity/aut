@@ -436,17 +436,22 @@ validator.add_command(change_commission_rate)
 @rpc_endpoint_option
 @keyfile_option()
 @validator_option
+@option("--ntn", is_flag=True, help="Check Newton (NTN) instead of Auton")
 @option("--account", help="Delegator account to check")
 def unclaimed_rewards(
     rpc_endpoint: Optional[str],
     keyfile: Optional[str],
+    ntn: bool,
     validator_addr_str: Optional[str],
     account: Optional[str],
 ) -> None:
     """
-    Check the given validator for unclaimed-fees.
+    Check the given validator for unclaimed fees.
     """
-    from autonity.utils.denominations import format_auton_quantity
+    from autonity.utils.denominations import (
+        format_auton_quantity,
+        format_newton_quantity,
+    )
     from autonity.validator import Validator
 
     from aut.config import get_node_address
@@ -458,8 +463,12 @@ def unclaimed_rewards(
     aut = autonity_from_endpoint_arg(rpc_endpoint)
     vdesc = aut.get_validator(validator_addr)
     val = Validator(aut.contract.w3, vdesc)
-    unclaimed_wei = val.unclaimed_rewards(account)
-    print(format_auton_quantity(unclaimed_wei))
+    unclaimed_atn, unclaimed_ntn = val.unclaimed_rewards(account)
+    print(
+        format_newton_quantity(unclaimed_ntn)
+        if ntn
+        else format_auton_quantity(unclaimed_atn)
+    )
 
 
 validator.add_command(unclaimed_rewards)
@@ -521,3 +530,61 @@ def claim_rewards(
 
 
 validator.add_command(claim_rewards)
+
+
+@command()
+@rpc_endpoint_option
+@keyfile_option()
+@from_option
+@tx_aux_options
+@validator_option
+@argument("enode", nargs=1)
+def update_enode(
+    rpc_endpoint: Optional[str],
+    keyfile: Optional[str],
+    from_str: Optional[str],
+    gas: Optional[str],
+    gas_price: Optional[str],
+    max_priority_fee_per_gas: Optional[str],
+    max_fee_per_gas: Optional[str],
+    fee_factor: Optional[float],
+    nonce: Optional[int],
+    chain_id: Optional[int],
+    validator_addr_str: Optional[str],
+    enode: str,
+) -> None:
+    """
+    Update the enode of a registered validator.
+
+    This function updates the network connection information (IP or/and port)
+    of a registered validator. You cannot change the validator's address
+    (pubkey part of the enode).
+    """
+    from aut.config import get_node_address
+    from aut.utils import (
+        autonity_from_endpoint_arg,
+        create_contract_tx_from_args,
+        from_address_from_argument,
+        to_json,
+    )
+
+    validator_addr = get_node_address(validator_addr_str)
+    from_addr = from_address_from_argument(from_str, keyfile)
+
+    aut = autonity_from_endpoint_arg(rpc_endpoint)
+
+    tx = create_contract_tx_from_args(
+        function=aut.update_enode(validator_addr, enode),
+        from_addr=from_addr,
+        gas=gas,
+        gas_price=gas_price,
+        max_fee_per_gas=max_fee_per_gas,
+        max_priority_fee_per_gas=max_priority_fee_per_gas,
+        fee_factor=fee_factor,
+        nonce=nonce,
+        chain_id=chain_id,
+    )
+    print(to_json(tx))
+
+
+validator.add_command(update_enode)
