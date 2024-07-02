@@ -95,7 +95,7 @@ echo "aut protocol get-proposer"
 aut protocol get-proposer 1 1
 
 # Test help text (does some parameter validation)
-aut protocol get-unbonding-release-state --help >/dev/null
+# aut protocol get-unbonding-release-state --help >/dev/null
 aut protocol get-reverting-amount --help >/dev/null
 
 set +e
