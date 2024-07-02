@@ -9,15 +9,28 @@ pushd _test_governance_cli
 ../scripts/setup_config_file.sh
 
 # Test help text (does some parameter validation)
-aut protocol set-minimum-base-fee --help > /dev/null
-aut protocol set-committee-size --help > /dev/null
-aut protocol set-unbonding-period --help > /dev/null
-aut protocol set-epoch-period --help > /dev/null
-aut protocol set-operator-account --help > /dev/null
-aut protocol set-treasury-account --help > /dev/null
-aut protocol set-treasury-fee --help > /dev/null
-aut protocol mint --help > /dev/null
-aut protocol burn --help > /dev/null
+aut protocol gov set-max-bond-applied-gas --help > /dev/null
+aut protocol gov set-max-unbond-applied-gas --help > /dev/null
+aut protocol gov set-max-unbond-released-gas --help > /dev/null
+aut protocol gov set-max-rewards-distribution-gas --help > /dev/null
+aut protocol gov set-staking-gas-price --help > /dev/null
+aut protocol gov set-minimum-base-fee --help > /dev/null
+aut protocol gov set-committee-size --help > /dev/null
+aut protocol gov set-unbonding-period --help > /dev/null
+aut protocol gov set-epoch-period --help > /dev/null
+aut protocol gov set-operator-account --help > /dev/null
+aut protocol gov set-treasury-account --help > /dev/null
+aut protocol gov set-treasury-fee --help > /dev/null
+aut protocol gov set-accountability-contract --help > /dev/null
+aut protocol gov set-oracle-contract --help > /dev/null
+aut protocol gov set-acu-contract --help > /dev/null
+aut protocol gov set-supply-control-contract --help > /dev/null
+aut protocol gov set-stabilization-contract --help > /dev/null
+aut protocol gov set-inflation-controller-contract --help > /dev/null
+aut protocol gov set-upgrade-manager-contract --help > /dev/null
+aut protocol gov set-non-stakable-vesting-contract --help > /dev/null
+aut protocol gov mint --help > /dev/null
+aut protocol gov burn --help > /dev/null
 
 set +e
 set +x

@@ -8,71 +8,95 @@ pushd _test_protocol_cli
 
 ../scripts/setup_config_file.sh
 
+echo "aut protocol commission-rate-precision"
+aut protocol commission-rate-precision
+
+echo "aut protocol max-bond-applied-gas"
+aut protocol max-bond-applied-gas
+
+echo "aut protocol max-unbond-applied-gas"
+aut protocol max-unbond-applied-gas
+
+echo "aut protocol max-unbond-released-gas"
+aut protocol max-unbond-released-gas
+
+echo "aut protocol max-rewards-distribution-gas"
+aut protocol max-rewards-distribution-gas
+
 echo "aut protocol config"
 aut protocol config
-
-echo "aut protocol deployer"
-aut protocol deployer
 
 echo "aut protocol epoch-id"
 aut protocol epoch-id
 
-echo "aut protocol epoch-reward"
-aut protocol epoch-reward
+echo "aut protocol last-epoch-block"
+aut protocol last-epoch-block
+
+echo "aut protocol last-epoch-time"
+aut protocol last-epoch-time
 
 echo "aut protocol epoch-total-bonded-stake"
 aut protocol epoch-total-bonded-stake
 
-echo "aut protocol get-committee"
-aut protocol get-committee
+echo "aut protocol atn-total-redistributed"
+aut protocol atn-total-redistributed
 
-echo "aut protocol get-committee-enodes"
-aut protocol get-committee-enodes
+echo "aut protocol epoch-reward"
+aut protocol epoch-reward
+
+echo "aut protocol staking-gas-price"
+aut protocol staking-gas-price
+
+echo "aut protocol inflation-reserve"
+aut protocol inflation-reserve
+
+echo "aut protocol deployer"
+aut protocol deployer
+
+echo "aut protocol get-epoch-period"
+aut protocol get-epoch-period
+
+echo "aut protocol get-block-period"
+aut protocol get-block-period
+
+echo "aut protocol get-unbonding-period"
+aut protocol get-unbonding-period
 
 echo "aut protocol get-last-epoch-block"
 aut protocol get-last-epoch-block
 
-echo "aut protocol get-max-committee-size"
-aut protocol get-max-committee-size
+echo "aut protocol get-version"
+aut protocol get-version
 
-echo "aut protocol get-minimum-base-fee"
-aut protocol get-minimum-base-fee
-
-echo "aut protocol get-operator"
-aut protocol get-operator
-
-echo "aut protocol get-proposer"
-aut protocol get-proposer 100 3
+echo "aut protocol get-committee"
+aut protocol get-committee
 
 echo "aut protocol get-validators"
 aut protocol get-validators
 
-echo "aut protocol get-version"
-aut protocol get-version
+echo "aut protocol get-treasury-account"
+aut protocol get-treasury-account
 
-echo "aut protocol last-epoch-block"
-aut protocol last-epoch-block
+echo "aut protocol get-treasury-fee"
+aut protocol get-treasury-fee
 
-echo "aut protocol atn-total-redistributed"
-aut protocol atn-total-redistributed
+echo "aut protocol get-max-committee-size"
+aut protocol get-max-committee-size
+
+echo "aut protocol get-committee-enodes"
+aut protocol get-committee-enodes
+
+echo "aut protocol get-minimum-base-fee"
+aut protocol get-minimum-base-fee
+echo "aut protocol get-operator"
+aut protocol get-operator
+
+echo "aut protocol get-proposer"
+aut protocol get-proposer 1 1
 
 # Test help text (does some parameter validation)
-aut protocol config --help > /dev/null
-aut protocol deployer --help > /dev/null
-aut protocol epoch-id --help > /dev/null
-aut protocol epoch-reward --help > /dev/null
-aut protocol epoch-total-bonded-stake --help > /dev/null
-aut protocol get-committee --help > /dev/null
-aut protocol get-committee-enodes --help > /dev/null
-aut protocol get-last-epoch-block --help > /dev/null
-aut protocol get-max-committee-size --help > /dev/null
-aut protocol get-minimum-base-fee --help > /dev/null
-aut protocol get-operator --help > /dev/null
-aut protocol get-proposer --help > /dev/null
-aut protocol get-validators --help > /dev/null
-aut protocol get-version --help > /dev/null
-aut protocol last-epoch-block --help > /dev/null
-aut protocol total-redistributed --help > /dev/null
+aut protocol get-unbonding-release-state --help >/dev/null
+aut protocol get-reverting-amount --help >/dev/null
 
 set +e
 set +x
