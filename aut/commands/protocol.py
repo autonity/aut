@@ -51,6 +51,62 @@ protocol_group.add_command(commission_rate_precision)
 
 @command()
 @rpc_endpoint_option
+def max_bond_applied_gas(rpc_endpoint: Optional[str]) -> None:
+    """
+    Max allowed gas for notifying delegator about bonding
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).max_bond_applied_gas())
+
+
+protocol_group.add_command(max_bond_applied_gas)
+
+
+@command()
+@rpc_endpoint_option
+def max_unbond_applied_gas(rpc_endpoint: Optional[str]) -> None:
+    """
+    Max allowed gas for notifying delegator about unbonding
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).max_unbond_applied_gas())
+
+
+protocol_group.add_command(max_unbond_applied_gas)
+
+
+@command()
+@rpc_endpoint_option
+def max_unbond_released_gas(rpc_endpoint: Optional[str]) -> None:
+    """
+    Max allowed gas for notifying delegator about bond being released
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).max_unbond_released_gas())
+
+
+protocol_group.add_command(max_unbond_released_gas)
+
+
+@command()
+@rpc_endpoint_option
+def max_rewards_distribution_gas(rpc_endpoint: Optional[str]) -> None:
+    """
+    Max allowed gas for notifying delegator about rewards being distributed
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).max_rewards_distribution_gas())
+
+
+protocol_group.add_command(max_rewards_distribution_gas)
+
+
+@command()
+@rpc_endpoint_option
 def config(rpc_endpoint: Optional[str]) -> None:
     """
     Print the Autonity contract config
@@ -93,6 +149,20 @@ protocol_group.add_command(last_epoch_block)
 
 @command()
 @rpc_endpoint_option
+def last_epoch_time(rpc_endpoint: Optional[str]) -> None:
+    """
+    Timestamp of the last epoch
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).last_epoch_time())
+
+
+protocol_group.add_command(last_epoch_time)
+
+
+@command()
+@rpc_endpoint_option
 def epoch_total_bonded_stake(rpc_endpoint: Optional[str]) -> None:
     """
     Total stake bonded this epoch
@@ -131,6 +201,34 @@ def epoch_reward(rpc_endpoint: Optional[str]) -> None:
 
 
 protocol_group.add_command(epoch_reward)
+
+
+@command()
+@rpc_endpoint_option
+def staking_gas_price(rpc_endpoint: Optional[str]) -> None:
+    """
+    The gas price to notify the delegator about the staking operation at epoch end
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).staking_gas_price())
+
+
+protocol_group.add_command(staking_gas_price)
+
+
+@command()
+@rpc_endpoint_option
+def inflation_reserve(rpc_endpoint: Optional[str]) -> None:
+    """
+    The inflation reserve
+    """
+    from aut.utils import autonity_from_endpoint_arg
+
+    print(autonity_from_endpoint_arg(rpc_endpoint).inflation_reserve())
+
+
+protocol_group.add_command(inflation_reserve)
 
 
 @command()
@@ -324,6 +422,40 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
 
 
 protocol_group.add_command(get_proposer)
+
+
+@command()
+@rpc_endpoint_option
+@argument("unbonding_id", type=int, nargs=1)
+def get_unbonding_release_state(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
+    """Get the release state of the unbonding request"""
+    from autonity import Autonity
+
+    from aut.utils import web3_from_endpoint_arg
+
+    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
+    print(aut.get_unbonding_release_state(unbonding_id))
+
+
+protocol_group.add_command(get_unbonding_release_state)
+
+
+@command()
+@rpc_endpoint_option
+@argument("unbonding_id", type=int, nargs=1)
+def get_reverting_amount(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
+    """
+    Get the amount of LNTN or NTN bonded when the released unbonding was reverted
+    """
+    from autonity import Autonity
+
+    from aut.utils import web3_from_endpoint_arg
+
+    aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
+    print(aut.get_reverting_amount(unbonding_id))
+
+
+protocol_group.add_command(get_reverting_amount)
 
 
 @command()
