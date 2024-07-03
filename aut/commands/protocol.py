@@ -382,7 +382,7 @@ protocol_group.add_command(minimum_base_fee)
 @command()
 @rpc_endpoint_option
 def operator(rpc_endpoint: Optional[str]) -> None:
-    """Contract operator"""
+    """The governance operator"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_operator())
@@ -464,7 +464,7 @@ protocol_group.add_command(epoch_from_block)
 @command()
 def contract_address() -> None:
     """
-    Print the default Autonity contract address.
+    Address of the Autonity Contract
     """
     from autonity import AUTONITY_CONTRACT_ADDRESS
 
