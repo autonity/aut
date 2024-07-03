@@ -1,5 +1,13 @@
 # Changelog
 
+## [v0.5.0] - 2024-07-03
+
+### Changed
+
+- Support the Autonity Yamuna protocol ([#158](https://github.com/autonity/aut/pull/158))
+- Drop `get-` prefix from protocol commands ([#159](https://github.com/autonity/aut/issues/159))
+- Move governance commands into `aut governance` ([`b656ec4`](https://github.com/autonity/aut/commit/b656ec4))
+
 ## [v0.4.0] - 2024-03-06
 
 ### Changed
@@ -33,5 +41,6 @@
 - Fix potential crash when listing accounts ([`1886121`](https://github.com/autonity/aut/commit/1886121))
 - Fix startup crash due to `ModuleNotFoundError` from eth_rlp ([#137](https://github.com/autonity/aut/issues/137))
 
+[v0.5.0]: https://github.com/autonity/aut/releases/tag/v0.5.0
 [v0.4.0]: https://github.com/autonity/aut/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/autonity/aut/releases/tag/v0.3.0
