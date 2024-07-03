@@ -94,9 +94,13 @@ aut protocol get-operator
 echo "aut protocol get-proposer"
 aut protocol get-proposer 1 1
 
+echo "aut protocol contract-address"
+aut protocol contract-address
+
 # Test help text (does some parameter validation)
 # aut protocol get-unbonding-release-state --help >/dev/null
 aut protocol get-reverting-amount --help >/dev/null
+aut protocol get-epoch-from-block --help >/dev/null
 
 set +e
 set +x
