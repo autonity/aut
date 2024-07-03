@@ -135,20 +135,6 @@ protocol_group.add_command(epoch_id)
 
 @command()
 @rpc_endpoint_option
-def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
-    """
-    Block number of the last epoch
-    """
-    from aut.utils import autonity_from_endpoint_arg
-
-    print(autonity_from_endpoint_arg(rpc_endpoint).last_epoch_block())
-
-
-protocol_group.add_command(last_epoch_block)
-
-
-@command()
-@rpc_endpoint_option
 def last_epoch_time(rpc_endpoint: Optional[str]) -> None:
     """
     Timestamp of the last epoch
@@ -247,69 +233,69 @@ protocol_group.add_command(deployer)
 
 @command()
 @rpc_endpoint_option
-def get_epoch_period(rpc_endpoint: Optional[str]) -> None:
+def epoch_period(rpc_endpoint: Optional[str]) -> None:
     """Epoch period in blocks"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_epoch_period())
 
 
-protocol_group.add_command(get_epoch_period)
+protocol_group.add_command(epoch_period)
 
 
 @command()
 @rpc_endpoint_option
-def get_block_period(rpc_endpoint: Optional[str]) -> None:
+def block_period(rpc_endpoint: Optional[str]) -> None:
     """Block period in seconds"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_block_period())
 
 
-protocol_group.add_command(get_block_period)
+protocol_group.add_command(block_period)
 
 
 @command()
 @rpc_endpoint_option
-def get_unbonding_period(rpc_endpoint: Optional[str]) -> None:
+def unbonding_period(rpc_endpoint: Optional[str]) -> None:
     """Unbonding period in blocks"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_unbonding_period())
 
 
-protocol_group.add_command(get_unbonding_period)
+protocol_group.add_command(unbonding_period)
 
 
 @command()
 @rpc_endpoint_option
-def get_last_epoch_block(rpc_endpoint: Optional[str]) -> None:
+def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     """
-    Block of last epoch
+    Block number of the last epoch
     """
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_last_epoch_block())
 
 
-protocol_group.add_command(get_last_epoch_block)
+protocol_group.add_command(last_epoch_block)
 
 
 @command()
 @rpc_endpoint_option
-def get_version(rpc_endpoint: Optional[str]) -> None:
+def version(rpc_endpoint: Optional[str]) -> None:
     """Contract version"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_version())
 
 
-protocol_group.add_command(get_version)
+protocol_group.add_command(version)
 
 
 @command()
 @rpc_endpoint_option
-def get_committee(rpc_endpoint: Optional[str]) -> None:
+def committee(rpc_endpoint: Optional[str]) -> None:
     """
     Get current committee
     """
@@ -318,98 +304,98 @@ def get_committee(rpc_endpoint: Optional[str]) -> None:
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).get_committee()))
 
 
-protocol_group.add_command(get_committee)
+protocol_group.add_command(committee)
 
 
 @command()
 @rpc_endpoint_option
-def get_validators(rpc_endpoint: Optional[str]) -> None:
+def validators(rpc_endpoint: Optional[str]) -> None:
     """Get current validators"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(_show_sequence(autonity_from_endpoint_arg(rpc_endpoint).get_validators()))
 
 
-protocol_group.add_command(get_validators)
+protocol_group.add_command(validators)
 
 
 @command()
 @rpc_endpoint_option
-def get_treasury_account(rpc_endpoint: Optional[str]) -> None:
+def treasury_account(rpc_endpoint: Optional[str]) -> None:
     """Treasury account address"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_account())
 
 
-protocol_group.add_command(get_treasury_account)
+protocol_group.add_command(treasury_account)
 
 
 @command()
 @rpc_endpoint_option
-def get_treasury_fee(rpc_endpoint: Optional[str]) -> None:
+def treasury_fee(rpc_endpoint: Optional[str]) -> None:
     """Treasury fee"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_fee())
 
 
-protocol_group.add_command(get_treasury_fee)
+protocol_group.add_command(treasury_fee)
 
 
 @command()
 @rpc_endpoint_option
-def get_max_committee_size(rpc_endpoint: Optional[str]) -> None:
+def max_committee_size(rpc_endpoint: Optional[str]) -> None:
     """Maximum committee size"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_max_committee_size())
 
 
-protocol_group.add_command(get_max_committee_size)
+protocol_group.add_command(max_committee_size)
 
 
 @command()
 @rpc_endpoint_option
-def get_committee_enodes(rpc_endpoint: Optional[str]) -> None:
+def committee_enodes(rpc_endpoint: Optional[str]) -> None:
     """Enodes in current committee"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_committee_enodes())
 
 
-protocol_group.add_command(get_committee_enodes)
+protocol_group.add_command(committee_enodes)
 
 
 @command()
 @rpc_endpoint_option
-def get_minimum_base_fee(rpc_endpoint: Optional[str]) -> None:
+def minimum_base_fee(rpc_endpoint: Optional[str]) -> None:
     """Minimum base fee"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_minimum_base_fee())
 
 
-protocol_group.add_command(get_minimum_base_fee)
+protocol_group.add_command(minimum_base_fee)
 
 
 @command()
 @rpc_endpoint_option
-def get_operator(rpc_endpoint: Optional[str]) -> None:
+def operator(rpc_endpoint: Optional[str]) -> None:
     """Contract operator"""
     from aut.utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_operator())
 
 
-protocol_group.add_command(get_operator)
+protocol_group.add_command(operator)
 
 
 @command()
 @rpc_endpoint_option
 @argument("height", type=int, nargs=1)
 @argument("round_", metavar="ROUND", type=int, nargs=1)
-def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
+def proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     """
     Proposer at the given height and round
     """
@@ -421,7 +407,7 @@ def get_proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     print(aut.get_proposer(height, round_))
 
 
-protocol_group.add_command(get_proposer)
+protocol_group.add_command(proposer)
 
 
 # -- Removed until https://github.com/autonity/autonity.py/pull/55 is released
@@ -444,7 +430,7 @@ protocol_group.add_command(get_proposer)
 @command()
 @rpc_endpoint_option
 @argument("unbonding_id", type=int, nargs=1)
-def get_reverting_amount(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
+def reverting_amount(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
     """
     Get the amount of LNTN or NTN bonded when the released unbonding was reverted
     """
@@ -456,13 +442,13 @@ def get_reverting_amount(rpc_endpoint: Optional[str], unbonding_id: int) -> None
     print(aut.get_reverting_amount(unbonding_id))
 
 
-protocol_group.add_command(get_reverting_amount)
+protocol_group.add_command(reverting_amount)
 
 
 @command()
 @rpc_endpoint_option
 @argument("block", type=int, nargs=1)
-def get_epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
+def epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
     """Get the epoch of the given block"""
     from autonity import Autonity
 
@@ -472,7 +458,7 @@ def get_epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
     print(aut.get_epoch_from_block(block))
 
 
-protocol_group.add_command(get_epoch_from_block)
+protocol_group.add_command(epoch_from_block)
 
 
 @command()

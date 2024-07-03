@@ -36,7 +36,7 @@ def validator() -> None:
 
 
 validator.add_command(
-    protocol_group.get_command(None, "get-validators"),  # type: ignore
+    protocol_group.get_command(None, "validators"),  # type: ignore
     name="list",
 )
 
