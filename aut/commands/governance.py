@@ -14,7 +14,7 @@ from aut.options import (
 )
 
 
-@group(name="gov")
+@group(name="governance")
 def governance_group() -> None:
     """
     Commands that can only be called by the governance operator account.
