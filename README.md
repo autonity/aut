@@ -20,7 +20,7 @@ To install the `aut` tool as a pipx package, isolated in its own environment, ru
 pipx install git+https://github.com/autonity/aut.git
 ```
 
-To upgrade from an earlier `pipx` installation of `aut`, use the `--force` flag:
+To upgrade from an earlier `pipx` installation of `aut`, run:
 
 ```console
 pipx upgrade aut
