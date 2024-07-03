@@ -23,7 +23,7 @@ pipx install git+https://github.com/autonity/aut.git
 To upgrade from an earlier `pipx` installation of `aut`, use the `--force` flag:
 
 ```console
-pipx install --force git+https://github.com/autonity/aut.git
+pipx upgrade aut
 ```
 
 Once successfully installed, the `aut` command should be available in the
