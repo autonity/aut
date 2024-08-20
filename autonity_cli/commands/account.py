@@ -2,11 +2,33 @@
 The `account` command group.
 """
 
+import json
 from typing import Dict, List, Optional
 
+import eth_account
+from autonity.autonity import Autonity
+from autonity.erc20 import ERC20
+from autonity.utils.denominations import (
+    format_auton_quantity,
+    format_newton_quantity,
+    format_quantity,
+)
+from autonity.utils.keyfile import (
+    PrivateKey,
+    create_keyfile_from_private_key,
+    decrypt_keyfile,
+    get_address_from_keyfile,
+)
+from autonity.utils.tx import sign_tx
 from click import ClickException, Path, argument, command, group, option
+from eth_account import Account
+from eth_account.messages import encode_defunct
+from hexbytes import HexBytes
+from web3 import Web3
 from web3.types import BlockIdentifier
 
+from .. import config
+from ..logging import log
 from ..options import (
     from_option,
     keyfile_and_password_options,
@@ -15,11 +37,19 @@ from ..options import (
     newton_or_token_option,
     rpc_endpoint_option,
 )
+from ..user import get_account_stats
+from ..utils import (
+    address_keyfile_dict,
+    from_address_from_argument_optional,
+    load_from_file_or_stdin,
+    load_from_file_or_stdin_line,
+    new_keyfile_from_options,
+    newton_or_token_to_address,
+    prompt_for_new_password,
+    to_json,
+    web3_from_endpoint_arg,
+)
 
-# Disable pylint warning about imports outside top-level.  We do this
-# intentionally to try and keep startup times of the CLI low.
-
-# pylint: disable=import-outside-toplevel
 # pylint: disable=too-many-locals
 
 
@@ -37,9 +67,6 @@ def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     """
     List the accounts for files in the keystore directory.
     """
-
-    from .. import config
-    from ..utils import address_keyfile_dict
 
     keystore = config.get_keystore_directory(keystore)
     keyfiles = address_keyfile_dict(keystore)
@@ -72,15 +99,6 @@ def info(
     the default keyfile account if no accounts specified).
     """
 
-    from web3 import Web3
-
-    from ..user import get_account_stats
-    from ..utils import (
-        from_address_from_argument_optional,
-        to_json,
-        web3_from_endpoint_arg,
-    )
-
     if len(accounts) == 0:
         account = from_address_from_argument_optional(None, keyfile)
         if not account:
@@ -112,20 +130,6 @@ def balance(
     """
     Print the current balance of the given account.
     """
-
-    from autonity import Autonity
-    from autonity.erc20 import ERC20
-    from autonity.utils.denominations import (
-        format_auton_quantity,
-        format_newton_quantity,
-        format_quantity,
-    )
-
-    from ..utils import (
-        from_address_from_argument_optional,
-        newton_or_token_to_address,
-        web3_from_endpoint_arg,
-    )
 
     account_addr = from_address_from_argument_optional(account_str, keyfile)
     if not account_addr:
@@ -167,17 +171,6 @@ def lntn_balances(
     """
     Print all Liquid Newton balances of the given account.
     """
-
-    from autonity.autonity import Autonity
-    from autonity.erc20 import ERC20
-    from autonity.utils.denominations import format_newton_quantity
-
-    from ..logging import log
-    from ..utils import (
-        from_address_from_argument_optional,
-        to_json,
-        web3_from_endpoint_arg,
-    )
 
     account_addr = from_address_from_argument_optional(account_str, keyfile)
     if not account_addr:
@@ -228,17 +221,6 @@ def new(
     specified, a default name is used (consistent with GETH keyfiles)
     in the keystore.
     """
-
-    import json
-
-    import eth_account
-    from autonity.utils.keyfile import (
-        create_keyfile_from_private_key,
-        get_address_from_keyfile,
-    )
-
-    from ..logging import log
-    from ..utils import new_keyfile_from_options, prompt_for_new_password
 
     # Ask for extra entropy, if requested.
 
@@ -300,22 +282,6 @@ def import_private_key(
     (consistent with GETH keyfiles) in the keystore.
     """
 
-    import json
-
-    from autonity.utils.keyfile import (
-        PrivateKey,
-        create_keyfile_from_private_key,
-        get_address_from_keyfile,
-    )
-    from hexbytes import HexBytes
-
-    from ..logging import log
-    from ..utils import (
-        load_from_file_or_stdin_line,
-        new_keyfile_from_options,
-        prompt_for_new_password,
-    )
-
     private_key = HexBytes.fromhex(load_from_file_or_stdin_line(private_key_file))
     if len(private_key) != 32:
         raise ClickException("invalid private key length")
@@ -353,14 +319,6 @@ def signtx(keyfile: Optional[str], password: Optional[str], tx_file: str) -> Non
     If password is not given, the env variable 'KEYFILEPWD' is used.
     If that is not set, the user is prompted.
     """
-
-    import json
-
-    from autonity.utils.tx import sign_tx
-
-    from .. import config
-    from ..logging import log
-    from ..utils import load_from_file_or_stdin, to_json
 
     # Read tx
     tx = json.loads(load_from_file_or_stdin(tx_file))
@@ -409,16 +367,6 @@ def sign_message(
     signature is always written to stdout (which can be piped to a
     file). The signature is also written to SIGNATURE_FILE, if given.
     """
-
-    import json
-
-    from autonity.utils.keyfile import decrypt_keyfile
-    from eth_account import Account
-    from eth_account.messages import encode_defunct
-
-    from .. import config
-    from ..logging import log
-    from ..utils import load_from_file_or_stdin
 
     # Read message
     if use_message_file:
@@ -482,16 +430,6 @@ def verify_signature(
     message MESSAGE, signed by the owner of the FROM address.
     Signature must be contained in a file.
     """
-
-    from eth_account import Account
-    from eth_account.messages import encode_defunct
-    from hexbytes import HexBytes
-
-    from ..logging import log
-    from ..utils import (
-        from_address_from_argument_optional,
-        load_from_file_or_stdin,
-    )
 
     if use_message_file:
         message = load_from_file_or_stdin(message)
