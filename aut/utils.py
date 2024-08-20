@@ -250,27 +250,6 @@ def create_contract_tx_from_args(
         raise ClickException(err.args[0]) from err
 
 
-# TODO: remove
-def w3_provider() -> Web3:
-    """
-    Return a web3py provider object for the RPC identifier that
-    w3_provider_endpoint returns.
-    """
-    return Web3()  # web3_from_endpoint(w3_provider_endpoint())
-
-
-def w3_provider_is_connected(w3: Web3) -> bool:
-    """
-    Take a web3py RPC provider object and return true if connected
-    to the provider, otherwise throw exception.
-    """
-    # identifier = w3_provider_endpoint()
-    if not w3.is_connected():
-        raise OSError("Web3 is not connected")
-
-    return True
-
-
 def parse_wei_representation(wei_str: str) -> Wei:
     """
     Take a text representation of an integer with an optional
@@ -346,15 +325,6 @@ def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
         addr_keyfile_dict[Web3.to_checksum_address("0x" + addr_lower)] = keyfile_path
 
     return addr_keyfile_dict
-
-
-def degeneate_address_keyfile_dict(keystore_dir: str) -> Dict[str, str]:
-    """
-    Similar to address_keyfile_dict, but addresses (keys) are
-    lower case and without the '0x' prefix.
-    """
-    addr_keyfile_dict = address_keyfile_dict(keystore_dir)
-    return {k.lower().replace("0x", ""): v for k, v in addr_keyfile_dict.items()}
 
 
 def to_checksum_address(address: str) -> ChecksumAddress:
