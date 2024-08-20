@@ -3,12 +3,6 @@ Constants
 """
 
 
-class Defaults:
-    """Default configuration variables."""
-
-    DEFAULT_RPC_ENDPOINT = "http://localhost:8545"
-
-
 class AutonDenoms:
     """
     Auton sub-denominations. 1 auton = one quntillion wei and
