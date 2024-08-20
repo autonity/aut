@@ -20,11 +20,7 @@ from web3.types import (
     BlockData,
     BlockIdentifier,
     ChecksumAddress,
-    SignedTx,
-    TxParams,
 )
-
-from .utils import w3_provider
 
 
 class AccountStats(TypedDict):
@@ -80,21 +76,3 @@ def get_block(w3: Web3, identifier: BlockIdentifier) -> BlockData:
     """
     block_data = w3.eth.get_block(identifier)
     return block_data
-
-
-# TODO: support this?
-def server_signtx(tx: TxParams) -> SignedTx:
-    """
-    Sign the transaction data contained in dictionary 'tx' by
-    sending that data via web3 RPC call eth_signTransaction. The
-    'from' account must be an account controlled by the RPC
-    server/node.
-
-    There are very few use-cases where this function should be called
-    by an RPC client that does not reside on the same machine as the
-    RPC server.
-    """
-    w3 = w3_provider()
-    # TODO: this seems wrong somehow ...
-    tx_raw = w3.eth.sign_transaction(tx["rawTransansaction"])  # type: ignore
-    return tx_raw
