@@ -7,8 +7,8 @@ from typing import Optional
 from click import argument, command, group
 from eth_utils import to_checksum_address
 
-from aut.options import from_option, keyfile_option, rpc_endpoint_option, tx_aux_options
-from aut.utils import (
+from ..options import from_option, keyfile_option, rpc_endpoint_option, tx_aux_options
+from ..utils import (
     autonity_from_endpoint_arg,
     create_contract_tx_from_args,
     from_address_from_argument,

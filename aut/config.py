@@ -13,8 +13,8 @@ from autonity.validator import NodeAddress
 from click import ClickException
 from web3 import Web3
 
-from aut.config_file import CONFIG_FILE_NAME, get_config_file
-from aut.logging import log
+from .config_file import CONFIG_FILE_NAME, get_config_file
+from .logging import log
 
 DEFAULT_KEYFILE_DIRECTORY = "~/.autonity/keystore"
 KEYFILE_DIRECTORY_ENV_VAR = "KEYFILEDIR"

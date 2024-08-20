@@ -9,14 +9,14 @@ from autonity.utils.denominations import format_quantity
 from click import ClickException, argument, command, group
 from web3 import Web3
 
-from aut.options import (
+from ..options import (
     from_option,
     keyfile_option,
     newton_or_token_option,
     rpc_endpoint_option,
     tx_aux_options,
 )
-from aut.utils import (
+from ..utils import (
     create_contract_tx_from_args,
     from_address_from_argument,
     newton_or_token_to_address_require,

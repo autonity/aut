@@ -6,9 +6,9 @@ from typing import Optional
 
 from click import argument, command, group
 
-from aut.options import rpc_endpoint_option
-from aut.user import get_block
-from aut.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
+from ..options import rpc_endpoint_option
+from ..user import get_block
+from ..utils import to_json, validate_block_identifier, web3_from_endpoint_arg
 
 
 @group(name="block")

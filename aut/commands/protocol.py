@@ -7,8 +7,8 @@ from typing import Any, Optional, Sequence
 from autonity.autonity import AUTONITY_CONTRACT_ADDRESS, Autonity
 from click import argument, command, echo, group
 
-from aut.options import rpc_endpoint_option
-from aut.utils import autonity_from_endpoint_arg, to_json, web3_from_endpoint_arg
+from ..options import rpc_endpoint_option
+from ..utils import autonity_from_endpoint_arg, to_json, web3_from_endpoint_arg
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals

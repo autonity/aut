@@ -13,17 +13,17 @@ from click import argument, command, echo, group, option
 from web3 import Web3
 from web3.types import HexBytes
 
-from aut.commands.protocol import protocol_group
-from aut.config import get_node_address
-from aut.constants import UnixExitStatus
-from aut.options import (
+from ..commands.protocol import protocol_group
+from ..config import get_node_address
+from ..constants import UnixExitStatus
+from ..options import (
     from_option,
     keyfile_option,
     rpc_endpoint_option,
     tx_aux_options,
     validator_option,
 )
-from aut.utils import (
+from ..utils import (
     autonity_from_endpoint_arg,
     create_contract_tx_from_args,
     from_address_from_argument,

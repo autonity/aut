@@ -9,8 +9,8 @@ from web3.datastructures import AttributeDict
 from web3.exceptions import MethodUnavailable
 from web3.types import SyncStatus
 
-from aut.options import rpc_endpoint_option
-from aut.utils import to_json, web3_from_endpoint_arg
+from ..options import rpc_endpoint_option
+from ..utils import to_json, web3_from_endpoint_arg
 
 
 @group(name="node")

@@ -27,9 +27,9 @@ from hexbytes import HexBytes
 from web3 import Web3
 from web3.types import BlockIdentifier
 
-from aut import config
-from aut.logging import log
-from aut.options import (
+from .. import config
+from ..logging import log
+from ..options import (
     from_option,
     keyfile_and_password_options,
     keyfile_option,
@@ -37,8 +37,8 @@ from aut.options import (
     newton_or_token_option,
     rpc_endpoint_option,
 )
-from aut.user import get_account_stats
-from aut.utils import (
+from ..user import get_account_stats
+from ..utils import (
     address_keyfile_dict,
     from_address_from_argument_optional,
     load_from_file_or_stdin,

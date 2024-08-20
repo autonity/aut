@@ -14,8 +14,8 @@ from autonity.abi_parser import (
 from click import ClickException, Path, argument, command, group, option
 from web3.contract.contract import ContractFunction
 
-from aut.logging import log
-from aut.options import (
+from ..logging import log
+from ..options import (
     contract_options,
     from_option,
     keyfile_option,
@@ -23,7 +23,7 @@ from aut.options import (
     tx_aux_options,
     tx_value_option,
 )
-from aut.utils import (
+from ..utils import (
     contract_address_and_abi_from_args,
     create_contract_tx_from_args,
     finalize_tx_from_args,

@@ -13,9 +13,9 @@ from eth_account.account import SignedTransaction
 from web3 import Web3
 from web3.types import HexBytes, HexStr
 
-from aut.commands.account import signtx
-from aut.logging import log
-from aut.options import (
+from ..commands.account import signtx
+from ..logging import log
+from ..options import (
     from_option,
     keyfile_option,
     newton_or_token_option,
@@ -23,7 +23,7 @@ from aut.options import (
     tx_aux_options,
     tx_value_option,
 )
-from aut.utils import (
+from ..utils import (
     create_contract_tx_from_args,
     create_tx_from_args,
     finalize_tx_from_args,
