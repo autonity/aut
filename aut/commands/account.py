@@ -62,7 +62,7 @@ def account_group() -> None:
 
 @command(name="list")
 @option("--with-files", is_flag=True, help="also show keyfile names.")
-@keystore_option()
+@keystore_option
 def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     """
     List the accounts for files in the keystore directory.
@@ -198,7 +198,7 @@ account_group.add_command(lntn_balances)
 
 
 @command()
-@keystore_option()
+@keystore_option
 @keyfile_option(required=False, output=True)
 @new_password_option
 @option(
@@ -256,7 +256,7 @@ account_group.add_command(new)
 
 
 @command()
-@keystore_option()
+@keystore_option
 @keyfile_option(output=True)
 @new_password_option
 @argument("private_key_file", type=Path(exists=False))

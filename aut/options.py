@@ -11,29 +11,29 @@ Func = TypeVar("Func", bound=Callable[..., Any])
 Decorator = Callable[[Func], Func]
 
 
-# an --rpc-endpoint, -r <url> option
-rpc_endpoint_option: Decorator = option(
-    "--rpc-endpoint",
-    "-r",
-    metavar="URL",
-    help="RPC endpoint (defaults to WEB3_ENDPOINT env var if set)",
-)
+def rpc_endpoint_option(fn: Func) -> Func:
+    """
+    An --rpc-endpoint, -r <url> option
+    """
+    return option(
+        "--rpc-endpoint",
+        "-r",
+        metavar="URL",
+        help="RPC endpoint (defaults to WEB3_ENDPOINT env var if set)",
+    )(fn)
 
 
-def keystore_option() -> Decorator:
+def keystore_option(fn: Func) -> Func:
     """
     Option: --keystore <directory>.
     """
 
-    def decorator(fn: Func) -> Func:
-        return option(
-            "--keystore",
-            "-s",
-            type=Path(exists=True),
-            help="keystore directory (falls back to config file or ~/.autonity/keystore).",
-        )(fn)
-
-    return decorator
+    return option(
+        "--keystore",
+        "-s",
+        type=Path(exists=True),
+        help="keystore directory (falls back to config file or ~/.autonity/keystore).",
+    )(fn)
 
 
 def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
@@ -43,14 +43,13 @@ def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
     """
 
     def decorator(fn: Func) -> Func:
-        fn = option(
+        return option(
             "--keyfile",
             "-k",
             required=required,
             type=Path(exists=not output),
             help="Encrypted private key file",
         )(fn)
-        return fn
 
     return decorator
 
@@ -124,13 +123,12 @@ def tx_value_option(required: bool = False) -> Decorator:
     """
 
     def decorator(fn: Func) -> Func:
-        fn = option(
+        return option(
             "--value",
             "-v",
             required=required,
             help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
         )(fn)
-        return fn
 
     return decorator
 
