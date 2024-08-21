@@ -2,8 +2,6 @@
 The "block" command group
 """
 
-from typing import Optional
-
 from click import argument, command, group
 
 from ..options import config_option, rpc_endpoint_option
@@ -20,7 +18,7 @@ def block_group() -> None:
 @config_option
 @rpc_endpoint_option
 @argument("identifier", default="latest")
-def get(rpc_endpoint: Optional[str], identifier: str) -> None:
+def get(rpc_endpoint: str, identifier: str) -> None:
     """Print information for block.
 
     IDENTIFIER is a block number or hash. If no argument is given, "latest" is used.
@@ -38,7 +36,7 @@ block_group.add_command(get)
 @command()
 @config_option
 @rpc_endpoint_option
-def height(rpc_endpoint: Optional[str]) -> None:
+def height(rpc_endpoint: str) -> None:
     """Print the current block height for the chain."""
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)

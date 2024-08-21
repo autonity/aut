@@ -40,6 +40,7 @@ def rpc_endpoint_option(fn: Func) -> Func:
         "-r",
         metavar="URL",
         help="RPC endpoint.",
+        required=True,
     )(fn)
 
 
@@ -75,25 +76,22 @@ def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
     return decorator
 
 
-def keyfile_and_password_options(required: bool = False) -> Decorator:
+def keyfile_and_password_options(fn: Func) -> Func:
     """
     Options: --keyfile and --password.  If `required` is True,
     --keyfile is required.
     """
 
-    def decorator(fn: Func) -> Func:
-        fn = keyfile_option(required)(fn)
-        fn = option(
-            "--password",
-            "-p",
-            help="Password for key file.",
-            prompt="Enter passphrase for key file",
-            hide_input=True,
-            show_default=False,
-        )(fn)
-        return fn
-
-    return decorator
+    fn = keyfile_option(required=True)(fn)
+    fn = option(
+        "--password",
+        "-p",
+        help="Password for key file.",
+        prompt="Enter passphrase for key file",
+        hide_input=True,
+        show_default=False,
+    )(fn)
+    return fn
 
 
 def new_password_option(fn: Func) -> Func:
@@ -222,6 +220,7 @@ def validator_option(fn: Func) -> Func:
         "-V",
         "validator_addr_str",
         help="Validator address.",
+        required=True,
     )(fn)
 
 
@@ -234,11 +233,13 @@ def contract_options(fn: Func) -> Func:
         "--address",
         "contract_address_str",
         help="Contract address.",
+        required=True,
     )(fn)
     fn = option(
         "--abi",
         "contract_abi_path",
         type=Path(exists=True),
         help="Contract ABI file.",
+        required=True,
     )(fn)
     return fn

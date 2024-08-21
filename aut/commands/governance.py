@@ -37,7 +37,7 @@ def governance_group() -> None:
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_bond_applied_gas(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -84,7 +84,7 @@ governance_group.add_command(set_max_bond_applied_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_unbond_applied_gas(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -131,7 +131,7 @@ governance_group.add_command(set_max_unbond_applied_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_unbond_released_gas(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -178,7 +178,7 @@ governance_group.add_command(set_max_unbond_released_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_rewards_distribution_gas(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -225,7 +225,7 @@ governance_group.add_command(set_max_rewards_distribution_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_staking_gas_price(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -272,7 +272,7 @@ governance_group.add_command(set_staking_gas_price)
 @tx_aux_options
 @argument("base-fee-str", metavar="base-fee", nargs=1)
 def set_minimum_base_fee(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -319,7 +319,7 @@ governance_group.add_command(set_minimum_base_fee)
 @tx_aux_options
 @argument("committee-size", type=int, nargs=1)
 def set_committee_size(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -364,7 +364,7 @@ governance_group.add_command(set_committee_size)
 @tx_aux_options
 @argument("unbonding-period", type=int, nargs=1)
 def set_unbonding_period(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -409,7 +409,7 @@ governance_group.add_command(set_unbonding_period)
 @tx_aux_options
 @argument("epoch-period", type=int, nargs=1)
 def set_epoch_period(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -454,7 +454,7 @@ governance_group.add_command(set_epoch_period)
 @tx_aux_options
 @argument("operator-address-str", metavar="OPERATOR-ADDRESS", nargs=1)
 def set_operator_account(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -500,7 +500,7 @@ governance_group.add_command(set_operator_account)
 @tx_aux_options
 @argument("treasury-address-str", metavar="treasury-address", nargs=1)
 def set_treasury_account(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -546,7 +546,7 @@ governance_group.add_command(set_treasury_account)
 @tx_aux_options
 @argument("treasury-fee-str", metavar="TREASURY-FEE", nargs=1)
 def set_treasury_fee(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -592,7 +592,7 @@ governance_group.add_command(set_treasury_fee)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_accountability_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -639,7 +639,7 @@ governance_group.add_command(set_accountability_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_oracle_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -685,7 +685,7 @@ governance_group.add_command(set_oracle_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_acu_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -731,7 +731,7 @@ governance_group.add_command(set_acu_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_supply_control_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -778,7 +778,7 @@ governance_group.add_command(set_supply_control_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_stabilization_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -825,7 +825,7 @@ governance_group.add_command(set_stabilization_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_inflation_controller_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -872,7 +872,7 @@ governance_group.add_command(set_inflation_controller_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_upgrade_manager_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -919,7 +919,7 @@ governance_group.add_command(set_upgrade_manager_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_non_stakable_vesting_contract(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -967,7 +967,7 @@ governance_group.add_command(set_non_stakable_vesting_contract)
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 @argument("recipient-str", metavar="RECIPIENT", required=False)
 def mint(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -1018,7 +1018,7 @@ governance_group.add_command(mint)
 @argument("amount-str", metavar="AMOUNT")
 @argument("account-str", metavar="ACCOUNT", required=False)
 def burn(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],

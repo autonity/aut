@@ -2,7 +2,7 @@
 The `protocol` command group.
 """
 
-from typing import Any, Optional, Sequence
+from typing import Any, Sequence
 
 from autonity.autonity import AUTONITY_CONTRACT_ADDRESS, Autonity
 from click import argument, command, echo, group
@@ -34,7 +34,7 @@ def _show_json(value: Any) -> str:
 @command()
 @config_option
 @rpc_endpoint_option
-def commission_rate_precision(rpc_endpoint: Optional[str]) -> None:
+def commission_rate_precision(rpc_endpoint: str) -> None:
     """Precision of validator commission rate values."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).commission_rate_precision())
@@ -46,7 +46,7 @@ protocol_group.add_command(commission_rate_precision)
 @command()
 @config_option
 @rpc_endpoint_option
-def max_bond_applied_gas(rpc_endpoint: Optional[str]) -> None:
+def max_bond_applied_gas(rpc_endpoint: str) -> None:
     """Max allowed gas for notifying delegator about bonding."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_bond_applied_gas())
@@ -58,7 +58,7 @@ protocol_group.add_command(max_bond_applied_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-def max_unbond_applied_gas(rpc_endpoint: Optional[str]) -> None:
+def max_unbond_applied_gas(rpc_endpoint: str) -> None:
     """Max allowed gas for notifying delegator about unbonding."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_unbond_applied_gas())
@@ -70,7 +70,7 @@ protocol_group.add_command(max_unbond_applied_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-def max_unbond_released_gas(rpc_endpoint: Optional[str]) -> None:
+def max_unbond_released_gas(rpc_endpoint: str) -> None:
     """Max allowed gas for notifying delegator about bond being released."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_unbond_released_gas())
@@ -82,7 +82,7 @@ protocol_group.add_command(max_unbond_released_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-def max_rewards_distribution_gas(rpc_endpoint: Optional[str]) -> None:
+def max_rewards_distribution_gas(rpc_endpoint: str) -> None:
     """Max allowed gas for notifying delegator about rewards being distributed."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_rewards_distribution_gas())
@@ -94,7 +94,7 @@ protocol_group.add_command(max_rewards_distribution_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-def config(rpc_endpoint: Optional[str]) -> None:
+def config(rpc_endpoint: str) -> None:
     """Print the Autonity contract config."""
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).config()))
@@ -106,7 +106,7 @@ protocol_group.add_command(config)
 @command()
 @config_option
 @rpc_endpoint_option
-def epoch_id(rpc_endpoint: Optional[str]) -> None:
+def epoch_id(rpc_endpoint: str) -> None:
     """ID of current epoch."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_id())
@@ -118,7 +118,7 @@ protocol_group.add_command(epoch_id)
 @command()
 @config_option
 @rpc_endpoint_option
-def last_epoch_time(rpc_endpoint: Optional[str]) -> None:
+def last_epoch_time(rpc_endpoint: str) -> None:
     """Timestamp of the last epoch."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).last_epoch_time())
@@ -130,7 +130,7 @@ protocol_group.add_command(last_epoch_time)
 @command()
 @config_option
 @rpc_endpoint_option
-def epoch_total_bonded_stake(rpc_endpoint: Optional[str]) -> None:
+def epoch_total_bonded_stake(rpc_endpoint: str) -> None:
     """Total stake bonded this epoch."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_total_bonded_stake())
@@ -142,7 +142,7 @@ protocol_group.add_command(epoch_total_bonded_stake)
 @command()
 @config_option
 @rpc_endpoint_option
-def atn_total_redistributed(rpc_endpoint: Optional[str]) -> None:
+def atn_total_redistributed(rpc_endpoint: str) -> None:
     """Total fees redistributed."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).atn_total_redistributed())
@@ -154,7 +154,7 @@ protocol_group.add_command(atn_total_redistributed)
 @command()
 @config_option
 @rpc_endpoint_option
-def epoch_reward(rpc_endpoint: Optional[str]) -> None:
+def epoch_reward(rpc_endpoint: str) -> None:
     """Reward for this epoch."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_reward())
@@ -178,7 +178,7 @@ protocol_group.add_command(staking_gas_price)
 @command()
 @config_option
 @rpc_endpoint_option
-def inflation_reserve(rpc_endpoint: Optional[str]) -> None:
+def inflation_reserve(rpc_endpoint: str) -> None:
     """The inflation reserve."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).inflation_reserve())
@@ -190,7 +190,7 @@ protocol_group.add_command(inflation_reserve)
 @command()
 @config_option
 @rpc_endpoint_option
-def deployer(rpc_endpoint: Optional[str]) -> None:
+def deployer(rpc_endpoint: str) -> None:
     """Contract deployer."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).deployer())
@@ -202,7 +202,7 @@ protocol_group.add_command(deployer)
 @command()
 @config_option
 @rpc_endpoint_option
-def epoch_period(rpc_endpoint: Optional[str]) -> None:
+def epoch_period(rpc_endpoint: str) -> None:
     """Epoch period in blocks."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_epoch_period())
@@ -214,7 +214,7 @@ protocol_group.add_command(epoch_period)
 @command()
 @config_option
 @rpc_endpoint_option
-def block_period(rpc_endpoint: Optional[str]) -> None:
+def block_period(rpc_endpoint: str) -> None:
     """Block period in seconds."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_block_period())
@@ -226,7 +226,7 @@ protocol_group.add_command(block_period)
 @command()
 @config_option
 @rpc_endpoint_option
-def unbonding_period(rpc_endpoint: Optional[str]) -> None:
+def unbonding_period(rpc_endpoint: str) -> None:
     """Unbonding period in blocks."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_unbonding_period())
@@ -238,7 +238,7 @@ protocol_group.add_command(unbonding_period)
 @command()
 @config_option
 @rpc_endpoint_option
-def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
+def last_epoch_block(rpc_endpoint: str) -> None:
     """Block number of the last epoch."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_last_epoch_block())
@@ -250,7 +250,7 @@ protocol_group.add_command(last_epoch_block)
 @command()
 @config_option
 @rpc_endpoint_option
-def version(rpc_endpoint: Optional[str]) -> None:
+def version(rpc_endpoint: str) -> None:
     """Contract version."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_version())
@@ -262,7 +262,7 @@ protocol_group.add_command(version)
 @command()
 @config_option
 @rpc_endpoint_option
-def committee(rpc_endpoint: Optional[str]) -> None:
+def committee(rpc_endpoint: str) -> None:
     """Get current committee."""
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).get_committee()))
@@ -274,7 +274,7 @@ protocol_group.add_command(committee)
 @command()
 @config_option
 @rpc_endpoint_option
-def validators(rpc_endpoint: Optional[str]) -> None:
+def validators(rpc_endpoint: str) -> None:
     """Get current validators."""
 
     print(_show_sequence(autonity_from_endpoint_arg(rpc_endpoint).get_validators()))
@@ -286,7 +286,7 @@ protocol_group.add_command(validators)
 @command()
 @config_option
 @rpc_endpoint_option
-def treasury_account(rpc_endpoint: Optional[str]) -> None:
+def treasury_account(rpc_endpoint: str) -> None:
     """Treasury account address."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_account())
@@ -298,7 +298,7 @@ protocol_group.add_command(treasury_account)
 @command()
 @config_option
 @rpc_endpoint_option
-def treasury_fee(rpc_endpoint: Optional[str]) -> None:
+def treasury_fee(rpc_endpoint: str) -> None:
     """Treasury fee."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_fee())
@@ -310,7 +310,7 @@ protocol_group.add_command(treasury_fee)
 @command()
 @config_option
 @rpc_endpoint_option
-def max_committee_size(rpc_endpoint: Optional[str]) -> None:
+def max_committee_size(rpc_endpoint: str) -> None:
     """Maximum committee size."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_max_committee_size())
@@ -322,7 +322,7 @@ protocol_group.add_command(max_committee_size)
 @command()
 @config_option
 @rpc_endpoint_option
-def committee_enodes(rpc_endpoint: Optional[str]) -> None:
+def committee_enodes(rpc_endpoint: str) -> None:
     """Enodes in current committee."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_committee_enodes())
@@ -334,7 +334,7 @@ protocol_group.add_command(committee_enodes)
 @command()
 @config_option
 @rpc_endpoint_option
-def minimum_base_fee(rpc_endpoint: Optional[str]) -> None:
+def minimum_base_fee(rpc_endpoint: str) -> None:
     """Minimum base fee."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_minimum_base_fee())
@@ -346,7 +346,7 @@ protocol_group.add_command(minimum_base_fee)
 @command()
 @config_option
 @rpc_endpoint_option
-def operator(rpc_endpoint: Optional[str]) -> None:
+def operator(rpc_endpoint: str) -> None:
     """The governance operator."""
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_operator())
@@ -360,7 +360,7 @@ protocol_group.add_command(operator)
 @rpc_endpoint_option
 @argument("height", type=int, nargs=1)
 @argument("round_", metavar="ROUND", type=int, nargs=1)
-def proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
+def proposer(rpc_endpoint: str, height: int, round_: int) -> None:
     """Proposer at the given height and round."""
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
@@ -375,7 +375,7 @@ protocol_group.add_command(proposer)
 # @config_option
 # @rpc_endpoint_option
 # @argument("unbonding_id", type=int, nargs=1)
-# def get_unbonding_release_state(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
+# def get_unbonding_release_state(rpc_endpoint: str, unbonding_id: int) -> None:
 #     """Get the release state of the unbonding request."""
 #     from autonity import Autonity
 
@@ -392,7 +392,7 @@ protocol_group.add_command(proposer)
 @config_option
 @rpc_endpoint_option
 @argument("unbonding_id", type=int, nargs=1)
-def reverting_amount(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
+def reverting_amount(rpc_endpoint: str, unbonding_id: int) -> None:
     """Get the amount of LNTN or NTN bonded when the released unbonding was reverted."""
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
@@ -406,7 +406,7 @@ protocol_group.add_command(reverting_amount)
 @config_option
 @rpc_endpoint_option
 @argument("block", type=int, nargs=1)
-def epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
+def epoch_from_block(rpc_endpoint: str, block: int) -> None:
     """Get the epoch of the given block."""
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))

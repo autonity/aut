@@ -58,7 +58,7 @@ validator.add_command(
 @config_option
 @rpc_endpoint_option
 @validator_option
-def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
+def info(rpc_endpoint: str, validator_addr_str: str) -> None:
     """Get information about a validator."""
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
@@ -105,7 +105,7 @@ validator.add_command(compute_address)
 @validator_option
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 def bond(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -115,7 +115,7 @@ def bond(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
     amount_str: str,
 ) -> None:
     """Create transaction to bond Newton to a validator."""
@@ -152,7 +152,7 @@ validator.add_command(bond)
 @validator_option
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 def unbond(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -162,7 +162,7 @@ def unbond(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
     amount_str: str,
 ) -> None:
     """Create transaction to unbond Newton from a validator."""
@@ -201,7 +201,7 @@ validator.add_command(unbond)
 @argument("consensus_key")
 @argument("proof")
 def register(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -252,7 +252,7 @@ validator.add_command(register)
 @tx_aux_options
 @validator_option
 def pause(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -262,7 +262,7 @@ def pause(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
 ) -> None:
     """Create transaction to pause the given validator.
 
@@ -299,7 +299,7 @@ validator.add_command(pause)
 @tx_aux_options
 @validator_option
 def activate(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -309,7 +309,7 @@ def activate(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
 ) -> None:
     """Create transaction to activate a paused validator.
 
@@ -347,7 +347,7 @@ validator.add_command(activate)
 @validator_option
 @argument("rate", type=str, nargs=1)
 def change_commission_rate(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -357,7 +357,7 @@ def change_commission_rate(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
     rate: str,
 ) -> None:
     """Create transaction to change the commission rate for the given Validator.
@@ -398,10 +398,10 @@ validator.add_command(change_commission_rate)
 @option("--ntn", is_flag=True, help="Check Newton (NTN) instead of Auton")
 @option("--account", help="Delegator account to check")
 def unclaimed_rewards(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     ntn: bool,
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
     account: Optional[str],
 ) -> None:
     """Check the given validator for unclaimed fees."""
@@ -431,7 +431,7 @@ validator.add_command(unclaimed_rewards)
 @tx_aux_options
 @validator_option
 def claim_rewards(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -441,7 +441,7 @@ def claim_rewards(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
 ) -> None:
     """Create transaction to claim rewards from a Validator."""
 
@@ -479,7 +479,7 @@ validator.add_command(claim_rewards)
 @validator_option
 @argument("enode", nargs=1)
 def update_enode(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -489,7 +489,7 @@ def update_enode(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: Optional[str],
+    validator_addr_str: str,
     enode: str,
 ) -> None:
     """Update the enode of a registered validator.

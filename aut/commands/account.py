@@ -62,7 +62,7 @@ def account_group() -> None:
 @config_option
 @option("--with-files", is_flag=True, help="Show key file names.")
 @keystore_option
-def list_cmd(keystore: Optional[str], with_files: bool) -> None:
+def list_cmd(keystore: str, with_files: bool) -> None:
     """List the accounts for files in the keystore directory."""
 
     keyfiles = address_keyfile_dict(keystore)
@@ -87,7 +87,7 @@ account_group.add_command(list_cmd)
 )
 @argument("accounts", nargs=-1)
 def info(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     accounts: List[str],
     asof: Optional[BlockIdentifier],
@@ -120,7 +120,7 @@ account_group.add_command(info)
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
 def balance(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     account_str: Optional[str],
     keyfile: Optional[str],
     ntn: bool,
@@ -164,7 +164,7 @@ account_group.add_command(balance)
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
 def lntn_balances(
-    rpc_endpoint: Optional[str], account_str: Optional[str], keyfile: Optional[str]
+    rpc_endpoint: str, account_str: Optional[str], keyfile: Optional[str]
 ) -> None:
     """Print all Liquid Newton balances of the given account."""
 
@@ -204,7 +204,7 @@ account_group.add_command(lntn_balances)
     help="File containing extra entropy. Use '-' to prompt for keyboard input.",
 )
 def new(
-    keystore: Optional[str],
+    keystore: str,
     keyfile: Optional[str],
     password: str,
     extra_entropy: Optional[str],
@@ -259,7 +259,7 @@ account_group.add_command(new)
 @new_password_option
 @argument("private_key_file", type=Path(exists=False))
 def import_private_key(
-    keystore: Optional[str],
+    keystore: str,
     keyfile: Optional[str],
     password: str,
     private_key_file: str,
@@ -293,13 +293,13 @@ account_group.add_command(import_private_key)
 
 @command()
 @config_option
-@keyfile_and_password_options()
+@keyfile_and_password_options
 @argument(
     "tx-file",
     type=Path(),
     required=True,
 )
-def signtx(keyfile: Optional[str], password: str, tx_file: str) -> None:
+def signtx(keyfile: str, password: str, tx_file: str) -> None:
     """Sign a transaction using the given keyfile.
 
     Use '-' to read from stdin instead of a file.
@@ -327,7 +327,7 @@ account_group.add_command(signtx)
 
 @command()
 @config_option
-@keyfile_and_password_options()
+@keyfile_and_password_options
 @option(
     "--use-message-file",
     "-f",
@@ -340,7 +340,7 @@ account_group.add_command(signtx)
 )
 @argument("signature-file", type=Path(), required=False)
 def sign_message(
-    keyfile: Optional[str],
+    keyfile: str,
     password: str,
     use_message_file: bool,
     message: str,

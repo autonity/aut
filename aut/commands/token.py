@@ -39,7 +39,7 @@ def token_group() -> None:
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
+def name(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
     """Returns the token name (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -58,7 +58,7 @@ token_group.add_command(name)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
+def symbol(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
     """Returns the token symbol (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -77,7 +77,7 @@ token_group.add_command(symbol)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
+def decimals(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
     """Returns the number of decimals used in the token balances."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -93,7 +93,7 @@ token_group.add_command(decimals)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
+def total_supply(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
     """Total supply (in units of whole Tokens)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -114,7 +114,7 @@ token_group.add_command(total_supply)
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", required=False)
 def balance_of(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -146,7 +146,7 @@ token_group.add_command(balance_of)
 @from_option
 @argument("owner")
 def allowance(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -183,7 +183,7 @@ token_group.add_command(allowance)
 @argument("recipient_str", metavar="RECIPIENT")
 @argument("amount_str", metavar="AMOUNT")
 def transfer(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -243,7 +243,7 @@ token_group.add_command(transfer)
 @argument("spender_str", metavar="SPENDER")
 @argument("amount_str", metavar="AMOUNT")
 def approve(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -304,7 +304,7 @@ token_group.add_command(approve)
 @argument("recipient_str", metavar="RECIPIENT")
 @argument("amount_str", metavar="AMOUNT")
 def transfer_from(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],

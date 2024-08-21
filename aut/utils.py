@@ -43,7 +43,7 @@ from .logging import log
 V = TypeVar("V")
 
 
-def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> Web3:
+def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: str) -> Web3:
     """
     Construct a Web3 from a cli argument.  CLI argument is not
     present, fall back to env vars and config files.
@@ -68,7 +68,7 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     return w3
 
 
-def autonity_from_endpoint_arg(endpoint_arg: Optional[str]) -> Autonity:
+def autonity_from_endpoint_arg(endpoint_arg: str) -> Autonity:
     """
     Construct a reference to the Autonity contract from an endpoint
     argument.  Intended for the case of Protocol queries where the CLI
@@ -120,7 +120,7 @@ def from_address_from_argument(
 
 def create_tx_from_args(
     w3: Optional[Web3],
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     from_addr: Optional[ChecksumAddress] = None,
     to_addr: Optional[ChecksumAddress] = None,
     value: Optional[str] = None,
@@ -174,7 +174,7 @@ def create_tx_from_args(
 
 def finalize_tx_from_args(
     w3: Optional[Web3],
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     tx: TxParams,
     from_addr: Optional[ChecksumAddress],
 ) -> TxParams:
@@ -470,7 +470,7 @@ def geth_keyfile_name(key_time: datetime, address: ChecksumAddress) -> str:
 
 
 def new_keyfile_from_options(
-    keystore: Optional[str], keyfile: Optional[str], keyfile_addr: ChecksumAddress
+    keystore: str, keyfile: Optional[str], keyfile_addr: ChecksumAddress
 ) -> str:
     """
     Logic to determine a (new) keyfile name, given keystore and
@@ -491,7 +491,7 @@ def new_keyfile_from_options(
 
 
 def contract_address_and_abi_from_args(
-    contract_address_str: Optional[str], contract_abi_path: Optional[str]
+    contract_address_str: str, contract_abi_path: str
 ) -> Tuple[ChecksumAddress, ABI]:
     """
     Extract the address and ABI of a contract, given the command line

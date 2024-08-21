@@ -2,7 +2,7 @@
 Implementation of `node` subcommands
 """
 
-from typing import Optional, Union
+from typing import Union
 
 from click import command, group
 from web3.datastructures import AttributeDict
@@ -21,7 +21,7 @@ def node_group() -> None:
 @command()
 @config_option
 @rpc_endpoint_option
-def info(rpc_endpoint: Optional[str]) -> None:
+def info(rpc_endpoint: str) -> None:
     """Print general information about the RPC node configuration and state.
 
     Note: some fields of the returned JSON object are only present if the 'admin'

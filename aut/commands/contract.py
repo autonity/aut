@@ -44,9 +44,9 @@ def contract_group() -> None:
 
 
 def function_call_from_args(
-    rpc_endpoint: Optional[str],
-    contract_address_str: Optional[str],
-    contract_abi_path: Optional[str],
+    rpc_endpoint: str,
+    contract_address_str: str,
+    contract_abi_path: str,
     method: str,
     parameters: List[str],
 ) -> Tuple:
@@ -94,7 +94,7 @@ def function_call_from_args(
 )
 @argument("parameters", nargs=-1)
 def deploy_cmd(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
     contract_path: str,
@@ -160,9 +160,9 @@ contract_group.add_command(deploy_cmd)
 @argument("method")
 @argument("parameters", nargs=-1)
 def call_cmd(
-    rpc_endpoint: Optional[str],
-    contract_address_str: Optional[str],
-    contract_abi_path: Optional[str],
+    rpc_endpoint: str,
+    contract_address_str: str,
+    contract_abi_path: str,
     method: str,
     parameters: List[str],
 ) -> None:
@@ -195,11 +195,11 @@ contract_group.add_command(call_cmd)
 @argument("method")
 @argument("parameters", nargs=-1)
 def tx_cmd(
-    rpc_endpoint: Optional[str],
+    rpc_endpoint: str,
     keyfile: Optional[str],
     from_str: Optional[str],
-    contract_address_str: Optional[str],
-    contract_abi_path: Optional[str],
+    contract_address_str: str,
+    contract_abi_path: str,
     method: str,
     parameters: List[str],
     gas: Optional[str],
