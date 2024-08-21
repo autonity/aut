@@ -27,9 +27,9 @@ from hexbytes import HexBytes
 from web3 import Web3
 from web3.types import BlockIdentifier
 
-from .. import config
 from ..logging import log
 from ..options import (
+    config_option,
     from_option,
     keyfile_and_password_options,
     keyfile_option,
@@ -61,6 +61,7 @@ def account_group() -> None:
 
 
 @command(name="list")
+@config_option
 @option("--with-files", is_flag=True, help="also show keyfile names.")
 @keystore_option
 def list_cmd(keystore: Optional[str], with_files: bool) -> None:
@@ -68,7 +69,6 @@ def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     List the accounts for files in the keystore directory.
     """
 
-    keystore = config.get_keystore_directory(keystore)
     keyfiles = address_keyfile_dict(keystore)
     for addr, keyfile in keyfiles.items():
         if with_files:
@@ -81,6 +81,7 @@ account_group.add_command(list_cmd)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @option(
@@ -116,6 +117,7 @@ account_group.add_command(info)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
@@ -162,6 +164,7 @@ account_group.add_command(balance)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
@@ -198,6 +201,7 @@ account_group.add_command(lntn_balances)
 
 
 @command()
+@config_option
 @keystore_option
 @keyfile_option(required=False, output=True)
 @new_password_option
@@ -256,6 +260,7 @@ account_group.add_command(new)
 
 
 @command()
+@config_option
 @keystore_option
 @keyfile_option(output=True)
 @new_password_option
@@ -294,6 +299,7 @@ account_group.add_command(import_private_key)
 
 
 @command()
+@config_option
 @keyfile_and_password_options()
 @argument(
     "tx-file",
@@ -313,7 +319,6 @@ def signtx(keyfile: Optional[str], password: str, tx_file: str) -> None:
     tx = json.loads(load_from_file_or_stdin(tx_file))
 
     # Read keyfile
-    keyfile = config.get_keyfile(keyfile)
     log(f"using key file: {keyfile}")
     with open(keyfile, encoding="ascii") as key_f:
         encrypted_key = json.load(key_f)
@@ -328,6 +333,7 @@ account_group.add_command(signtx)
 
 
 @command()
+@config_option
 @keyfile_and_password_options()
 @option(
     "--use-message-file",
@@ -359,7 +365,6 @@ def sign_message(
         message = load_from_file_or_stdin(message)
 
     # Read keyfile
-    keyfile = config.get_keyfile(keyfile)
     log(f"using key file: {keyfile}")
     with open(keyfile, encoding="ascii") as key_f:
         encrypted_key = json.load(key_f)
@@ -385,6 +390,7 @@ account_group.add_command(sign_message)
 
 
 @command()
+@config_option
 @keyfile_option()
 @from_option
 @option(

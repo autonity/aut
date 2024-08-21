@@ -2,13 +2,33 @@
 Command line option sets used by multiple commands.
 """
 
+from os import path
 from typing import Any, Callable, TypeVar
 
 from click import Path, option
 
+from .config import config_file, read_defaults_from_config
+
 Func = TypeVar("Func", bound=Callable[..., Any])
 
 Decorator = Callable[[Func], Func]
+
+
+def config_option(fn: Func) -> Func:
+    """
+    Option: --config <file>
+    """
+    # Based on https://jwodder.github.io/kbits/posts/click-config/
+    return option(
+        "--config",
+        "-c",
+        type=Path(exists=True),
+        help="Read option defaults from the specified INI file.",
+        default=config_file,
+        callback=read_defaults_from_config,
+        expose_value=False,
+        is_eager=True,
+    )(fn)
 
 
 def rpc_endpoint_option(fn: Func) -> Func:
@@ -19,7 +39,7 @@ def rpc_endpoint_option(fn: Func) -> Func:
         "--rpc-endpoint",
         "-r",
         metavar="URL",
-        help="RPC endpoint (defaults to WEB3_ENDPOINT env var if set)",
+        help="RPC endpoint",
     )(fn)
 
 
@@ -32,6 +52,7 @@ def keystore_option(fn: Func) -> Func:
         "--keystore",
         "-s",
         type=Path(exists=True),
+        default=path.join(path.expanduser("~"), ".autonity", "keystore"),
         help="keystore directory (falls back to config file or ~/.autonity/keystore).",
     )(fn)
 

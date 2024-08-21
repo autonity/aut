@@ -27,7 +27,7 @@ aut contract call \
     getValidators | jq -r '.[0]' > validator0
 
 # Get the id of the validator and check it matches
-CONTRACT_ADDRESS=${AUTONITY_ADDRESS} CONTRACT_ABI="${AUTONITY_ABI}" \
+AUT_ADDRESS=${AUTONITY_ADDRESS} AUT_ABI="${AUTONITY_ABI}" \
     aut contract call \
     getValidator `cat validator0` > validator0.json
 

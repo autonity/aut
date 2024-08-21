@@ -16,6 +16,7 @@ from web3.types import HexBytes, HexStr
 from ..commands.account import signtx
 from ..logging import log
 from ..options import (
+    config_option,
     from_option,
     keyfile_option,
     newton_or_token_option,
@@ -52,6 +53,7 @@ tx_group.add_command(signtx, name="sign")
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
@@ -177,6 +179,7 @@ tx_group.add_command(make)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @argument("tx-file", type=Path())
 def send(rpc_endpoint: Optional[str], tx_file: str) -> None:
@@ -196,6 +199,7 @@ tx_group.add_command(send)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @option("--quiet", "-q", is_flag=True, help="Do not dump the full transaction receipt.")
 @option(

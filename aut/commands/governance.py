@@ -7,7 +7,13 @@ from typing import Optional
 from click import argument, command, group
 from eth_utils import to_checksum_address
 
-from ..options import from_option, keyfile_option, rpc_endpoint_option, tx_aux_options
+from ..options import (
+    config_option,
+    from_option,
+    keyfile_option,
+    rpc_endpoint_option,
+    tx_aux_options,
+)
 from ..utils import (
     autonity_from_endpoint_arg,
     create_contract_tx_from_args,
@@ -26,6 +32,7 @@ def governance_group() -> None:
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -71,6 +78,7 @@ governance_group.add_command(set_max_bond_applied_gas)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -116,6 +124,7 @@ governance_group.add_command(set_max_unbond_applied_gas)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -161,6 +170,7 @@ governance_group.add_command(set_max_unbond_released_gas)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -206,6 +216,7 @@ governance_group.add_command(set_max_rewards_distribution_gas)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -251,6 +262,7 @@ governance_group.add_command(set_staking_gas_price)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -296,6 +308,7 @@ governance_group.add_command(set_minimum_base_fee)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -340,6 +353,7 @@ governance_group.add_command(set_committee_size)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -384,6 +398,7 @@ governance_group.add_command(set_unbonding_period)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -428,6 +443,7 @@ governance_group.add_command(set_epoch_period)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -473,6 +489,7 @@ governance_group.add_command(set_operator_account)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -518,6 +535,7 @@ governance_group.add_command(set_treasury_account)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -563,6 +581,7 @@ governance_group.add_command(set_treasury_fee)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -608,6 +627,7 @@ governance_group.add_command(set_accountability_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -653,6 +673,7 @@ governance_group.add_command(set_oracle_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -698,6 +719,7 @@ governance_group.add_command(set_acu_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -743,6 +765,7 @@ governance_group.add_command(set_supply_control_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -788,6 +811,7 @@ governance_group.add_command(set_stabilization_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -833,6 +857,7 @@ governance_group.add_command(set_inflation_controller_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -878,6 +903,7 @@ governance_group.add_command(set_upgrade_manager_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -923,6 +949,7 @@ governance_group.add_command(set_non_stakable_vesting_contract)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option
@@ -974,6 +1001,7 @@ governance_group.add_command(mint)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @keyfile_option()
 @from_option

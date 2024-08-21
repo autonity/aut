@@ -6,7 +6,7 @@ from typing import Optional
 
 from click import argument, command, group
 
-from ..options import rpc_endpoint_option
+from ..options import config_option, rpc_endpoint_option
 from ..user import get_block
 from ..utils import to_json, validate_block_identifier, web3_from_endpoint_arg
 
@@ -19,6 +19,7 @@ def block_group() -> None:
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @argument("identifier", default="latest")
 def get(rpc_endpoint: Optional[str], identifier: str) -> None:
@@ -37,6 +38,7 @@ block_group.add_command(get)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 def height(rpc_endpoint: Optional[str]) -> None:
     """

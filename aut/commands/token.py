@@ -10,6 +10,7 @@ from click import ClickException, argument, command, group
 from web3 import Web3
 
 from ..options import (
+    config_option,
     from_option,
     keyfile_option,
     newton_or_token_option,
@@ -37,6 +38,7 @@ def token_group() -> None:
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
@@ -57,6 +59,7 @@ token_group.add_command(name)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
@@ -77,6 +80,7 @@ token_group.add_command(symbol)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
@@ -94,6 +98,7 @@ token_group.add_command(decimals)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
@@ -113,6 +118,7 @@ token_group.add_command(total_supply)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
@@ -143,6 +149,7 @@ token_group.add_command(balance_of)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
@@ -176,6 +183,7 @@ token_group.add_command(allowance)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
@@ -234,6 +242,7 @@ token_group.add_command(transfer)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
@@ -293,6 +302,7 @@ token_group.add_command(approve)
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()

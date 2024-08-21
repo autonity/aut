@@ -1,143 +1,98 @@
 """
-Configuration-related code.  Determines precedence of command
+Configuration-related code. Determines precedence of command
 line, config and defaults, and handles extracting from the config
 file.
 """
 
 import os
-import os.path
-from getpass import getpass
-from typing import Optional
+from configparser import ConfigParser
+from typing import Any, Dict, Optional
 
-from autonity.validator import NodeAddress
-from click import ClickException
-from web3 import Web3
+from click import Context
 
-from .config_file import CONFIG_FILE_NAME, get_config_file
 from .logging import log
 
-DEFAULT_KEYFILE_DIRECTORY = "~/.autonity/keystore"
-KEYFILE_DIRECTORY_ENV_VAR = "KEYFILEDIR"
-KEYFILE_ENV_VAR = "KEYFILE"
-KEYFILE_PASSWORD_ENV_VAR = "KEYFILEPWD"
-WEB3_ENDPOINT_ENV_VAR = "WEB3_ENDPOINT"
-CONTRACT_ADDRESS_ENV_VAR = "CONTRACT_ADDRESS"
-CONTRACT_ABI_ENV_VAR = "CONTRACT_ABI"
+
+CONFIG_FILE_NAME = "autrc"
+CONFIG_SECTION_NAME = "aut"
+ENV_VAR_PREFIX = "AUT_"
+OPTION_ALIASES = {
+    "abi": "contract_abi_path",
+    "address": "contract_address_str",
+    "from": "from_str",
+    "validator": "validator_addr_str",
+}
+
+_config: Optional[Dict[str, Any]] = None
 
 
-def get_keystore_directory(keystore_directory: Optional[str]) -> str:
+def read_defaults_from_config(
+    ctx: Context, _: str, config_file_path: Optional[str]
+) -> None:
     """
-    Get the keystore directory.  In order, use the command-line
-    parameter, falling back to the env var then config file, and finally to
-    DEFAULT_KEYFILE_DIRECTORY.
-    """
-    if keystore_directory is None:
-        keystore_directory = os.getenv(KEYFILE_DIRECTORY_ENV_VAR)
-        if keystore_directory is None:
-            keystore_directory = get_config_file().get_path("keystore")
-            if keystore_directory is None:
-                keystore_directory = os.path.expanduser(DEFAULT_KEYFILE_DIRECTORY)
-
-    assert keystore_directory is not None
-    return keystore_directory
-
-
-def get_keyfile_optional(keyfile: Optional[str]) -> Optional[str]:
-    """
-    Get the keyfile configuration if available.
-    """
-    if keyfile is None:
-        keyfile = os.getenv(KEYFILE_ENV_VAR)
-        if keyfile is None:
-            keyfile = get_config_file().get_path("keyfile")
-
-    return keyfile
-
-
-def get_keyfile(keyfile: Optional[str]) -> str:
-    """
-    Get the keyfile configuration, raising a Click error if not given.
-    """
-    keyfile = get_keyfile_optional(keyfile)
-    if keyfile is None:
-        raise ClickException(
-            f"No keyfile specified (use --keyfile, {KEYFILE_ENV_VAR} env var "
-            f"or {CONFIG_FILE_NAME})"
-        )
-
-    return keyfile
-
-
-def get_rpc_endpoint(endpoint: Optional[str]) -> str:
-    """
-    Get the RPC endpoint configuration value, where param is the
-    command-line option. If param is not given, check the env var,
-    then configuration files, falling back to the default.
+    Load the first config file found and set its values as Click option defaults.
     """
 
-    if endpoint is None:
-        endpoint = os.getenv(WEB3_ENDPOINT_ENV_VAR)
-        if endpoint is None:
-            endpoint = get_config_file().get("rpc_endpoint")
-            if endpoint is None:
-                raise ClickException(
-                    f"No RPC endpoint given (use --rpc-endpoint, {WEB3_ENDPOINT_ENV_VAR}"
-                    f"env var or {CONFIG_FILE_NAME})"
-                )
+    global _config
 
-            log(f"endpoint from config file: {endpoint}")
+    if _config is None:
+        if config_file_path:
+            config_file = ConfigParser()
+            config_file.read(config_file_path)
+            try:
+                _config = dict(config_file[CONFIG_SECTION_NAME])
+            except KeyError:
+                _config = {}
         else:
-            log(f"endpoint from env var: {endpoint}")
-    else:
-        log(f"endpoint from command line: {endpoint}")
+            _config = {}
 
-    return endpoint
+        # Env vars have higher precedence than config file items
+        for key, value in os.environ.items():
+            if key.startswith(ENV_VAR_PREFIX):
+                _config[key.replace(ENV_VAR_PREFIX, "").lower()] = value
+
+        for name, alias in OPTION_ALIASES.items():
+            if name in _config:
+                _config[alias] = _config.pop(name)
+
+    ctx.default_map = _config
 
 
-def get_node_address(validator_addr_str: Optional[str]) -> NodeAddress:
+def _find_config_file() -> Optional[str]:
     """
-    Validator address to use, cli parameter falling back to any config file.
+    Find the config file in the file system.  For now, find the first
+    .autrc file in the current or any parent dir.
     """
 
-    if not validator_addr_str:
-        validator_addr_str = get_config_file().get("validator")
-        if not validator_addr_str:
-            raise ClickException("no validator specified")
+    if config_path := os.getenv(ENV_VAR_PREFIX + "CONFIG"):
+        return config_path
 
-    return NodeAddress(Web3.to_checksum_address(validator_addr_str))
+    home_dir = os.path.expanduser("~")
+    cur_dir = os.getcwd()
+
+    while True:
+        config_path = os.path.join(cur_dir, f".{CONFIG_FILE_NAME}")
+        if os.path.exists(config_path):
+            log(f"found config file: {config_path}")
+            return config_path
+
+        # If/when we reach the home directory, check also for ~/.config/aut/autrc
+        if cur_dir == home_dir:
+            config_path = os.path.join(home_dir, ".config", "aut", CONFIG_FILE_NAME)
+            if os.path.exists(config_path):
+                log(f"HOME dir. found {config_path}")
+                return config_path
+
+            log(f"HOME dir. no file {config_path}")
+
+        parent_dir = os.path.normpath(os.path.join(cur_dir, ".."))
+        if parent_dir == cur_dir:
+            log(f"reached root. no {CONFIG_FILE_NAME} file found")
+            break
+
+        cur_dir = parent_dir
+
+    return None
 
 
-def get_contract_address(contract_address_str: Optional[str]) -> str:
-    """
-    Get the contract address.  Fall back to 'CONTRACT_ADDRESS' env
-    var, then config file 'contract_address' entry, then error.
-    """
-    if contract_address_str is None:
-        contract_address_str = os.getenv(CONTRACT_ADDRESS_ENV_VAR)
-        if contract_address_str is None:
-            contract_address_str = get_config_file().get("contract_address")
-            if contract_address_str is None:
-                raise ClickException(
-                    f"No contract address given (use --address, {CONTRACT_ADDRESS_ENV_VAR} "
-                    f"env var or {CONFIG_FILE_NAME})"
-                )
-
-    return contract_address_str
-
-
-def get_contract_abi(contract_abi_path: Optional[str]) -> str:
-    """
-    Get the contract abi file path.  Fall back to 'CONTRACT_ABI' env
-    var, then config file 'contract_abi' entry, then error.
-    """
-    if contract_abi_path is None:
-        contract_abi_path = os.getenv(CONTRACT_ABI_ENV_VAR)
-        if contract_abi_path is None:
-            contract_abi_path = get_config_file().get("contract_abi")
-            if contract_abi_path is None:
-                raise ClickException(
-                    f"No contract ABI file given (use --abi, {CONTRACT_ABI_ENV_VAR} "
-                    f"env var or {CONFIG_FILE_NAME})"
-                )
-
-    return contract_abi_path
+config_file = _find_config_file()

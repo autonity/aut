@@ -9,7 +9,7 @@ from web3.datastructures import AttributeDict
 from web3.exceptions import MethodUnavailable
 from web3.types import SyncStatus
 
-from ..options import rpc_endpoint_option
+from ..options import config_option, rpc_endpoint_option
 from ..utils import to_json, web3_from_endpoint_arg
 
 
@@ -21,6 +21,7 @@ def node_group() -> None:
 
 
 @command()
+@config_option
 @rpc_endpoint_option
 def info(rpc_endpoint: Optional[str]) -> None:
     """

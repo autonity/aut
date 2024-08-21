@@ -32,7 +32,6 @@ from web3.types import (
     Wei,
 )
 
-from . import config
 from .constants import AutonDenoms
 from .logging import log
 
@@ -64,9 +63,7 @@ def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: Optional[str]) -> W
     if w3 is None:
         # TODO: For now, ignore the chain ID by default.  Later, this
         # check should be enabled and controllable by a flag.
-        return create_web3_for_endpoint(
-            config.get_rpc_endpoint(endpoint_arg), ignore_chain_id=True
-        )
+        return create_web3_for_endpoint(endpoint_arg, ignore_chain_id=True)
 
     return w3
 
@@ -95,7 +92,6 @@ def from_address_from_argument_optional(
         from_addr: Optional[ChecksumAddress] = Web3.to_checksum_address(from_str)
     else:
         log("no from-addr given.  attempting to extract from keyfile")
-        keyfile = config.get_keyfile_optional(keyfile)
         if keyfile:
             key_data = load_keyfile(keyfile)
             from_addr = get_address_from_keyfile(key_data)
@@ -486,7 +482,6 @@ def new_keyfile_from_options(
 
     if keyfile is None:
         key_time = datetime.now(timezone.utc)
-        keystore = config.get_keystore_directory(keystore)
         if not os.path.exists(keystore):
             os.makedirs(keystore)
         keyfile = os.path.join(keystore, geth_keyfile_name(key_time, keyfile_addr))
@@ -506,10 +501,7 @@ def contract_address_and_abi_from_args(
     config file, otherwise raise an error.
     """
 
-    contract_address = Web3.to_checksum_address(
-        config.get_contract_address(contract_address_str)
-    )
-    contract_abi_path = config.get_contract_abi(contract_abi_path)
+    contract_address = Web3.to_checksum_address(contract_address_str)
     contract_abi = ABIManager.load_abi_file(contract_abi_path)
     return contract_address, contract_abi
 
