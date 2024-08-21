@@ -104,7 +104,8 @@ def make(
 
     if to_addr is None:
         raise ClickException(
-            "To-address must be specified (contract deployment not yet supported)"
+            "To-address must be specified "
+            "(use the `contract deploy` command to deploy a contract)"
         )
 
     token_addresss = newton_or_token_to_address(ntn, token)
