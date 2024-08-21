@@ -7,7 +7,6 @@ import os
 import sys
 from datetime import datetime, timezone
 from decimal import Decimal
-from getpass import getpass
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 from autonity import Autonity
@@ -462,26 +461,6 @@ def newton_or_token_to_address_require(
         raise ClickException("Token address (or --ntn) must be specified.")
 
     return token
-
-
-def prompt_for_new_password(show_password: bool) -> str:
-    """
-    Prompt for a new password (with confirmation), optionally echoing
-    to the console.
-    """
-    prompt = "Password for new account: "
-    prompt_2 = "Confirm account password: "
-    if show_password:
-        password = input(prompt)
-        password_2 = input(prompt_2)
-    else:
-        password = getpass(prompt)
-        password_2 = getpass(prompt_2)
-
-    if password != password_2:
-        raise ClickException("passwords do not match")
-
-    return password
 
 
 def geth_keyfile_name(key_time: datetime, address: ChecksumAddress) -> str:

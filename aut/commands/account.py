@@ -34,6 +34,7 @@ from ..options import (
     keyfile_and_password_options,
     keyfile_option,
     keystore_option,
+    new_password_option,
     newton_or_token_option,
     rpc_endpoint_option,
 )
@@ -45,7 +46,6 @@ from ..utils import (
     load_from_file_or_stdin_line,
     new_keyfile_from_options,
     newton_or_token_to_address,
-    prompt_for_new_password,
     to_json,
     web3_from_endpoint_arg,
 )
@@ -200,21 +200,17 @@ account_group.add_command(lntn_balances)
 @command()
 @keystore_option()
 @keyfile_option(required=False, output=True)
+@new_password_option
 @option(
     "--extra-entropy",
     type=Path(),
     help="File containing extra entropy.  Use '-' to prompt for keyboard input.",
 )
-@option(
-    "--show-password",
-    is_flag=True,
-    help="Echo password input to the terminal",
-)
 def new(
     keystore: Optional[str],
     keyfile: Optional[str],
+    password: str,
     extra_entropy: Optional[str],
-    show_password: bool,
 ) -> None:
     """
     Create a new key and write it to a keyfile.  If no keyfile is
@@ -236,7 +232,6 @@ def new(
     # Ask for password (and confirmation) and ensure both entries
     # match.
 
-    password = prompt_for_new_password(show_password)
     log("Generating private key ...")
     account = eth_account.Account.create(entropy)
     keyfile_data = create_keyfile_from_private_key(account.key, password)
@@ -263,16 +258,12 @@ account_group.add_command(new)
 @command()
 @keystore_option()
 @keyfile_option(output=True)
-@option(
-    "--show-password",
-    is_flag=True,
-    help="Echo password input to the terminal",
-)
+@new_password_option
 @argument("private_key_file", type=Path(exists=False))
 def import_private_key(
     keystore: Optional[str],
     keyfile: Optional[str],
-    show_password: bool,
+    password: str,
     private_key_file: str,
 ) -> None:
     """
@@ -285,8 +276,6 @@ def import_private_key(
     private_key = HexBytes.fromhex(load_from_file_or_stdin_line(private_key_file))
     if len(private_key) != 32:
         raise ClickException("invalid private key length")
-
-    password = prompt_for_new_password(show_password)
 
     keyfile_data = create_keyfile_from_private_key(PrivateKey(private_key), password)
     keyfile_addr = get_address_from_keyfile(keyfile_data)
@@ -311,7 +300,7 @@ account_group.add_command(import_private_key)
     type=Path(),
     required=True,
 )
-def signtx(keyfile: Optional[str], password: Optional[str], tx_file: str) -> None:
+def signtx(keyfile: Optional[str], password: str, tx_file: str) -> None:
     """
     Sign a transaction using the given keyfile.  Use '-' to read from
     stdin instead of a file.
@@ -328,9 +317,6 @@ def signtx(keyfile: Optional[str], password: Optional[str], tx_file: str) -> Non
     log(f"using key file: {keyfile}")
     with open(keyfile, encoding="ascii") as key_f:
         encrypted_key = json.load(key_f)
-
-    # Read password
-    password = config.get_keyfile_password(password)
 
     # Sign the tx:
     signed_tx = sign_tx(tx, encrypted_key, password)
@@ -356,7 +342,7 @@ account_group.add_command(signtx)
 @argument("signature-file", type=Path(), required=False)
 def sign_message(
     keyfile: Optional[str],
-    password: Optional[str],
+    password: str,
     use_message_file: bool,
     message: str,
     signature_file: Optional[str],
@@ -379,7 +365,6 @@ def sign_message(
         encrypted_key = json.load(key_f)
 
     # Read password
-    password = config.get_keyfile_password(password)
     private_key = decrypt_keyfile(encrypted_key, password)
 
     # Sign the message

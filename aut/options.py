@@ -67,10 +67,25 @@ def keyfile_and_password_options(required: bool = False) -> Decorator:
             "--password",
             "-p",
             help="Password for key file (or use env var 'KEYFILEPWD')",
+            prompt="Enter passphrase for key file (or CTRL-d to exit)",
+            hide_input=True,
+            show_default=False,
         )(fn)
         return fn
 
     return decorator
+
+
+def new_password_option(fn: Func) -> Func:
+    return option(
+        "--password",
+        "-p",
+        help="Password for key file (or use env var 'KEYFILEPWD')",
+        prompt="Key file passphrase for new account",
+        confirmation_prompt=True,
+        hide_input=True,
+        show_default=False,
+    )(fn)
 
 
 def newton_or_token_option(fn: Func) -> Func:

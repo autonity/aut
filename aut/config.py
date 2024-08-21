@@ -68,27 +68,6 @@ def get_keyfile(keyfile: Optional[str]) -> str:
     return keyfile
 
 
-def get_keyfile_password(password: Optional[str], keyfile: Optional[str] = None) -> str:
-    """
-    Get the keyfile password, given a cli parameter `password`.  Fall
-    back to env vars if cli parameter is not given, then to user
-    input.
-    """
-
-    # Read password
-    if password is None:
-        password = os.getenv(KEYFILE_PASSWORD_ENV_VAR)
-        if password is None:
-            password = getpass(
-                f"(consider using '{KEYFILE_PASSWORD_ENV_VAR}' env var).\n"
-                + "Enter passphrase "
-                + ("" if keyfile is None else f"for {keyfile} ")
-                + "(or CTRL-d to exit): "
-            )
-
-    return password
-
-
 def get_rpc_endpoint(endpoint: Optional[str]) -> str:
     """
     Get the RPC endpoint configuration value, where param is the
