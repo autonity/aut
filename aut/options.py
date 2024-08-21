@@ -39,7 +39,7 @@ def rpc_endpoint_option(fn: Func) -> Func:
         "--rpc-endpoint",
         "-r",
         metavar="URL",
-        help="RPC endpoint",
+        help="RPC endpoint.",
     )(fn)
 
 
@@ -53,7 +53,7 @@ def keystore_option(fn: Func) -> Func:
         "-s",
         type=Path(exists=True),
         default=path.join(path.expanduser("~"), ".autonity", "keystore"),
-        help="keystore directory (falls back to config file or ~/.autonity/keystore).",
+        help="Keystore directory.",
     )(fn)
 
 
@@ -69,7 +69,7 @@ def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
             "-k",
             required=required,
             type=Path(exists=not output),
-            help="Encrypted private key file",
+            help="Encrypted private key file.",
         )(fn)
 
     return decorator
@@ -86,8 +86,8 @@ def keyfile_and_password_options(required: bool = False) -> Decorator:
         fn = option(
             "--password",
             "-p",
-            help="Password for key file (or use env var 'KEYFILEPWD')",
-            prompt="Enter passphrase for key file (or CTRL-d to exit)",
+            help="Password for key file.",
+            prompt="Enter passphrase for key file",
             hide_input=True,
             show_default=False,
         )(fn)
@@ -100,7 +100,7 @@ def new_password_option(fn: Func) -> Func:
     return option(
         "--password",
         "-p",
-        help="Password for key file (or use env var 'KEYFILEPWD')",
+        help="Password for key file.",
         prompt="Key file passphrase for new account",
         confirmation_prompt=True,
         hide_input=True,
@@ -113,12 +113,14 @@ def newton_or_token_option(fn: Func) -> Func:
     Adds the --ntn and --token flags, allowing the user to specify
     that a transfer should use an ERC20 token.
     """
-    fn = option("--ntn", is_flag=True, help="Use Newton (NTN) instead of Auton")(fn)
+    fn = option("--ntn", is_flag=True, help="Use Newton (NTN) instead of Auton (ATN).")(
+        fn
+    )
     fn = option(
         "--token",
         "-t",
         metavar="TOKEN-ADDR",
-        help="Use the ERC20 token at the given address",
+        help="Use the ERC20 token at the given address.",
     )(fn)
     return fn
 
@@ -126,7 +128,7 @@ def newton_or_token_option(fn: Func) -> Func:
 def from_option(fn: Func) -> Func:
     """
     Adds the --from, -f option to specify the from field of a
-    transaction.  Passed to the from_str parameter.
+    transaction. Passed to the from_str parameter.
     """
     return option(
         "--from",
@@ -148,7 +150,10 @@ def tx_value_option(required: bool = False) -> Decorator:
             "--value",
             "-v",
             required=required,
-            help="value in Auton or whole tokens (e.g. '0.000000007' and '7gwei' are identical).",
+            help=(
+                "Value in ATN or whole tokens with units "
+                "(e.g. '0.000000007' and '7gwei' are identical)."
+            ),
         )(fn)
 
     return decorator
@@ -166,39 +171,42 @@ def tx_aux_options(fn: Callable) -> Callable:
       --chain-id
     """
     fn = option(
-        "--gas", "-g", help="maximum gas units that can be consumed by the tx."
+        "--gas", "-g", help="Maximum gas units that can be consumed by the tx."
     )(fn)
     fn = option(
         "--gas-price",
         "-p",
-        help="value per gas in Auton (legacy, use -F and -P instead).",
+        help=(
+            "Value per gas in ATN "
+            "(legacy, use --max-fee-per-gas and --max-priority-fee-per-gas instead)."
+        ),
     )(fn)
     fn = option(
         "--max-fee-per-gas",
         "-F",
-        help="maximum to pay (in Auton) per gas for the total fee of the tx.",
+        help="Maximum to pay (in ATN) per gas for the total fee of the tx.",
     )(fn)
     fn = option(
         "--max-priority-fee-per-gas",
         "-P",
-        help="maximum to pay (in Auton) per gas as tip to block proposer.",
+        help="Maximum to pay (in ATN) per gas as tip to block proposer.",
     )(fn)
     fn = option(
         "--fee-factor",
         type=float,
-        help="set maxFeePerGas to <last-basefee> x <fee-factor> [default: 2].",
+        help="Sets --max-fee-per-gas to <last-base-fee> x <fee-factor>.",
     )(fn)
     fn = option(
         "--nonce",
         "-n",
         type=int,
-        help="tx nonce; query chain for account tx count if not given.",
+        help="Tx nonce; the account's tx count is queried if not given.",
     )(fn)
     fn = option(
         "--chain-id",
         "-I",
         type=int,
-        help="integer representing EIP155 chainId.",
+        help="EIP155 chain ID.",
     )(fn)
 
     return fn
@@ -213,7 +221,7 @@ def validator_option(fn: Func) -> Func:
         "--validator",
         "-V",
         "validator_addr_str",
-        help="Validator address (falls back to 'validator' in config file)",
+        help="Validator address.",
     )(fn)
 
 
@@ -225,12 +233,12 @@ def contract_options(fn: Func) -> Func:
     fn = option(
         "--address",
         "contract_address_str",
-        help="Contract address (falls back to 'address' in config file)",
+        help="Contract address.",
     )(fn)
     fn = option(
         "--abi",
         "contract_abi_path",
         type=Path(exists=True),
-        help="Contract ABI file (falls back to 'abi' in config file)",
+        help="Contract ABI file.",
     )(fn)
     return fn

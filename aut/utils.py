@@ -115,7 +115,7 @@ def from_address_from_argument(
     if from_addr:
         return from_addr
 
-    raise ClickException("from address or keyfile required")
+    raise ClickException("From address or keyfile required")
 
 
 def create_tx_from_args(
@@ -393,8 +393,6 @@ def validate_block_identifier(block_id: Union[str, int]) -> BlockIdentifier:
 
         return HexBytes(block_id)
 
-    raise ClickException(f"failed parsing block identifier: {block_id}")
-
 
 def load_from_file_or_stdin(filename: str) -> str:
     """
@@ -434,7 +432,7 @@ def newton_or_token_to_address(
     if ntn:
         if token:
             raise ClickException(
-                "cannot use --ntn and --token <addr> arguments together"
+                "Cannot use --ntn and --token <addr> arguments together"
             )
 
         return Autonity.address()
@@ -487,7 +485,7 @@ def new_keyfile_from_options(
         keyfile = os.path.join(keystore, geth_keyfile_name(key_time, keyfile_addr))
 
     if os.path.exists(keyfile):
-        raise ClickException(f"refusing to overwrite existing keyfile {keyfile}")
+        raise ClickException(f"Refusing to overwrite existing keyfile {keyfile}")
 
     return keyfile
 
@@ -515,7 +513,8 @@ def parse_commission_rate(rate_str: str, rate_precision: int) -> int:
     # Handle ambiguous case
     if rate_str == "1" or rate_str.startswith("1.0"):
         raise ClickException(
-            f"ambiguous rate.  Use X%, 0.xx or a fixed-point value (out of {rate_precision}"
+            "Ambiguous rate. Use X%, 0.xx or a fixed-point value "
+            f"(out of {rate_precision})"
         )
 
     if rate_str.endswith("%"):
@@ -529,7 +528,7 @@ def parse_commission_rate(rate_str: str, rate_precision: int) -> int:
         rate_int = int(rate_str)
     except ValueError:
         raise ClickException(  # pylint: disable=raise-missing-from
-            f"Expected integer instead of {rate_str}.  See --help text."
+            f"Expected integer instead of {rate_str}. See --help text"
         )
 
     return rate_int

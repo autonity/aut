@@ -131,7 +131,7 @@ def balance_of(
     account_str: Optional[str],
 ) -> None:
     """
-    Returns the balance in tokens of ACCOUNT.  If ACCOUNT is not
+    Returns the balance in tokens of ACCOUNT. If ACCOUNT is not
     specified, the default keyfile is used.
     """
 
@@ -208,7 +208,7 @@ def transfer(
     amount_str: str,
 ) -> None:
     """
-    Create a transaction transferring AMOUNT of tokens to RECIPIENT.  AMOUNT may
+    Create a transaction transferring AMOUNT of tokens to RECIPIENT. AMOUNT may
     be fractional if the token supports it.
     """
 
@@ -268,7 +268,7 @@ def approve(
 ) -> None:
     """
     Create a transaction granting SPENDER permission to spend
-    AMOUNT of tokens owned by `from_addr`.  AMOUNT may be
+    AMOUNT of tokens owned by `from_addr`. AMOUNT may be
     fractional if the token supports it.
     """
 
@@ -330,9 +330,9 @@ def transfer_from(
 ) -> None:
     """
     Create a transaction transferring AMOUNT of tokens held by SPENDER
-    to RECIPIENT.  SPENDER must previously have granted the caller
+    to RECIPIENT. SPENDER must previously have granted the caller
     (`from_addr`) permission to spend these tokens, via an `approve`
-    transaction.  AMOUNT can be fractional if the token supports it.
+    transaction. AMOUNT can be fractional if the token supports it.
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)

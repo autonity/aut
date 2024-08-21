@@ -54,7 +54,7 @@ def function_call_from_args(
 ) -> Tuple:
     """
     Take command line arguments and construct a ContractFunction
-    (i.e. a function call).  Returns the ContractFunction object, the
+    (i.e. a function call). Returns the ContractFunction object, the
     ABIFunction for the method, and the Web3 object created in the
     process.
     """
@@ -91,7 +91,7 @@ def function_call_from_args(
     "contract_path",
     required=True,
     type=Path(),
-    help="Path to JSON file holding contact abi and bytecode",
+    help="Path to JSON file holding contact abi and bytecode.",
 )
 @argument("parameters", nargs=-1)
 def deploy_cmd(
@@ -110,9 +110,9 @@ def deploy_cmd(
     parameters: List[str],
 ) -> None:
     """
-    Deploy a contract, given the compiled JSON file.  Note that the
+    Deploy a contract, given the compiled JSON file. Note that the
     contract's address will appear in the 'contractAddress' field of
-    the transaction receipt (see aut tx wait).
+    the transaction receipt (see `aut tx wait`).
     """
 
     log(f"parameters: {list(parameters)}")
@@ -216,7 +216,7 @@ def tx_cmd(
 ) -> None:
     """
     Create a transaction which calls the given contract method,
-    passing any parameters.  The parameters must match those required
+    passing any parameters. The parameters must match those required
     by the contract.
     """
 

@@ -6,7 +6,7 @@ rpc_endpoint = https://rpc1.piccadilly.autonity.org/
 # Location of keystore directory (defaults to ~/.autonity/keystore)
 # keystore = path_to_keystore
 
-# Keyfile to use by default
+# Key file to use by default
 # keyfile = path_to_keyfile
 
 # Default validator to interact with (for bonding / unbonding / claiming fees etc)

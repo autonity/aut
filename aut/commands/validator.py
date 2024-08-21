@@ -227,7 +227,7 @@ def register(
     proof: str,
 ) -> None:
     """
-    Create transaction to register a validator
+    Create transaction to register a validator.
     """
 
     consensus_key_bytes = HexBytes(consensus_key)
@@ -277,7 +277,7 @@ def pause(
     validator_addr_str: Optional[str],
 ) -> None:
     """
-    Create transaction to pause the given validator.  See
+    Create transaction to pause the given validator. See
     `pauseValidator` on the Autonity contract.
     """
 
@@ -324,7 +324,7 @@ def activate(
     validator_addr_str: Optional[str],
 ) -> None:
     """
-    Create transaction to activate a paused validator.  See
+    Create transaction to activate a paused validator. See
     `activateValidator` on the Autonity contract.
     """
 
@@ -374,7 +374,7 @@ def change_commission_rate(
 ) -> None:
     """
     Create transaction to change the commission rate for the given
-    Validator.  The rate is given as a decimal, and must be no greater
+    Validator. The rate is given as a decimal, and must be no greater
     than 1 e.g. 3% would be 0.03.
     """
 

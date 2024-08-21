@@ -62,7 +62,7 @@ def account_group() -> None:
 
 @command(name="list")
 @config_option
-@option("--with-files", is_flag=True, help="also show keyfile names.")
+@option("--with-files", is_flag=True, help="Show key file names.")
 @keystore_option
 def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     """
@@ -86,7 +86,8 @@ account_group.add_command(list_cmd)
 @keyfile_option()
 @option(
     "--asof",
-    help="state as of TAG, one of block number, 'latest', 'earliest', or 'pending'.",
+    metavar="TAG",
+    help="State as of TAG, one of block number, 'latest', 'earliest', or 'pending'.",
 )
 @argument("accounts", nargs=-1)
 def info(
@@ -136,7 +137,7 @@ def balance(
     account_addr = from_address_from_argument_optional(account_str, keyfile)
     if not account_addr:
         raise ClickException(
-            "could not determine account address from argument or keyfile"
+            "Could not determine account address from argument or keyfile"
         )
 
     token_addresss = newton_or_token_to_address(ntn, token)
@@ -178,7 +179,7 @@ def lntn_balances(
     account_addr = from_address_from_argument_optional(account_str, keyfile)
     if not account_addr:
         raise ClickException(
-            "could not determine account address from argument or keyfile"
+            "Could not determine account address from argument or keyfile"
         )
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -208,7 +209,7 @@ account_group.add_command(lntn_balances)
 @option(
     "--extra-entropy",
     type=Path(),
-    help="File containing extra entropy.  Use '-' to prompt for keyboard input.",
+    help="File containing extra entropy. Use '-' to prompt for keyboard input.",
 )
 def new(
     keystore: Optional[str],
@@ -273,8 +274,8 @@ def import_private_key(
 ) -> None:
     """
     Read a plaintext private key file (as hex), and create a new
-    encrypted keystore file for it.  Use - to read private key from
-    stdin.  If no keyfile is specified, a default name is used
+    encrypted keystore file for it. Use - to read private key from
+    stdin. If no keyfile is specified, a default name is used
     (consistent with GETH keyfiles) in the keystore.
     """
 
@@ -308,10 +309,10 @@ account_group.add_command(import_private_key)
 )
 def signtx(keyfile: Optional[str], password: str, tx_file: str) -> None:
     """
-    Sign a transaction using the given keyfile.  Use '-' to read from
+    Sign a transaction using the given keyfile. Use '-' to read from
     stdin instead of a file.
 
-    If password is not given, the env variable 'KEYFILEPWD' is used.
+    If password is not given, the environment variable 'AUT_PASSWORD' is used.
     If that is not set, the user is prompted.
     """
 
@@ -339,7 +340,7 @@ account_group.add_command(signtx)
     "--use-message-file",
     "-f",
     is_flag=True,
-    help="Interpret MESSAGE as a filename where - means stdin",
+    help="Read message from a file. Use '-' to read message from stdin.",
 )
 @argument(
     "message",
@@ -397,7 +398,7 @@ account_group.add_command(sign_message)
     "--use-message-file",
     "-f",
     is_flag=True,
-    help="Interpret MESSAGE as a filename where - means stdin",
+    help="Read message from a file. Use '-' to read message from stdin.",
 )
 @argument(
     "message",
