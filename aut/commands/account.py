@@ -196,7 +196,7 @@ account_group.add_command(lntn_balances)
 @command()
 @config_option
 @keystore_option
-@keyfile_option(required=False, output=True)
+@keyfile_option(exists=False)
 @new_password_option
 @option(
     "--extra-entropy",
@@ -255,7 +255,7 @@ account_group.add_command(new)
 @command()
 @config_option
 @keystore_option
-@keyfile_option(output=True)
+@keyfile_option(exists=False)
 @new_password_option
 @argument("private_key_file", type=Path(exists=False))
 def import_private_key(

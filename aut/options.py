@@ -58,10 +58,10 @@ def keystore_option(fn: Func) -> Func:
     )(fn)
 
 
-def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
+def keyfile_option(required: bool = False, exists: bool = True) -> Decorator:
     """
-    Options: --keyfile.  If `required` is True, --keyfile is
-    required.  If `output` is True, the file does not need to exist.
+    Options: --keyfile. If `required` is True, --keyfile is
+    required. If `exists` is True, the file needs to exist.
     """
 
     def decorator(fn: Func) -> Func:
@@ -69,7 +69,7 @@ def keyfile_option(required: bool = False, output: bool = False) -> Decorator:
             "--keyfile",
             "-k",
             required=required,
-            type=Path(exists=not output),
+            type=Path(exists=exists),
             help="Encrypted private key file.",
         )(fn)
 
