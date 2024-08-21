@@ -32,9 +32,7 @@ from ..utils import (
 
 @group(name="token")
 def token_group() -> None:
-    """
-    Commands for working with ERC20 tokens.
-    """
+    """Commands for working with ERC20 tokens."""
 
 
 @command()
@@ -42,9 +40,7 @@ def token_group() -> None:
 @rpc_endpoint_option
 @newton_or_token_option
 def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
-    """
-    Returns the token name (if available).
-    """
+    """Returns the token name (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -63,9 +59,7 @@ token_group.add_command(name)
 @rpc_endpoint_option
 @newton_or_token_option
 def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
-    """
-    Returns the token symbol (if available).
-    """
+    """Returns the token symbol (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -84,9 +78,7 @@ token_group.add_command(symbol)
 @rpc_endpoint_option
 @newton_or_token_option
 def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
-    """
-    Returns the number of decimals used in the token balances.
-    """
+    """Returns the number of decimals used in the token balances."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -102,9 +94,7 @@ token_group.add_command(decimals)
 @rpc_endpoint_option
 @newton_or_token_option
 def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
-    """
-    Total supply (in units of whole Tokens).
-    """
+    """Total supply (in units of whole Tokens)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -130,9 +120,9 @@ def balance_of(
     keyfile: Optional[str],
     account_str: Optional[str],
 ) -> None:
-    """
-    Returns the balance in tokens of ACCOUNT. If ACCOUNT is not
-    specified, the default keyfile is used.
+    """Returns the balance in tokens of an account.
+
+    If ACCOUNT is not specified, the default keyfile is used.
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -163,9 +153,10 @@ def allowance(
     from_str: Optional[str],
     owner: str,
 ) -> None:
-    """
-    Returns the quantity in tokens that OWNER has granted the caller
-    (the "from" address) permission to spend.
+    """Returns the quantity in tokens that an owner has granted the caller permission
+    to spend.
+
+    The caller is the "from" address.
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -208,8 +199,9 @@ def transfer(
     amount_str: str,
 ) -> None:
     """
-    Create a transaction transferring AMOUNT of tokens to RECIPIENT. AMOUNT may
-    be fractional if the token supports it.
+    Create a transaction transferring tokens to a recipient.
+
+    AMOUNT may be fractional if the token supports it.
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -266,9 +258,9 @@ def approve(
     spender_str: str,
     amount_str: str,
 ) -> None:
-    """
-    Create a transaction granting SPENDER permission to spend
-    AMOUNT of tokens owned by `from_addr`. AMOUNT may be
+    """Create a transaction granting a spender permission to spend tokens.
+
+    The tokens are owned by the `--from` account. AMOUNT may be
     fractional if the token supports it.
     """
 
@@ -328,11 +320,12 @@ def transfer_from(
     recipient_str: str,
     amount_str: str,
 ) -> None:
-    """
-    Create a transaction transferring AMOUNT of tokens held by SPENDER
-    to RECIPIENT. SPENDER must previously have granted the caller
-    (`from_addr`) permission to spend these tokens, via an `approve`
-    transaction. AMOUNT can be fractional if the token supports it.
+    """Create a transaction transferring tokens.
+
+    Tokens held by SPENDER are transferred to RECIPIENT.
+    SPENDER must previously have granted the caller (`--from` account) permission to
+    spend these tokens, via an `approve` transaction.
+    AMOUNT can be fractional if the token supports it.
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)

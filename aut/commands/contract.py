@@ -40,9 +40,7 @@ from ..utils import (
 
 @group(name="contract")
 def contract_group() -> None:
-    """
-    Command for interacting with arbitrary contracts.
-    """
+    """Command for interacting with arbitrary contracts."""
 
 
 def function_call_from_args(
@@ -52,7 +50,8 @@ def function_call_from_args(
     method: str,
     parameters: List[str],
 ) -> Tuple:
-    """
+    """Construct a ContractFunction object.
+
     Take command line arguments and construct a ContractFunction
     (i.e. a function call). Returns the ContractFunction object, the
     ABIFunction for the method, and the Web3 object created in the
@@ -109,9 +108,9 @@ def deploy_cmd(
     chain_id: Optional[int],
     parameters: List[str],
 ) -> None:
-    """
-    Deploy a contract, given the compiled JSON file. Note that the
-    contract's address will appear in the 'contractAddress' field of
+    """Deploy a contract, given the compiled JSON file.
+
+    Note that the contract's address will appear in the 'contractAddress' field of
     the transaction receipt (see `aut tx wait`).
     """
 
@@ -167,9 +166,7 @@ def call_cmd(
     method: str,
     parameters: List[str],
 ) -> None:
-    """
-    Execute a contract call on the connected node, and print the result.
-    """
+    """Execute a contract call on the connected node, and print the result."""
 
     function, abi_fn, _ = function_call_from_args(
         rpc_endpoint,
@@ -214,10 +211,10 @@ def tx_cmd(
     value: Optional[str],
     chain_id: Optional[int],
 ) -> None:
-    """
-    Create a transaction which calls the given contract method,
-    passing any parameters. The parameters must match those required
-    by the contract.
+    """Create a transaction which calls the given contract method, passing any
+    parameters.
+
+    The parameters must match those required by the contract.
     """
 
     function, _, w3 = function_call_from_args(

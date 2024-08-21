@@ -45,9 +45,7 @@ from ..utils import (
 
 @group()
 def validator() -> None:
-    """
-    Commands related to the validators.
-    """
+    """Commands related to the validators."""
 
 
 validator.add_command(
@@ -61,9 +59,7 @@ validator.add_command(
 @rpc_endpoint_option
 @validator_option
 def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
-    """
-    Get information about a validator.
-    """
+    """Get information about a validator."""
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -89,9 +85,7 @@ validator.add_command(info)
 def compute_address(
     enode: str,
 ) -> None:
-    """
-    Compute the address corresponding to an enode URL.
-    """
+    """Compute the address corresponding to an enode URL."""
 
     _, key_at_ip_port, _, _, _, _ = urlparse.urlparse(enode)
     pubkey, _ = key_at_ip_port.split("@")
@@ -124,9 +118,7 @@ def bond(
     validator_addr_str: Optional[str],
     amount_str: str,
 ) -> None:
-    """
-    Create transaction to bond Newton to a validator.
-    """
+    """Create transaction to bond Newton to a validator."""
 
     token_units = parse_newton_value_representation(amount_str)
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
@@ -173,9 +165,7 @@ def unbond(
     validator_addr_str: Optional[str],
     amount_str: str,
 ) -> None:
-    """
-    Create transaction to unbond Newton from a validator.
-    """
+    """Create transaction to unbond Newton from a validator."""
 
     token_units = parse_newton_value_representation(amount_str)
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
@@ -226,9 +216,7 @@ def register(
     consensus_key: str,
     proof: str,
 ) -> None:
-    """
-    Create transaction to register a validator.
-    """
+    """Create transaction to register a validator."""
 
     consensus_key_bytes = HexBytes(consensus_key)
     proof_bytes = HexBytes(proof)
@@ -276,9 +264,9 @@ def pause(
     chain_id: Optional[int],
     validator_addr_str: Optional[str],
 ) -> None:
-    """
-    Create transaction to pause the given validator. See
-    `pauseValidator` on the Autonity contract.
+    """Create transaction to pause the given validator.
+
+    See `pauseValidator` on the Autonity contract.
     """
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
@@ -323,9 +311,9 @@ def activate(
     chain_id: Optional[int],
     validator_addr_str: Optional[str],
 ) -> None:
-    """
-    Create transaction to activate a paused validator. See
-    `activateValidator` on the Autonity contract.
+    """Create transaction to activate a paused validator.
+
+    See `activateValidator` on the Autonity contract.
     """
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
@@ -372,10 +360,9 @@ def change_commission_rate(
     validator_addr_str: Optional[str],
     rate: str,
 ) -> None:
-    """
-    Create transaction to change the commission rate for the given
-    Validator. The rate is given as a decimal, and must be no greater
-    than 1 e.g. 3% would be 0.03.
+    """Create transaction to change the commission rate for the given Validator.
+
+    The rate is given as a decimal, and must be no greater than 1 e.g. 3% would be 0.03.
     """
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
@@ -417,9 +404,7 @@ def unclaimed_rewards(
     validator_addr_str: Optional[str],
     account: Optional[str],
 ) -> None:
-    """
-    Check the given validator for unclaimed fees.
-    """
+    """Check the given validator for unclaimed fees."""
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     account = from_address_from_argument(account, keyfile)
@@ -458,9 +443,7 @@ def claim_rewards(
     chain_id: Optional[int],
     validator_addr_str: Optional[str],
 ) -> None:
-    """
-    Create transaction to claim rewards from a Validator.
-    """
+    """Create transaction to claim rewards from a Validator."""
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
@@ -509,8 +492,7 @@ def update_enode(
     validator_addr_str: Optional[str],
     enode: str,
 ) -> None:
-    """
-    Update the enode of a registered validator.
+    """Update the enode of a registered validator.
 
     This function updates the network connection information (IP or/and port)
     of a registered validator. You cannot change the validator's address

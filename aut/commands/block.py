@@ -13,9 +13,7 @@ from ..utils import to_json, validate_block_identifier, web3_from_endpoint_arg
 
 @group(name="block")
 def block_group() -> None:
-    """
-    Commands for querying block information.
-    """
+    """Commands for querying block information."""
 
 
 @command()
@@ -23,9 +21,9 @@ def block_group() -> None:
 @rpc_endpoint_option
 @argument("identifier", default="latest")
 def get(rpc_endpoint: Optional[str], identifier: str) -> None:
-    """
-    Print information for block, where <identifier> is a block number
-    or hash. If no argument is given, "latest" is used.
+    """Print information for block.
+
+    IDENTIFIER is a block number or hash. If no argument is given, "latest" is used.
     """
 
     block_id = validate_block_identifier(identifier)
@@ -41,9 +39,7 @@ block_group.add_command(get)
 @config_option
 @rpc_endpoint_option
 def height(rpc_endpoint: Optional[str]) -> None:
-    """
-    Print the current block height for the chain.
-    """
+    """Print the current block height for the chain."""
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     print(w3.eth.block_number)

@@ -15,17 +15,14 @@ from ..utils import to_json, web3_from_endpoint_arg
 
 @group(name="node")
 def node_group() -> None:
-    """
-    Commands related to querying specific Autonity nodes.
-    """
+    """Commands related to querying specific Autonity nodes."""
 
 
 @command()
 @config_option
 @rpc_endpoint_option
 def info(rpc_endpoint: Optional[str]) -> None:
-    """
-    Print general information about the RPC node configuration and state.
+    """Print general information about the RPC node configuration and state.
 
     Note: some fields of the returned JSON object are only present if the 'admin'
     JSON-RPC API is available.

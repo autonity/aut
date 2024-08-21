@@ -55,9 +55,7 @@ from ..utils import (
 
 @group(name="account")
 def account_group() -> None:
-    """
-    Commands related to specific accounts.
-    """
+    """Commands related to specific accounts."""
 
 
 @command(name="list")
@@ -65,9 +63,7 @@ def account_group() -> None:
 @option("--with-files", is_flag=True, help="Show key file names.")
 @keystore_option
 def list_cmd(keystore: Optional[str], with_files: bool) -> None:
-    """
-    List the accounts for files in the keystore directory.
-    """
+    """List the accounts for files in the keystore directory."""
 
     keyfiles = address_keyfile_dict(keystore)
     for addr, keyfile in keyfiles.items():
@@ -96,9 +92,9 @@ def info(
     accounts: List[str],
     asof: Optional[BlockIdentifier],
 ) -> None:
-    """
-    Print some information about the given account (falling back to
-    the default keyfile account if no accounts specified).
+    """Print some information about the given account.
+
+    Falls back to the default keyfile account if no accounts specified.
     """
 
     if len(accounts) == 0:
@@ -130,9 +126,7 @@ def balance(
     ntn: bool,
     token: Optional[str],
 ) -> None:
-    """
-    Print the current balance of the given account.
-    """
+    """Print the current balance of the given account."""
 
     account_addr = from_address_from_argument_optional(account_str, keyfile)
     if not account_addr:
@@ -172,9 +166,7 @@ account_group.add_command(balance)
 def lntn_balances(
     rpc_endpoint: Optional[str], account_str: Optional[str], keyfile: Optional[str]
 ) -> None:
-    """
-    Print all Liquid Newton balances of the given account.
-    """
+    """Print all Liquid Newton balances of the given account."""
 
     account_addr = from_address_from_argument_optional(account_str, keyfile)
     if not account_addr:
@@ -217,9 +209,9 @@ def new(
     password: str,
     extra_entropy: Optional[str],
 ) -> None:
-    """
-    Create a new key and write it to a keyfile.  If no keyfile is
-    specified, a default name is used (consistent with GETH keyfiles)
+    """Create a new key and write it to a keyfile.
+
+    If no keyfile is specified, a default name is used (consistent with GETH keyfiles)
     in the keystore.
     """
 
@@ -272,11 +264,11 @@ def import_private_key(
     password: str,
     private_key_file: str,
 ) -> None:
-    """
-    Read a plaintext private key file (as hex), and create a new
-    encrypted keystore file for it. Use - to read private key from
-    stdin. If no keyfile is specified, a default name is used
-    (consistent with GETH keyfiles) in the keystore.
+    """Read a plaintext private key file (as hex), and create a new encrypted keystore
+    file for it.
+
+    Use - to read private key from stdin. If no keyfile is specified, a default name is
+    used (consistent with GETH keyfiles) in the keystore.
     """
 
     private_key = HexBytes.fromhex(load_from_file_or_stdin_line(private_key_file))
@@ -308,9 +300,9 @@ account_group.add_command(import_private_key)
     required=True,
 )
 def signtx(keyfile: Optional[str], password: str, tx_file: str) -> None:
-    """
-    Sign a transaction using the given keyfile. Use '-' to read from
-    stdin instead of a file.
+    """Sign a transaction using the given keyfile.
+
+    Use '-' to read from stdin instead of a file.
 
     If password is not given, the environment variable 'AUT_PASSWORD' is used.
     If that is not set, the user is prompted.
@@ -354,9 +346,9 @@ def sign_message(
     message: str,
     signature_file: Optional[str],
 ) -> None:
-    """
-    Use the private key in the given keyfile to sign the string
-    MESSAGE (or the contents of a file; see --use-message-file).  The
+    """Use the private key in the given keyfile to sign a message.
+
+    MESSAGE may be a string or the contents of a file; see --use-message-file. The
     signature is always written to stdout (which can be piped to a
     file). The signature is also written to SIGNATURE_FILE, if given.
     """
@@ -417,7 +409,8 @@ def verify_signature(
     message: str,
     signature_file: str,
 ) -> None:
-    """
+    """Verify that the signature of a message is valid.
+
     Verify that the signature in `SIGNATURE_FILE` is valid for the
     message MESSAGE, signed by the owner of the FROM address.
     Signature must be contained in a file.
