@@ -5,12 +5,13 @@ Implementation of `node` subcommands
 from typing import Union
 
 from click import command, group
+from web3 import Web3
 from web3.datastructures import AttributeDict
 from web3.exceptions import MethodUnavailable
 from web3.types import SyncStatus
 
 from ..options import config_option, rpc_endpoint_option
-from ..utils import to_json, web3_from_endpoint_arg
+from ..utils import to_json
 
 
 @group(name="node")
@@ -21,14 +22,13 @@ def node_group() -> None:
 @command()
 @config_option
 @rpc_endpoint_option
-def info(rpc_endpoint: str) -> None:
+def info(w3: Web3) -> None:
     """Print general information about the RPC node configuration and state.
 
     Note: some fields of the returned JSON object are only present if the 'admin'
     JSON-RPC API is available.
     """
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     try:
         admin_node_info = w3.geth.admin.node_info()
     except MethodUnavailable:

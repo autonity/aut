@@ -12,6 +12,7 @@ from autonity.abi_parser import (
     parse_return_value,
 )
 from click import ClickException, Path, argument, command, group, option
+from web3 import Web3
 from web3.contract.contract import ContractFunction
 
 from ..logging import log
@@ -30,7 +31,6 @@ from ..utils import (
     finalize_tx_from_args,
     from_address_from_argument,
     to_json,
-    web3_from_endpoint_arg,
 )
 
 # pylint: disable=too-many-arguments
@@ -44,7 +44,7 @@ def contract_group() -> None:
 
 
 def function_call_from_args(
-    rpc_endpoint: str,
+    w3: Web3,
     contract_address_str: str,
     contract_abi_path: str,
     method: str,
@@ -69,13 +69,12 @@ def function_call_from_args(
     fn_params = parse_arguments(abi_fn, parameters)
     log(f"fn_params (parsed): {fn_params}")
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     contract = w3.eth.contract(address, abi=abi)
     contract_fn = getattr(contract.functions, method, None)
     if contract_fn is None:
         raise ClickException(f"method '{method}' not found on contract abi")
 
-    return contract_fn(*fn_params), abi_fn, w3
+    return contract_fn(*fn_params), abi_fn
 
 
 @command(name="deploy")
@@ -94,7 +93,7 @@ def function_call_from_args(
 )
 @argument("parameters", nargs=-1)
 def deploy_cmd(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     contract_path: str,
@@ -115,8 +114,6 @@ def deploy_cmd(
     """
 
     log(f"parameters: {list(parameters)}")
-
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
 
     # load contract
     with open(contract_path, "r", encoding="utf8") as contract_f:
@@ -146,7 +143,7 @@ def deploy_cmd(
 
     del deploy_tx["to"]
 
-    tx = finalize_tx_from_args(w3, rpc_endpoint, deploy_tx, from_addr)
+    tx = finalize_tx_from_args(w3, deploy_tx, from_addr)
     print(to_json(tx))
 
 
@@ -160,7 +157,7 @@ contract_group.add_command(deploy_cmd)
 @argument("method")
 @argument("parameters", nargs=-1)
 def call_cmd(
-    rpc_endpoint: str,
+    w3: Web3,
     contract_address_str: str,
     contract_abi_path: str,
     method: str,
@@ -168,8 +165,8 @@ def call_cmd(
 ) -> None:
     """Execute a contract call on the connected node, and print the result."""
 
-    function, abi_fn, _ = function_call_from_args(
-        rpc_endpoint,
+    function, abi_fn = function_call_from_args(
+        w3,
         contract_address_str,
         contract_abi_path,
         method,
@@ -195,7 +192,7 @@ contract_group.add_command(call_cmd)
 @argument("method")
 @argument("parameters", nargs=-1)
 def tx_cmd(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     contract_address_str: str,
@@ -217,8 +214,8 @@ def tx_cmd(
     The parameters must match those required by the contract.
     """
 
-    function, _, w3 = function_call_from_args(
-        rpc_endpoint,
+    function, _ = function_call_from_args(
+        w3,
         contract_address_str,
         contract_abi_path,
         method,
@@ -243,7 +240,7 @@ def tx_cmd(
 
     # Fill in any missing values.
 
-    tx = finalize_tx_from_args(w3, rpc_endpoint, tx, from_addr)
+    tx = finalize_tx_from_args(w3, tx, from_addr)
     print(to_json(tx))
 
 

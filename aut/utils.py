@@ -18,7 +18,6 @@ from autonity.utils.tx import (
     create_transaction,
     finalize_transaction,
 )
-from autonity.utils.web3 import create_web3_for_endpoint
 from click import ClickException
 from web3 import Web3
 from web3.contract.contract import ContractFunction
@@ -41,40 +40,6 @@ from .logging import log
 
 # Intended to represent "value" types
 V = TypeVar("V")
-
-
-def web3_from_endpoint_arg(w3: Optional[Web3], endpoint_arg: str) -> Web3:
-    """
-    Construct a Web3 from a cli argument.  CLI argument is not
-    present, fall back to env vars and config files.
-
-    Can also be used to implement the common pattern of initializing a
-    Web3 "on-demand", for example to compute values only if they are
-    not given on the command line, but ensure only one Web3 connection
-    is created.
-
-    See the `maketx` command which may or may not connect to a node to
-    compute one or more of: gas parameters, nonce, chainID, etc.  If
-    multiple of these must be computed, we should avoid creating
-    multiple connections.  Conversely, if all of these values are
-    given on the command line, no connected web3 object is required.
-    """
-
-    if w3 is None:
-        # TODO: For now, ignore the chain ID by default.  Later, this
-        # check should be enabled and controllable by a flag.
-        return create_web3_for_endpoint(endpoint_arg, ignore_chain_id=True)
-
-    return w3
-
-
-def autonity_from_endpoint_arg(endpoint_arg: str) -> Autonity:
-    """
-    Construct a reference to the Autonity contract from an endpoint
-    argument.  Intended for the case of Protocol queries where the CLI
-    function simply loads the Autonity contract and makes one request.
-    """
-    return Autonity(web3_from_endpoint_arg(None, endpoint_arg))
 
 
 def from_address_from_argument_optional(
@@ -119,8 +84,7 @@ def from_address_from_argument(
 
 
 def create_tx_from_args(
-    w3: Optional[Web3],
-    rpc_endpoint: str,
+    w3: Web3,
     from_addr: Optional[ChecksumAddress] = None,
     to_addr: Optional[ChecksumAddress] = None,
     value: Optional[str] = None,
@@ -132,49 +96,42 @@ def create_tx_from_args(
     fee_factor: Optional[float] = None,
     nonce: Optional[int] = None,
     chain_id: Optional[int] = None,
-) -> Tuple[TxParams, Optional[Web3]]:
+) -> TxParams:
     """
     Convenience function to setup a TxParams object based on optional
     command-line parameters.
     """
 
     if fee_factor:
-        w3 = web3_from_endpoint_arg(w3, rpc_endpoint)
         block_number = w3.eth.block_number
         block_data = w3.eth.get_block(block_number)
         max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
 
     try:
-        return (
-            create_transaction(
-                from_addr=from_addr,
-                to_addr=to_addr,
-                value=parse_wei_representation(value) if value else None,
-                data=HexBytes(data) if data else None,
-                gas=parse_wei_representation(gas) if gas else None,
-                gas_price=parse_wei_representation(gas_price) if gas_price else None,
-                max_fee_per_gas=(
-                    parse_wei_representation(max_fee_per_gas)
-                    if max_fee_per_gas
-                    else None
-                ),
-                max_priority_fee_per_gas=(
-                    parse_wei_representation(max_priority_fee_per_gas)
-                    if max_priority_fee_per_gas
-                    else None
-                ),
-                nonce=Nonce(nonce) if nonce else None,
-                chain_id=chain_id,
+        return create_transaction(
+            from_addr=from_addr,
+            to_addr=to_addr,
+            value=parse_wei_representation(value) if value else None,
+            data=HexBytes(data) if data else None,
+            gas=parse_wei_representation(gas) if gas else None,
+            gas_price=parse_wei_representation(gas_price) if gas_price else None,
+            max_fee_per_gas=(
+                parse_wei_representation(max_fee_per_gas) if max_fee_per_gas else None
             ),
-            w3,
+            max_priority_fee_per_gas=(
+                parse_wei_representation(max_priority_fee_per_gas)
+                if max_priority_fee_per_gas
+                else None
+            ),
+            nonce=Nonce(nonce) if nonce else None,
+            chain_id=chain_id,
         )
     except ValueError as err:
         raise ClickException(err.args[0]) from err
 
 
 def finalize_tx_from_args(
-    w3: Optional[Web3],
-    rpc_endpoint: str,
+    w3: Web3,
     tx: TxParams,
     from_addr: Optional[ChecksumAddress],
 ) -> TxParams:
@@ -182,11 +139,7 @@ def finalize_tx_from_args(
     Fill in any values not set by create_tx_from_args.  Wraps the
     finalize_tx call in autonity.py.
     """
-
-    def create_w3() -> Web3:
-        return web3_from_endpoint_arg(w3, rpc_endpoint)
-
-    return finalize_transaction(create_w3, tx, from_addr)
+    return finalize_transaction(lambda: w3, tx, from_addr)
 
 
 def create_contract_tx_from_args(

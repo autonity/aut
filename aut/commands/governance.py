@@ -4,8 +4,10 @@ The `gov` command group.
 
 from typing import Optional
 
+from autonity import Autonity
 from click import argument, command, group
 from eth_utils import to_checksum_address
+from web3 import Web3
 
 from ..options import (
     config_option,
@@ -15,7 +17,6 @@ from ..options import (
     tx_aux_options,
 )
 from ..utils import (
-    autonity_from_endpoint_arg,
     create_contract_tx_from_args,
     from_address_from_argument,
     parse_newton_value_representation,
@@ -37,7 +38,7 @@ def governance_group() -> None:
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_bond_applied_gas(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -57,7 +58,7 @@ def set_max_bond_applied_gas(
 
     gas_value = parse_wei_representation(gas_value_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_max_bond_applied_gas(gas_value),
@@ -84,7 +85,7 @@ governance_group.add_command(set_max_bond_applied_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_unbond_applied_gas(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -104,7 +105,7 @@ def set_max_unbond_applied_gas(
 
     gas_value = parse_wei_representation(gas_value_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_max_unbond_applied_gas(gas_value),
@@ -131,7 +132,7 @@ governance_group.add_command(set_max_unbond_applied_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_unbond_released_gas(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -151,7 +152,7 @@ def set_max_unbond_released_gas(
 
     gas_value = parse_wei_representation(gas_value_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_max_unbond_released_gas(gas_value),
@@ -178,7 +179,7 @@ governance_group.add_command(set_max_unbond_released_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_max_rewards_distribution_gas(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -198,7 +199,7 @@ def set_max_rewards_distribution_gas(
 
     gas_value = parse_wei_representation(gas_value_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_max_rewards_distribution_gas(gas_value),
@@ -225,7 +226,7 @@ governance_group.add_command(set_max_rewards_distribution_gas)
 @tx_aux_options
 @argument("gas_value_str", metavar="gas", nargs=1)
 def set_staking_gas_price(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -245,7 +246,7 @@ def set_staking_gas_price(
 
     gas_value = parse_wei_representation(gas_value_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_staking_gas_price(gas_value),
@@ -272,7 +273,7 @@ governance_group.add_command(set_staking_gas_price)
 @tx_aux_options
 @argument("base-fee-str", metavar="base-fee", nargs=1)
 def set_minimum_base_fee(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -292,7 +293,7 @@ def set_minimum_base_fee(
 
     base_fee = parse_wei_representation(base_fee_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_minimum_base_fee(base_fee),
@@ -319,7 +320,7 @@ governance_group.add_command(set_minimum_base_fee)
 @tx_aux_options
 @argument("committee-size", type=int, nargs=1)
 def set_committee_size(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -337,7 +338,7 @@ def set_committee_size(
     """
 
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_committee_size(committee_size),
@@ -364,7 +365,7 @@ governance_group.add_command(set_committee_size)
 @tx_aux_options
 @argument("unbonding-period", type=int, nargs=1)
 def set_unbonding_period(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -382,7 +383,7 @@ def set_unbonding_period(
     """
 
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_unbonding_period(unbonding_period),
@@ -409,7 +410,7 @@ governance_group.add_command(set_unbonding_period)
 @tx_aux_options
 @argument("epoch-period", type=int, nargs=1)
 def set_epoch_period(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -427,7 +428,7 @@ def set_epoch_period(
     """
 
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_epoch_period(epoch_period),
@@ -454,7 +455,7 @@ governance_group.add_command(set_epoch_period)
 @tx_aux_options
 @argument("operator-address-str", metavar="OPERATOR-ADDRESS", nargs=1)
 def set_operator_account(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -473,7 +474,7 @@ def set_operator_account(
 
     operator_address = to_checksum_address(operator_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_operator_account(operator_address),
@@ -500,7 +501,7 @@ governance_group.add_command(set_operator_account)
 @tx_aux_options
 @argument("treasury-address-str", metavar="treasury-address", nargs=1)
 def set_treasury_account(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -519,7 +520,7 @@ def set_treasury_account(
 
     treasury_address = to_checksum_address(treasury_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_treasury_account(treasury_address),
@@ -546,7 +547,7 @@ governance_group.add_command(set_treasury_account)
 @tx_aux_options
 @argument("treasury-fee-str", metavar="TREASURY-FEE", nargs=1)
 def set_treasury_fee(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -565,7 +566,7 @@ def set_treasury_fee(
 
     treasury_fee = parse_wei_representation(treasury_fee_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_treasury_fee(treasury_fee),
@@ -592,7 +593,7 @@ governance_group.add_command(set_treasury_fee)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_accountability_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -612,7 +613,7 @@ def set_accountability_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_accountability_contract(contract_address),
@@ -639,7 +640,7 @@ governance_group.add_command(set_accountability_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_oracle_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -658,7 +659,7 @@ def set_oracle_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_oracle_contract(contract_address),
@@ -685,7 +686,7 @@ governance_group.add_command(set_oracle_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_acu_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -704,7 +705,7 @@ def set_acu_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_acu_contract(contract_address),
@@ -731,7 +732,7 @@ governance_group.add_command(set_acu_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_supply_control_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -751,7 +752,7 @@ def set_supply_control_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_supply_control_contract(contract_address),
@@ -778,7 +779,7 @@ governance_group.add_command(set_supply_control_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_stabilization_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -798,7 +799,7 @@ def set_stabilization_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_stabilization_contract(contract_address),
@@ -825,7 +826,7 @@ governance_group.add_command(set_stabilization_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_inflation_controller_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -845,7 +846,7 @@ def set_inflation_controller_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_inflation_controller_contract(contract_address),
@@ -872,7 +873,7 @@ governance_group.add_command(set_inflation_controller_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_upgrade_manager_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -892,7 +893,7 @@ def set_upgrade_manager_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_upgrade_manager_contract(contract_address),
@@ -919,7 +920,7 @@ governance_group.add_command(set_upgrade_manager_contract)
 @tx_aux_options
 @argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
 def set_non_stakable_vesting_contract(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -939,7 +940,7 @@ def set_non_stakable_vesting_contract(
 
     contract_address = to_checksum_address(contract_address_str)
     from_addr = from_address_from_argument(from_str, keyfile)
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.set_non_stakable_vesting_contract(contract_address),
@@ -967,7 +968,7 @@ governance_group.add_command(set_non_stakable_vesting_contract)
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 @argument("recipient-str", metavar="RECIPIENT", required=False)
 def mint(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -990,7 +991,7 @@ def mint(
     from_addr = from_address_from_argument(from_str, keyfile)
     recipient = to_checksum_address(recipient_str) if recipient_str else from_addr
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.mint(recipient, token_units),
@@ -1018,7 +1019,7 @@ governance_group.add_command(mint)
 @argument("amount-str", metavar="AMOUNT")
 @argument("account-str", metavar="ACCOUNT", required=False)
 def burn(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -1041,7 +1042,7 @@ def burn(
     token_units = parse_newton_value_representation(amount_str)
     from_addr = from_address_from_argument(from_str, keyfile)
     account = to_checksum_address(account_str) if account_str else from_addr
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.burn(account, token_units),

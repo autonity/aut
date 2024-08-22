@@ -23,7 +23,6 @@ from ..utils import (
     newton_or_token_to_address_require,
     parse_token_value_representation,
     to_json,
-    web3_from_endpoint_arg,
 )
 
 # pylint: disable=too-many-locals
@@ -39,11 +38,10 @@ def token_group() -> None:
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def name(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
+def name(w3: Web3, ntn: bool, token: Optional[str]) -> None:
     """Returns the token name (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     token_name = erc.name()
     if token_name is None:
@@ -58,11 +56,10 @@ token_group.add_command(name)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def symbol(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
+def symbol(w3: Web3, ntn: bool, token: Optional[str]) -> None:
     """Returns the token symbol (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     token_symbol = erc.symbol()
     if token_symbol is None:
@@ -77,11 +74,10 @@ token_group.add_command(symbol)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def decimals(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
+def decimals(w3: Web3, ntn: bool, token: Optional[str]) -> None:
     """Returns the number of decimals used in the token balances."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     print(erc.decimals())
 
@@ -93,11 +89,10 @@ token_group.add_command(decimals)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def total_supply(rpc_endpoint: str, ntn: bool, token: Optional[str]) -> None:
+def total_supply(w3: Web3, ntn: bool, token: Optional[str]) -> None:
     """Total supply (in units of whole Tokens)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     token_decimals = erc.decimals()
     token_total_supply = erc.total_supply()
@@ -114,7 +109,7 @@ token_group.add_command(total_supply)
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", required=False)
 def balance_of(
-    rpc_endpoint: str,
+    w3: Web3,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -128,7 +123,6 @@ def balance_of(
     token_addresss = newton_or_token_to_address_require(ntn, token)
     account_addr = from_address_from_argument(account_str, keyfile)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     balance = erc.balance_of(account_addr)
     token_decimals = erc.decimals()
@@ -146,7 +140,7 @@ token_group.add_command(balance_of)
 @from_option
 @argument("owner")
 def allowance(
-    rpc_endpoint: str,
+    w3: Web3,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -163,7 +157,6 @@ def allowance(
     from_addr = from_address_from_argument(from_str, keyfile)
     owner_addr = Web3.to_checksum_address(owner)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
     token_allowance = erc.allowance(owner_addr, from_addr)
     token_decimals = erc.decimals()
@@ -183,7 +176,7 @@ token_group.add_command(allowance)
 @argument("recipient_str", metavar="RECIPIENT")
 @argument("amount_str", metavar="AMOUNT")
 def transfer(
-    rpc_endpoint: str,
+    w3: Web3,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -208,7 +201,6 @@ def transfer(
     from_addr = from_address_from_argument(from_str, keyfile)
     recipient_addr = Web3.to_checksum_address(recipient_str)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
 
     token_decimals = erc.decimals()
@@ -243,7 +235,7 @@ token_group.add_command(transfer)
 @argument("spender_str", metavar="SPENDER")
 @argument("amount_str", metavar="AMOUNT")
 def approve(
-    rpc_endpoint: str,
+    w3: Web3,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -268,7 +260,6 @@ def approve(
     from_addr = from_address_from_argument(from_str, keyfile)
     spender = Web3.to_checksum_address(spender_str)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
 
     token_decimals = erc.decimals()
@@ -304,7 +295,7 @@ token_group.add_command(approve)
 @argument("recipient_str", metavar="RECIPIENT")
 @argument("amount_str", metavar="AMOUNT")
 def transfer_from(
-    rpc_endpoint: str,
+    w3: Web3,
     ntn: bool,
     token: Optional[str],
     keyfile: Optional[str],
@@ -333,7 +324,6 @@ def transfer_from(
     spender = Web3.to_checksum_address(spender_str)
     recipient = Web3.to_checksum_address(recipient_str)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     erc = ERC20(w3, token_addresss)
 
     token_decimals = erc.decimals()

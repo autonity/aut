@@ -47,7 +47,6 @@ from ..utils import (
     new_keyfile_from_options,
     newton_or_token_to_address,
     to_json,
-    web3_from_endpoint_arg,
 )
 
 # pylint: disable=too-many-locals
@@ -87,7 +86,7 @@ account_group.add_command(list_cmd)
 )
 @argument("accounts", nargs=-1)
 def info(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     accounts: List[str],
     asof: Optional[BlockIdentifier],
@@ -105,7 +104,6 @@ def info(
 
     addresses = [Web3.to_checksum_address(act) for act in accounts]
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     account_stats = get_account_stats(w3, addresses, asof)
     print(to_json(account_stats, pretty=True))
 
@@ -120,7 +118,7 @@ account_group.add_command(info)
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
 def balance(
-    rpc_endpoint: str,
+    w3: Web3,
     account_str: Optional[str],
     keyfile: Optional[str],
     ntn: bool,
@@ -135,8 +133,6 @@ def balance(
         )
 
     token_addresss = newton_or_token_to_address(ntn, token)
-
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
 
     # TODO: support printing in other denominations (AUT / units based
     # on num decimals of token).
@@ -163,9 +159,7 @@ account_group.add_command(balance)
 @rpc_endpoint_option
 @keyfile_option()
 @argument("account_str", metavar="ACCOUNT", default="")
-def lntn_balances(
-    rpc_endpoint: str, account_str: Optional[str], keyfile: Optional[str]
-) -> None:
+def lntn_balances(w3: Web3, account_str: Optional[str], keyfile: Optional[str]) -> None:
     """Print all Liquid Newton balances of the given account."""
 
     account_addr = from_address_from_argument_optional(account_str, keyfile)
@@ -174,7 +168,6 @@ def lntn_balances(
             "Could not determine account address from argument or keyfile"
         )
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     aut = Autonity(w3)
     validator_addrs = aut.get_validators()
     validators = [aut.get_validator(vaddr) for vaddr in validator_addrs]

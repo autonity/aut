@@ -8,6 +8,7 @@ from typing import Any, Callable, TypeVar
 from click import Path, option
 
 from .config import config_file, read_defaults_from_config
+from .param_types import RPCEndpoint
 
 Func = TypeVar("Func", bound=Callable[..., Any])
 
@@ -38,6 +39,8 @@ def rpc_endpoint_option(fn: Func) -> Func:
     return option(
         "--rpc-endpoint",
         "-r",
+        "w3",
+        type=RPCEndpoint(),
         metavar="URL",
         help="RPC endpoint.",
         required=True,

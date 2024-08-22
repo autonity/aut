@@ -3,10 +3,11 @@ The "block" command group
 """
 
 from click import argument, command, group
+from web3 import Web3
 
 from ..options import config_option, rpc_endpoint_option
 from ..user import get_block
-from ..utils import to_json, validate_block_identifier, web3_from_endpoint_arg
+from ..utils import to_json, validate_block_identifier
 
 
 @group(name="block")
@@ -18,14 +19,13 @@ def block_group() -> None:
 @config_option
 @rpc_endpoint_option
 @argument("identifier", default="latest")
-def get(rpc_endpoint: str, identifier: str) -> None:
+def get(w3: Web3, identifier: str) -> None:
     """Print information for block.
 
     IDENTIFIER is a block number or hash. If no argument is given, "latest" is used.
     """
 
     block_id = validate_block_identifier(identifier)
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     block_data = get_block(w3, block_id)
     print(to_json(block_data))
 
@@ -36,10 +36,9 @@ block_group.add_command(get)
 @command()
 @config_option
 @rpc_endpoint_option
-def height(rpc_endpoint: str) -> None:
+def height(w3: Web3) -> None:
     """Print the current block height for the chain."""
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     print(w3.eth.block_number)
 
 

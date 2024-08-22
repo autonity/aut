@@ -20,6 +20,7 @@ OPTION_ALIASES = {
     "abi": "contract_abi_path",
     "address": "contract_address_str",
     "from": "from_str",
+    "rpc_endpoint": "w3",
     "validator": "validator_addr_str",
 }
 

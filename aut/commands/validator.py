@@ -24,13 +24,11 @@ from ..options import (
     validator_option,
 )
 from ..utils import (
-    autonity_from_endpoint_arg,
     create_contract_tx_from_args,
     from_address_from_argument,
     parse_commission_rate,
     parse_newton_value_representation,
     to_json,
-    web3_from_endpoint_arg,
 )
 
 # Disable pylint warning about imports outside top-level.  We do this
@@ -58,11 +56,11 @@ validator.add_command(
 @config_option
 @rpc_endpoint_option
 @validator_option
-def info(rpc_endpoint: str, validator_addr_str: str) -> None:
+def info(w3: Web3, validator_addr_str: str) -> None:
     """Get information about a validator."""
 
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
     validator_data = aut.get_validator(validator_addr)
     if (
         validator_data is None
@@ -105,7 +103,7 @@ validator.add_command(compute_address)
 @validator_option
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 def bond(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -124,7 +122,7 @@ def bond(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.bond(validator_addr, token_units),
@@ -152,7 +150,7 @@ validator.add_command(bond)
 @validator_option
 @argument("amount-str", metavar="AMOUNT", nargs=1)
 def unbond(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -171,7 +169,7 @@ def unbond(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.unbond(validator_addr, token_units),
@@ -201,7 +199,7 @@ validator.add_command(unbond)
 @argument("consensus_key")
 @argument("proof")
 def register(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -224,7 +222,7 @@ def register(
     from_addr = from_address_from_argument(from_str, keyfile)
     # TODO: validate enode string?
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
     tx = create_contract_tx_from_args(
         function=aut.register_validator(
             enode, oracle, consensus_key_bytes, proof_bytes
@@ -252,7 +250,7 @@ validator.add_command(register)
 @tx_aux_options
 @validator_option
 def pause(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -272,7 +270,7 @@ def pause(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.pause_validator(validator_addr),
@@ -299,7 +297,7 @@ validator.add_command(pause)
 @tx_aux_options
 @validator_option
 def activate(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -319,7 +317,7 @@ def activate(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.activate_validator(validator_addr),
@@ -347,7 +345,7 @@ validator.add_command(activate)
 @validator_option
 @argument("rate", type=str, nargs=1)
 def change_commission_rate(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -368,7 +366,7 @@ def change_commission_rate(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     rate_precision = aut.commission_rate_precision()
     rate_int = parse_commission_rate(rate, rate_precision)
@@ -398,7 +396,7 @@ validator.add_command(change_commission_rate)
 @option("--ntn", is_flag=True, help="Check Newton (NTN) instead of Auton")
 @option("--account", help="Delegator account to check")
 def unclaimed_rewards(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     ntn: bool,
     validator_addr_str: str,
@@ -409,7 +407,7 @@ def unclaimed_rewards(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     account = from_address_from_argument(account, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
     vdesc = aut.get_validator(validator_addr)
     val = Validator(aut.contract.w3, vdesc)
     unclaimed_atn, unclaimed_ntn = val.unclaimed_rewards(account)
@@ -431,7 +429,7 @@ validator.add_command(unclaimed_rewards)
 @tx_aux_options
 @validator_option
 def claim_rewards(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -448,7 +446,6 @@ def claim_rewards(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     aut = Autonity(w3)
     vdesc = aut.get_validator(validator_addr)
     val = Validator(w3, vdesc)
@@ -479,7 +476,7 @@ validator.add_command(claim_rewards)
 @validator_option
 @argument("enode", nargs=1)
 def update_enode(
-    rpc_endpoint: str,
+    w3: Web3,
     keyfile: Optional[str],
     from_str: Optional[str],
     gas: Optional[str],
@@ -502,7 +499,7 @@ def update_enode(
     validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     from_addr = from_address_from_argument(from_str, keyfile)
 
-    aut = autonity_from_endpoint_arg(rpc_endpoint)
+    aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
         function=aut.update_enode(validator_addr, enode),
