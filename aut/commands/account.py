@@ -31,7 +31,7 @@ from web3.types import BlockIdentifier
 from ..logging import log
 from ..options import (
     config_option,
-    from_option,
+    keyfile_or_from_option,
     keyfile_and_password_options,
     keyfile_option,
     keystore_option,
@@ -381,8 +381,7 @@ account_group.add_command(sign_message)
 
 @command()
 @config_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @option(
     "--use-message-file",
     "-f",

@@ -12,8 +12,7 @@ from web3.types import Wei
 
 from ..options import (
     config_option,
-    from_option,
-    keyfile_option,
+    keyfile_or_from_option,
     rpc_endpoint_option,
     tx_aux_options,
 )
@@ -33,8 +32,7 @@ def governance_group() -> None:
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("gas_value", metavar="gas", type=TokenValueType())
 def set_max_bond_applied_gas(
@@ -79,8 +77,7 @@ governance_group.add_command(set_max_bond_applied_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("gas_value", metavar="gas", type=TokenValueType())
 def set_max_unbond_applied_gas(
@@ -125,8 +122,7 @@ governance_group.add_command(set_max_unbond_applied_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("gas_value", metavar="gas", type=TokenValueType())
 def set_max_unbond_released_gas(
@@ -171,8 +167,7 @@ governance_group.add_command(set_max_unbond_released_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("gas_value", metavar="gas", type=TokenValueType())
 def set_max_rewards_distribution_gas(
@@ -217,8 +212,7 @@ governance_group.add_command(set_max_rewards_distribution_gas)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("gas_value", metavar="gas", type=TokenValueType())
 def set_staking_gas_price(
@@ -263,8 +257,7 @@ governance_group.add_command(set_staking_gas_price)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("base-fee", type=TokenValueType())
 def set_minimum_base_fee(
@@ -309,8 +302,7 @@ governance_group.add_command(set_minimum_base_fee)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("committee-size", type=int)
 def set_committee_size(
@@ -354,8 +346,7 @@ governance_group.add_command(set_committee_size)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("unbonding-period", type=int)
 def set_unbonding_period(
@@ -399,8 +390,7 @@ governance_group.add_command(set_unbonding_period)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("epoch-period", type=int)
 def set_epoch_period(
@@ -444,8 +434,7 @@ governance_group.add_command(set_epoch_period)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("operator-address", type=ChecksumAddressType())
 def set_operator_account(
@@ -489,8 +478,7 @@ governance_group.add_command(set_operator_account)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("treasury-address", type=ChecksumAddressType())
 def set_treasury_account(
@@ -534,8 +522,7 @@ governance_group.add_command(set_treasury_account)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("treasury-fee", type=TokenValueType())
 def set_treasury_fee(
@@ -579,8 +566,7 @@ governance_group.add_command(set_treasury_fee)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_accountability_contract(
@@ -625,8 +611,7 @@ governance_group.add_command(set_accountability_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_oracle_contract(
@@ -670,8 +655,7 @@ governance_group.add_command(set_oracle_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_acu_contract(
@@ -715,8 +699,7 @@ governance_group.add_command(set_acu_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_supply_control_contract(
@@ -761,8 +744,7 @@ governance_group.add_command(set_supply_control_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_stabilization_contract(
@@ -807,8 +789,7 @@ governance_group.add_command(set_stabilization_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address-str", type=ChecksumAddressType())
 def set_inflation_controller_contract(
@@ -853,8 +834,7 @@ governance_group.add_command(set_inflation_controller_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_upgrade_manager_contract(
@@ -899,8 +879,7 @@ governance_group.add_command(set_upgrade_manager_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("contract-address", type=ChecksumAddressType())
 def set_non_stakable_vesting_contract(
@@ -945,8 +924,7 @@ governance_group.add_command(set_non_stakable_vesting_contract)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("amount", type=TokenValueType())
 @argument("recipient", type=ChecksumAddressType(), required=False)
@@ -995,8 +973,7 @@ governance_group.add_command(mint)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("amount", type=ChecksumAddressType())
 @argument("account", type=ChecksumAddressType(), required=False)

@@ -13,8 +13,8 @@ from web3.types import Wei
 
 from ..options import (
     config_option,
-    from_option,
     keyfile_option,
+    keyfile_or_from_option,
     newton_or_token_option,
     rpc_endpoint_option,
     tx_aux_options,
@@ -139,8 +139,7 @@ token_group.add_command(balance_of)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @argument("owner", type=ChecksumAddressType())
 def allowance(
     w3: Web3,
@@ -172,8 +171,7 @@ token_group.add_command(allowance)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("recipient", type=ChecksumAddressType())
 @argument("amount_str", metavar="AMOUNT")
@@ -230,8 +228,7 @@ token_group.add_command(transfer)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("spender", type=ChecksumAddressType())
 @argument("amount_str", metavar="AMOUNT")
@@ -288,8 +285,7 @@ token_group.add_command(approve)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("spender", type=ChecksumAddressType())
 @argument("recipient", type=ChecksumAddressType())

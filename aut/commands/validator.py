@@ -19,8 +19,8 @@ from ..commands.protocol import protocol_group
 from ..constants import UnixExitStatus
 from ..options import (
     config_option,
-    from_option,
     keyfile_option,
+    keyfile_or_from_option,
     rpc_endpoint_option,
     tx_aux_options,
     validator_option,
@@ -98,8 +98,7 @@ validator.add_command(compute_address)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 @argument("amount", type=TokenValueType())
@@ -143,8 +142,7 @@ validator.add_command(bond)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 @argument("amount", type=TokenValueType(), nargs=1)
@@ -188,8 +186,7 @@ validator.add_command(unbond)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @argument("enode")
 @argument("oracle", type=ChecksumAddressType())
@@ -237,8 +234,7 @@ validator.add_command(register)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 def pause(
@@ -283,8 +279,7 @@ validator.add_command(pause)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 def activate(
@@ -329,8 +324,7 @@ validator.add_command(activate)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 @argument("rate", type=str)
@@ -412,8 +406,7 @@ validator.add_command(unclaimed_rewards)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 def claim_rewards(
@@ -457,8 +450,7 @@ validator.add_command(claim_rewards)
 @command()
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_aux_options
 @validator_option
 @argument("enode", nargs=1)

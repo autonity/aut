@@ -22,8 +22,7 @@ from ..logging import log
 from ..options import (
     config_option,
     contract_options,
-    from_option,
-    keyfile_option,
+    keyfile_or_from_option,
     rpc_endpoint_option,
     tx_aux_options,
     tx_value_option,
@@ -80,8 +79,7 @@ def function_call_from_args(
 @command(name="deploy")
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @tx_value_option()
 @tx_aux_options
 @option(
@@ -184,8 +182,7 @@ contract_group.add_command(call_cmd)
 @command(name="tx")
 @config_option
 @rpc_endpoint_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @contract_options
 @tx_value_option()
 @tx_aux_options

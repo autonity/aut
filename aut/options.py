@@ -127,12 +127,13 @@ def newton_or_token_option(fn: Func) -> Func:
     return fn
 
 
-def from_option(fn: Func) -> Func:
+def keyfile_or_from_option(fn: Func) -> Func:
     """
-    Adds the --from, -f option to specify the from field of a
-    transaction. Passed to the from_str parameter.
+    Adds the --from and the --keyfile options to specify the sender of the
+    transaction.
     """
-    return option(
+    fn = keyfile_option()(fn)
+    fn = option(
         "--from",
         "-f",
         "from_",
@@ -140,6 +141,7 @@ def from_option(fn: Func) -> Func:
         metavar="FROM",
         help="The from address (extracted from keyfile if not given).",
     )(fn)
+    return fn
 
 
 def tx_value_option(required: bool = False) -> Decorator:

@@ -19,8 +19,7 @@ from ..commands.account import signtx
 from ..logging import log
 from ..options import (
     config_option,
-    from_option,
-    keyfile_option,
+    keyfile_or_from_option,
     newton_or_token_option,
     rpc_endpoint_option,
     tx_aux_options,
@@ -56,8 +55,7 @@ tx_group.add_command(signtx, name="sign")
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-@keyfile_option()
-@from_option
+@keyfile_or_from_option
 @option(
     "--to", "-t", type=ChecksumAddressType(), help="Address to which tx is directed."
 )
@@ -99,8 +97,7 @@ def make(
     # a node will then receive an error if they do not specify all
     # required values (rather than having Web3.py silently connect).
 
-    # If from_str is not set, take the address from a keyfile instead
-    # (if given)
+    # If from_ is not set, take the address from a keyfile instead (if given)
     from_addr = from_address_from_argument_optional(from_, keyfile)
     log(f"from_addr: {from_addr}")
 
