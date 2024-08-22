@@ -10,8 +10,9 @@ from autonity.erc20 import ERC20
 from autonity.utils.tx import send_tx, wait_for_tx
 from click import ClickException, Path, argument, command, group, option
 from eth_account.account import SignedTransaction
+from eth_typing import ChecksumAddress, HexStr
+from hexbytes import HexBytes
 from web3 import Web3
-from web3.types import HexBytes, HexStr
 
 from ..commands.account import signtx
 from ..logging import log
@@ -24,6 +25,7 @@ from ..options import (
     tx_aux_options,
     tx_value_option,
 )
+from ..param_types import ChecksumAddressType
 from ..utils import (
     create_contract_tx_from_args,
     create_tx_from_args,
@@ -55,7 +57,9 @@ tx_group.add_command(signtx, name="sign")
 @newton_or_token_option
 @keyfile_option()
 @from_option
-@option("--to", "-t", "to_str", help="Address to which tx is directed.")
+@option(
+    "--to", "-t", type=ChecksumAddressType(), help="Address to which tx is directed."
+)
 @tx_value_option(required=True)
 @tx_aux_options
 @option(
@@ -69,10 +73,10 @@ tx_group.add_command(signtx, name="sign")
 def make(
     w3: Web3,
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
     keyfile: Optional[str],
-    from_str: Optional[str],
-    to_str: Optional[str],
+    from_: Optional[ChecksumAddress],
+    to: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -93,10 +97,10 @@ def make(
 
     # If from_str is not set, take the address from a keyfile instead
     # (if given)
-    from_addr = from_address_from_argument_optional(from_str, keyfile)
+    from_addr = from_address_from_argument_optional(from_, keyfile)
     log(f"from_addr: {from_addr}")
 
-    to_addr = Web3.to_checksum_address(to_str) if to_str else None
+    to_addr = to if to else None
 
     if to_addr is None:
         raise ClickException(

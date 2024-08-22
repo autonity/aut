@@ -3,15 +3,16 @@ The `validator` command group.
 """
 
 import sys
-from typing import Optional, cast
+from typing import Optional
 from urllib import parse as urlparse
 
 from autonity.autonity import Autonity
 from autonity.utils.denominations import format_auton_quantity, format_newton_quantity
 from autonity.validator import NodeAddress, OracleAddress, Validator
 from click import argument, command, echo, group, option
+from eth_typing import ChecksumAddress
+from hexbytes import HexBytes
 from web3 import Web3
-from web3.types import HexBytes
 
 from ..commands.protocol import protocol_group
 from ..constants import UnixExitStatus
@@ -23,6 +24,7 @@ from ..options import (
     tx_aux_options,
     validator_option,
 )
+from ..param_types import ChecksumAddressType
 from ..utils import (
     create_contract_tx_from_args,
     from_address_from_argument,
@@ -56,10 +58,9 @@ validator.add_command(
 @config_option
 @rpc_endpoint_option
 @validator_option
-def info(w3: Web3, validator_addr_str: str) -> None:
+def info(w3: Web3, validator_addr: NodeAddress) -> None:
     """Get information about a validator."""
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     aut = Autonity(w3)
     validator_data = aut.get_validator(validator_addr)
     if (
@@ -105,7 +106,7 @@ validator.add_command(compute_address)
 def bond(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -113,19 +114,18 @@ def bond(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
     amount_str: str,
 ) -> None:
     """Create transaction to bond Newton to a validator."""
 
     token_units = parse_newton_value_representation(amount_str)
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
-        function=aut.bond(validator_addr, token_units),
+        function=aut.bond(validator, token_units),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -152,7 +152,7 @@ validator.add_command(bond)
 def unbond(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -160,19 +160,18 @@ def unbond(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
     amount_str: str,
 ) -> None:
     """Create transaction to unbond Newton from a validator."""
 
     token_units = parse_newton_value_representation(amount_str)
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
-        function=aut.unbond(validator_addr, token_units),
+        function=aut.unbond(validator, token_units),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -195,13 +194,13 @@ validator.add_command(unbond)
 @from_option
 @tx_aux_options
 @argument("enode")
-@argument("oracle")
+@argument("oracle", type=ChecksumAddressType())
 @argument("consensus_key")
 @argument("proof")
 def register(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -219,7 +218,7 @@ def register(
     consensus_key_bytes = HexBytes(consensus_key)
     proof_bytes = HexBytes(proof)
 
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     # TODO: validate enode string?
 
     aut = Autonity(w3)
@@ -252,7 +251,7 @@ validator.add_command(register)
 def pause(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -260,20 +259,19 @@ def pause(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
 ) -> None:
     """Create transaction to pause the given validator.
 
     See `pauseValidator` on the Autonity contract.
     """
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
-        function=aut.pause_validator(validator_addr),
+        function=aut.pause_validator(validator),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -299,7 +297,7 @@ validator.add_command(pause)
 def activate(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -307,20 +305,19 @@ def activate(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
 ) -> None:
     """Create transaction to activate a paused validator.
 
     See `activateValidator` on the Autonity contract.
     """
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
-        function=aut.activate_validator(validator_addr),
+        function=aut.activate_validator(validator),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -347,7 +344,7 @@ validator.add_command(activate)
 def change_commission_rate(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -355,7 +352,7 @@ def change_commission_rate(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
     rate: str,
 ) -> None:
     """Create transaction to change the commission rate for the given Validator.
@@ -363,8 +360,7 @@ def change_commission_rate(
     The rate is given as a decimal, and must be no greater than 1 e.g. 3% would be 0.03.
     """
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
 
@@ -372,7 +368,7 @@ def change_commission_rate(
     rate_int = parse_commission_rate(rate, rate_precision)
 
     tx = create_contract_tx_from_args(
-        function=aut.change_commission_rate(validator_addr, rate_int),
+        function=aut.change_commission_rate(validator, rate_int),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,
@@ -394,21 +390,20 @@ validator.add_command(change_commission_rate)
 @keyfile_option()
 @validator_option
 @option("--ntn", is_flag=True, help="Check Newton (NTN) instead of Auton")
-@option("--account", help="Delegator account to check")
+@option("--account", type=ChecksumAddressType(), help="Delegator account to check")
 def unclaimed_rewards(
     w3: Web3,
     keyfile: Optional[str],
     ntn: bool,
-    validator_addr_str: str,
-    account: Optional[str],
+    validator: NodeAddress,
+    account: Optional[ChecksumAddress],
 ) -> None:
     """Check the given validator for unclaimed fees."""
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
     account = from_address_from_argument(account, keyfile)
 
     aut = Autonity(w3)
-    vdesc = aut.get_validator(validator_addr)
+    vdesc = aut.get_validator(validator)
     val = Validator(aut.contract.w3, vdesc)
     unclaimed_atn, unclaimed_ntn = val.unclaimed_rewards(account)
     print(
@@ -431,7 +426,7 @@ validator.add_command(unclaimed_rewards)
 def claim_rewards(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -439,15 +434,14 @@ def claim_rewards(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
 ) -> None:
     """Create transaction to claim rewards from a Validator."""
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
-    vdesc = aut.get_validator(validator_addr)
+    vdesc = aut.get_validator(validator)
     val = Validator(w3, vdesc)
 
     tx = create_contract_tx_from_args(
@@ -478,7 +472,7 @@ validator.add_command(claim_rewards)
 def update_enode(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -486,7 +480,7 @@ def update_enode(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    validator_addr_str: str,
+    validator: NodeAddress,
     enode: str,
 ) -> None:
     """Update the enode of a registered validator.
@@ -496,13 +490,12 @@ def update_enode(
     (pubkey part of the enode).
     """
 
-    validator_addr = cast(NodeAddress, Web3.to_checksum_address(validator_addr_str))
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
-        function=aut.update_enode(validator_addr, enode),
+        function=aut.update_enode(validator, enode),
         from_addr=from_addr,
         gas=gas,
         gas_price=gas_price,

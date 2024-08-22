@@ -6,7 +6,7 @@ from typing import Optional
 
 from autonity import Autonity
 from click import argument, command, group
-from eth_utils import to_checksum_address
+from eth_typing import ChecksumAddress
 from web3 import Web3
 
 from ..options import (
@@ -23,6 +23,7 @@ from ..utils import (
     parse_wei_representation,
     to_json,
 )
+from ..param_types import ChecksumAddressType
 
 
 @group(name="governance")
@@ -40,7 +41,7 @@ def governance_group() -> None:
 def set_max_bond_applied_gas(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -57,7 +58,7 @@ def set_max_bond_applied_gas(
     """
 
     gas_value = parse_wei_representation(gas_value_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -87,7 +88,7 @@ governance_group.add_command(set_max_bond_applied_gas)
 def set_max_unbond_applied_gas(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -104,7 +105,7 @@ def set_max_unbond_applied_gas(
     """
 
     gas_value = parse_wei_representation(gas_value_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -134,7 +135,7 @@ governance_group.add_command(set_max_unbond_applied_gas)
 def set_max_unbond_released_gas(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -151,7 +152,7 @@ def set_max_unbond_released_gas(
     """
 
     gas_value = parse_wei_representation(gas_value_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -181,7 +182,7 @@ governance_group.add_command(set_max_unbond_released_gas)
 def set_max_rewards_distribution_gas(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -198,7 +199,7 @@ def set_max_rewards_distribution_gas(
     """
 
     gas_value = parse_wei_representation(gas_value_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -228,7 +229,7 @@ governance_group.add_command(set_max_rewards_distribution_gas)
 def set_staking_gas_price(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -245,7 +246,7 @@ def set_staking_gas_price(
     """
 
     gas_value = parse_wei_representation(gas_value_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -275,7 +276,7 @@ governance_group.add_command(set_staking_gas_price)
 def set_minimum_base_fee(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -292,7 +293,7 @@ def set_minimum_base_fee(
     """
 
     base_fee = parse_wei_representation(base_fee_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -322,7 +323,7 @@ governance_group.add_command(set_minimum_base_fee)
 def set_committee_size(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -337,7 +338,7 @@ def set_committee_size(
     Restricted to the Operator account. See `setCommitteeSize` on Autonity contract.
     """
 
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -367,7 +368,7 @@ governance_group.add_command(set_committee_size)
 def set_unbonding_period(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -382,7 +383,7 @@ def set_unbonding_period(
     Restricted to the Operator account. See `setUnbondingPeriod` on Autonity contract.
     """
 
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -412,7 +413,7 @@ governance_group.add_command(set_unbonding_period)
 def set_epoch_period(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -427,7 +428,7 @@ def set_epoch_period(
     Restricted to the Operator account. See `setEpochPeriod` on Autonity contract.
     """
 
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -453,11 +454,11 @@ governance_group.add_command(set_epoch_period)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("operator-address-str", metavar="OPERATOR-ADDRESS", nargs=1)
+@argument("operator-address", type=ChecksumAddressType(), nargs=1)
 def set_operator_account(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -465,15 +466,14 @@ def set_operator_account(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    operator_address_str: str,
+    operator_address: ChecksumAddress,
 ) -> None:
     """Set the Operator account.
 
     Restricted to the Operator account. See `setOperatorAccount` on Autonity contract.
     """
 
-    operator_address = to_checksum_address(operator_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -499,11 +499,11 @@ governance_group.add_command(set_operator_account)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("treasury-address-str", metavar="treasury-address", nargs=1)
+@argument("treasury-address", type=ChecksumAddressType(), nargs=1)
 def set_treasury_account(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -511,15 +511,14 @@ def set_treasury_account(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    treasury_address_str: str,
+    treasury_address: ChecksumAddress,
 ) -> None:
     """Set the global treasury account.
 
     Restricted to the Operator account. See `setTreasuryAccount` on Autonity contract.
     """
 
-    treasury_address = to_checksum_address(treasury_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -549,7 +548,7 @@ governance_group.add_command(set_treasury_account)
 def set_treasury_fee(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -565,7 +564,7 @@ def set_treasury_fee(
     """
 
     treasury_fee = parse_wei_representation(treasury_fee_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -591,11 +590,11 @@ governance_group.add_command(set_treasury_fee)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_accountability_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -603,7 +602,7 @@ def set_accountability_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the Accountability Contract address.
 
@@ -611,8 +610,7 @@ def set_accountability_contract(
     See `setAccountabilityContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -638,11 +636,11 @@ governance_group.add_command(set_accountability_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_oracle_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -650,15 +648,14 @@ def set_oracle_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the Oracle Contract address.
 
     Restricted to the Operator account. See `setOracleContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -684,11 +681,11 @@ governance_group.add_command(set_oracle_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_acu_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -696,15 +693,14 @@ def set_acu_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the ACU Contract address.
 
     Restricted to the Operator account. See `setAcuContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -730,11 +726,11 @@ governance_group.add_command(set_acu_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_supply_control_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -742,7 +738,7 @@ def set_supply_control_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the Supply Control Contract address.
 
@@ -750,8 +746,7 @@ def set_supply_control_contract(
     See `setSupplyControlContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -777,11 +772,11 @@ governance_group.add_command(set_supply_control_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_stabilization_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -789,7 +784,7 @@ def set_stabilization_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the Supply Control Contract address.
 
@@ -797,8 +792,7 @@ def set_stabilization_contract(
     See `setSupplyControlContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -824,11 +818,11 @@ governance_group.add_command(set_stabilization_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address-str", type=ChecksumAddressType(), nargs=1)
 def set_inflation_controller_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -836,7 +830,7 @@ def set_inflation_controller_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the inflation controller contract address.
 
@@ -844,8 +838,7 @@ def set_inflation_controller_contract(
     See `setInflationControllerContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -871,11 +864,11 @@ governance_group.add_command(set_inflation_controller_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_upgrade_manager_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -883,7 +876,7 @@ def set_upgrade_manager_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the upgrade manager contract address.
 
@@ -891,8 +884,7 @@ def set_upgrade_manager_contract(
     See `setUpgradeManagerContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -918,11 +910,11 @@ governance_group.add_command(set_upgrade_manager_contract)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("contract-address-str", metavar="CONTRACT-ADDRESS", nargs=1)
+@argument("contract-address", type=ChecksumAddressType(), nargs=1)
 def set_non_stakable_vesting_contract(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -930,7 +922,7 @@ def set_non_stakable_vesting_contract(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    contract_address_str: str,
+    contract_address: ChecksumAddress,
 ) -> None:
     """Set the non stakable vesting contract address.
 
@@ -938,8 +930,7 @@ def set_non_stakable_vesting_contract(
     See `setNonStakableVestingContract` on Autonity contract.
     """
 
-    contract_address = to_checksum_address(contract_address_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(
@@ -966,11 +957,11 @@ governance_group.add_command(set_non_stakable_vesting_contract)
 @from_option
 @tx_aux_options
 @argument("amount-str", metavar="AMOUNT", nargs=1)
-@argument("recipient-str", metavar="RECIPIENT", required=False)
+@argument("recipient", type=ChecksumAddressType(), required=False)
 def mint(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -979,7 +970,7 @@ def mint(
     nonce: Optional[int],
     chain_id: Optional[int],
     amount_str: str,
-    recipient_str: Optional[str],
+    recipient: Optional[ChecksumAddress],
 ) -> None:
     """Mint new stake token (NTN) and add it to the recipient balance.
 
@@ -988,8 +979,8 @@ def mint(
     """
 
     token_units = parse_newton_value_representation(amount_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
-    recipient = to_checksum_address(recipient_str) if recipient_str else from_addr
+    from_addr = from_address_from_argument(from_, keyfile)
+    recipient = recipient if recipient else from_addr
 
     aut = Autonity(w3)
 
@@ -1017,11 +1008,11 @@ governance_group.add_command(mint)
 @from_option
 @tx_aux_options
 @argument("amount-str", metavar="AMOUNT")
-@argument("account-str", metavar="ACCOUNT", required=False)
+@argument("account", type=ChecksumAddressType(), required=False)
 def burn(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -1030,7 +1021,7 @@ def burn(
     nonce: Optional[int],
     chain_id: Optional[int],
     amount_str: str,
-    account_str: Optional[str],
+    account: Optional[ChecksumAddress],
 ) -> None:
     """Burn the specified amount of NTN stake token from an account.
 
@@ -1040,8 +1031,8 @@ def burn(
     """
 
     token_units = parse_newton_value_representation(amount_str)
-    from_addr = from_address_from_argument(from_str, keyfile)
-    account = to_checksum_address(account_str) if account_str else from_addr
+    from_addr = from_address_from_argument(from_, keyfile)
+    account = account if account else from_addr
     aut = Autonity(w3)
 
     tx = create_contract_tx_from_args(

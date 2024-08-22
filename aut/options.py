@@ -8,7 +8,7 @@ from typing import Any, Callable, TypeVar
 from click import Path, option
 
 from .config import config_file, read_defaults_from_config
-from .param_types import RPCEndpoint
+from .param_types import ChecksumAddressType, RPCEndpointType
 
 Func = TypeVar("Func", bound=Callable[..., Any])
 
@@ -40,7 +40,7 @@ def rpc_endpoint_option(fn: Func) -> Func:
         "--rpc-endpoint",
         "-r",
         "w3",
-        type=RPCEndpoint(),
+        type=RPCEndpointType(),
         metavar="URL",
         help="RPC endpoint.",
         required=True,
@@ -120,6 +120,7 @@ def newton_or_token_option(fn: Func) -> Func:
     fn = option(
         "--token",
         "-t",
+        type=ChecksumAddressType(),
         metavar="TOKEN-ADDR",
         help="Use the ERC20 token at the given address.",
     )(fn)
@@ -134,7 +135,8 @@ def from_option(fn: Func) -> Func:
     return option(
         "--from",
         "-f",
-        "from_str",
+        "from_",
+        type=ChecksumAddressType(),
         metavar="FROM",
         help="The from address (extracted from keyfile if not given).",
     )(fn)
@@ -221,7 +223,7 @@ def validator_option(fn: Func) -> Func:
     return option(
         "--validator",
         "-V",
-        "validator_addr_str",
+        type=ChecksumAddressType(),
         help="Validator address.",
         required=True,
     )(fn)
@@ -234,13 +236,12 @@ def contract_options(fn: Func) -> Func:
     """
     fn = option(
         "--address",
-        "contract_address_str",
+        type=ChecksumAddressType(),
         help="Contract address.",
         required=True,
     )(fn)
     fn = option(
         "--abi",
-        "contract_abi_path",
         type=Path(exists=True),
         help="Contract ABI file.",
         required=True,

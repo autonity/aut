@@ -10,7 +10,6 @@ from decimal import Decimal
 from typing import Any, Dict, Mapping, Optional, Sequence, Tuple, TypeVar, Union, cast
 
 from autonity import Autonity
-from autonity.abi_manager import ABIManager
 from autonity.utils.denominations import NEWTON_DECIMALS
 from autonity.utils.keyfile import get_address_from_keyfile, load_keyfile
 from autonity.utils.tx import (
@@ -18,18 +17,12 @@ from autonity.utils.tx import (
     create_transaction,
     finalize_transaction,
 )
+from eth_typing import ChecksumAddress
 from click import ClickException
+from hexbytes import HexBytes
 from web3 import Web3
 from web3.contract.contract import ContractFunction
-from web3.types import (
-    ABI,
-    BlockIdentifier,
-    ChecksumAddress,
-    HexBytes,
-    Nonce,
-    TxParams,
-    Wei,
-)
+from web3.types import BlockIdentifier, Nonce, TxParams, Wei
 
 from .constants import AutonDenoms
 from .logging import log
@@ -43,7 +36,7 @@ V = TypeVar("V")
 
 
 def from_address_from_argument_optional(
-    from_str: Optional[str], keyfile: Optional[str]
+    from_addr: Optional[ChecksumAddress], keyfile: Optional[str]
 ) -> Optional[ChecksumAddress]:
     """
     Given an optional command line parameter, create an address,
@@ -51,11 +44,7 @@ def from_address_from_argument_optional(
     neither is given.
     """
 
-    # If from_str is not set, take the address from a keyfile instead
-    # (if given)
-    if from_str:
-        from_addr: Optional[ChecksumAddress] = Web3.to_checksum_address(from_str)
-    else:
+    if not from_addr:
         log("no from-addr given.  attempting to extract from keyfile")
         if keyfile:
             key_data = load_keyfile(keyfile)
@@ -69,14 +58,14 @@ def from_address_from_argument_optional(
 
 
 def from_address_from_argument(
-    from_str: Optional[str], keyfile: Optional[str]
+    from_addr: Optional[ChecksumAddress], keyfile: Optional[str]
 ) -> ChecksumAddress:
     """
     Given an optional command line parameter, create an address,
     falling back to the keyfile given in the config.  Throws a
     ClickException if the address cannot be determined.
     """
-    from_addr = from_address_from_argument_optional(from_str, keyfile)
+    from_addr = from_address_from_argument_optional(from_addr, keyfile)
     if from_addr:
         return from_addr
 
@@ -275,15 +264,6 @@ def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:
     return addr_keyfile_dict
 
 
-def to_checksum_address(address: str) -> ChecksumAddress:
-    """
-    Take a blockchain address as string, convert the string into
-    an EIP55 checksum address and return that.
-    """
-    checksum_address = Web3.to_checksum_address(address)
-    return checksum_address
-
-
 def to_json(data: Union[Mapping[str, V], Sequence[V]], pretty: bool = False) -> str:
     """
     Take python data structure, return json formatted data.
@@ -372,7 +352,7 @@ def load_from_file_or_stdin_line(filename: str) -> str:
 
 
 def newton_or_token_to_address(
-    ntn: bool, token: Optional[str]
+    ntn: bool, token: Optional[ChecksumAddress]
 ) -> Optional[ChecksumAddress]:
     """
     Intended to be used in conjunction with the `newton_or_token`
@@ -391,13 +371,13 @@ def newton_or_token_to_address(
         return Autonity.address()
 
     if token:
-        return Web3.to_checksum_address(token)
+        return token
 
     return None
 
 
 def newton_or_token_to_address_require(
-    ntn: bool, token: Optional[str]
+    ntn: bool, token: Optional[ChecksumAddress]
 ) -> ChecksumAddress:
     """
     Similar to newton_or_token_address, but thrown an error if neither
@@ -441,20 +421,6 @@ def new_keyfile_from_options(
         raise ClickException(f"Refusing to overwrite existing keyfile {keyfile}")
 
     return keyfile
-
-
-def contract_address_and_abi_from_args(
-    contract_address_str: str, contract_abi_path: str
-) -> Tuple[ChecksumAddress, ABI]:
-    """
-    Extract the address and ABI of a contract, given the command line
-    args.  If arguments are not given, fall back to entries in the
-    config file, otherwise raise an error.
-    """
-
-    contract_address = Web3.to_checksum_address(contract_address_str)
-    contract_abi = ABIManager.load_abi_file(contract_abi_path)
-    return contract_address, contract_abi
 
 
 def parse_commission_rate(rate_str: str, rate_precision: int) -> int:

@@ -5,6 +5,7 @@ The `contract` command group
 import json
 from typing import List, Optional, Tuple, cast
 
+from autonity.abi_manager import ABIManager
 from autonity.abi_parser import (
     find_abi_constructor,
     find_abi_function,
@@ -12,6 +13,7 @@ from autonity.abi_parser import (
     parse_return_value,
 )
 from click import ClickException, Path, argument, command, group, option
+from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.contract.contract import ContractFunction
 
@@ -26,7 +28,6 @@ from ..options import (
     tx_value_option,
 )
 from ..utils import (
-    contract_address_and_abi_from_args,
     create_contract_tx_from_args,
     finalize_tx_from_args,
     from_address_from_argument,
@@ -45,8 +46,8 @@ def contract_group() -> None:
 
 def function_call_from_args(
     w3: Web3,
-    contract_address_str: str,
-    contract_abi_path: str,
+    address: ChecksumAddress,
+    abi_path: str,
     method: str,
     parameters: List[str],
 ) -> Tuple:
@@ -61,9 +62,7 @@ def function_call_from_args(
     log(f"method: {method}")
     log(f"parameters: {list(parameters)}")
 
-    address, abi = contract_address_and_abi_from_args(
-        contract_address_str, contract_abi_path
-    )
+    abi = ABIManager.load_abi_file(abi_path)
 
     abi_fn = find_abi_function(abi, method)
     fn_params = parse_arguments(abi_fn, parameters)
@@ -95,7 +94,7 @@ def function_call_from_args(
 def deploy_cmd(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     contract_path: str,
     gas: Optional[str],
     gas_price: Optional[str],
@@ -126,7 +125,7 @@ def deploy_cmd(
     log(f"fn_params (parsed): {fn_params}")
     deploy_fn = cast(ContractFunction, contract.constructor(*fn_params))
 
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     deploy_tx = create_contract_tx_from_args(
         function=deploy_fn,
@@ -158,8 +157,8 @@ contract_group.add_command(deploy_cmd)
 @argument("parameters", nargs=-1)
 def call_cmd(
     w3: Web3,
-    contract_address_str: str,
-    contract_abi_path: str,
+    address: ChecksumAddress,
+    abi: str,
     method: str,
     parameters: List[str],
 ) -> None:
@@ -167,8 +166,8 @@ def call_cmd(
 
     function, abi_fn = function_call_from_args(
         w3,
-        contract_address_str,
-        contract_abi_path,
+        address,
+        abi,
         method,
         parameters,
     )
@@ -194,9 +193,9 @@ contract_group.add_command(call_cmd)
 def tx_cmd(
     w3: Web3,
     keyfile: Optional[str],
-    from_str: Optional[str],
-    contract_address_str: str,
-    contract_abi_path: str,
+    from_: Optional[ChecksumAddress],
+    address: ChecksumAddress,
+    abi: str,
     method: str,
     parameters: List[str],
     gas: Optional[str],
@@ -216,13 +215,13 @@ def tx_cmd(
 
     function, _ = function_call_from_args(
         w3,
-        contract_address_str,
-        contract_abi_path,
+        address,
+        abi,
         method,
         parameters,
     )
 
-    from_addr = from_address_from_argument(from_str, keyfile)
+    from_addr = from_address_from_argument(from_, keyfile)
     log(f"from_addr: {from_addr}")
 
     tx = create_contract_tx_from_args(

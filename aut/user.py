@@ -15,11 +15,11 @@ from autonity.utils.denominations import (
     format_auton_quantity,
     format_newton_quantity,
 )
+from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.types import (
     BlockData,
     BlockIdentifier,
-    ChecksumAddress,
 )
 
 

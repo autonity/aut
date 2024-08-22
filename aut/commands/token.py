@@ -7,6 +7,7 @@ from typing import Optional
 from autonity.erc20 import ERC20
 from autonity.utils.denominations import format_quantity
 from click import ClickException, argument, command, group
+from eth_typing import ChecksumAddress
 from web3 import Web3
 
 from ..options import (
@@ -17,6 +18,7 @@ from ..options import (
     rpc_endpoint_option,
     tx_aux_options,
 )
+from ..param_types import ChecksumAddressType
 from ..utils import (
     create_contract_tx_from_args,
     from_address_from_argument,
@@ -38,7 +40,7 @@ def token_group() -> None:
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def name(w3: Web3, ntn: bool, token: Optional[str]) -> None:
+def name(w3: Web3, ntn: bool, token: Optional[ChecksumAddress]) -> None:
     """Returns the token name (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -56,7 +58,7 @@ token_group.add_command(name)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def symbol(w3: Web3, ntn: bool, token: Optional[str]) -> None:
+def symbol(w3: Web3, ntn: bool, token: Optional[ChecksumAddress]) -> None:
     """Returns the token symbol (if available)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -74,7 +76,7 @@ token_group.add_command(symbol)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def decimals(w3: Web3, ntn: bool, token: Optional[str]) -> None:
+def decimals(w3: Web3, ntn: bool, token: Optional[ChecksumAddress]) -> None:
     """Returns the number of decimals used in the token balances."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -89,7 +91,7 @@ token_group.add_command(decimals)
 @config_option
 @rpc_endpoint_option
 @newton_or_token_option
-def total_supply(w3: Web3, ntn: bool, token: Optional[str]) -> None:
+def total_supply(w3: Web3, ntn: bool, token: Optional[ChecksumAddress]) -> None:
     """Total supply (in units of whole Tokens)."""
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
@@ -107,13 +109,13 @@ token_group.add_command(total_supply)
 @rpc_endpoint_option
 @newton_or_token_option
 @keyfile_option()
-@argument("account_str", metavar="ACCOUNT", required=False)
+@argument("account", type=ChecksumAddressType(), required=False)
 def balance_of(
     w3: Web3,
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
     keyfile: Optional[str],
-    account_str: Optional[str],
+    account: Optional[ChecksumAddress],
 ) -> None:
     """Returns the balance in tokens of an account.
 
@@ -121,7 +123,7 @@ def balance_of(
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    account_addr = from_address_from_argument(account_str, keyfile)
+    account_addr = from_address_from_argument(account, keyfile)
 
     erc = ERC20(w3, token_addresss)
     balance = erc.balance_of(account_addr)
@@ -138,14 +140,14 @@ token_group.add_command(balance_of)
 @newton_or_token_option
 @keyfile_option()
 @from_option
-@argument("owner")
+@argument("owner", type=ChecksumAddressType())
 def allowance(
     w3: Web3,
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
     keyfile: Optional[str],
-    from_str: Optional[str],
-    owner: str,
+    from_: Optional[ChecksumAddress],
+    owner: ChecksumAddress,
 ) -> None:
     """Returns the quantity in tokens that an owner has granted the caller permission
     to spend.
@@ -154,11 +156,10 @@ def allowance(
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, keyfile)
-    owner_addr = Web3.to_checksum_address(owner)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     erc = ERC20(w3, token_addresss)
-    token_allowance = erc.allowance(owner_addr, from_addr)
+    token_allowance = erc.allowance(owner, from_addr)
     token_decimals = erc.decimals()
     print(format_quantity(token_allowance, token_decimals))
 
@@ -173,14 +174,14 @@ token_group.add_command(allowance)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("recipient_str", metavar="RECIPIENT")
+@argument("recipient", type=ChecksumAddressType())
 @argument("amount_str", metavar="AMOUNT")
 def transfer(
     w3: Web3,
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -188,7 +189,7 @@ def transfer(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    recipient_str: str,
+    recipient: ChecksumAddress,
     amount_str: str,
 ) -> None:
     """
@@ -198,15 +199,14 @@ def transfer(
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, keyfile)
-    recipient_addr = Web3.to_checksum_address(recipient_str)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     erc = ERC20(w3, token_addresss)
 
     token_decimals = erc.decimals()
     amount = parse_token_value_representation(amount_str, token_decimals)
 
-    function_call = erc.transfer(recipient_addr, amount)
+    function_call = erc.transfer(recipient, amount)
     tx = create_contract_tx_from_args(
         function=function_call,
         from_addr=from_addr,
@@ -232,14 +232,14 @@ token_group.add_command(transfer)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("spender_str", metavar="SPENDER")
+@argument("spender", type=ChecksumAddressType())
 @argument("amount_str", metavar="AMOUNT")
 def approve(
     w3: Web3,
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -247,7 +247,7 @@ def approve(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    spender_str: str,
+    spender: ChecksumAddress,
     amount_str: str,
 ) -> None:
     """Create a transaction granting a spender permission to spend tokens.
@@ -257,8 +257,7 @@ def approve(
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, keyfile)
-    spender = Web3.to_checksum_address(spender_str)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     erc = ERC20(w3, token_addresss)
 
@@ -291,15 +290,15 @@ token_group.add_command(approve)
 @keyfile_option()
 @from_option
 @tx_aux_options
-@argument("spender_str", metavar="SPENDER")
-@argument("recipient_str", metavar="RECIPIENT")
+@argument("spender", type=ChecksumAddressType())
+@argument("recipient", type=ChecksumAddressType())
 @argument("amount_str", metavar="AMOUNT")
 def transfer_from(
     w3: Web3,
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     gas: Optional[str],
     gas_price: Optional[str],
     max_priority_fee_per_gas: Optional[str],
@@ -307,8 +306,8 @@ def transfer_from(
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
-    spender_str: str,
-    recipient_str: str,
+    spender: ChecksumAddress,
+    recipient: ChecksumAddress,
     amount_str: str,
 ) -> None:
     """Create a transaction transferring tokens.
@@ -320,9 +319,7 @@ def transfer_from(
     """
 
     token_addresss = newton_or_token_to_address_require(ntn, token)
-    from_addr = from_address_from_argument(from_str, keyfile)
-    spender = Web3.to_checksum_address(spender_str)
-    recipient = Web3.to_checksum_address(recipient_str)
+    from_addr = from_address_from_argument(from_, keyfile)
 
     erc = ERC20(w3, token_addresss)
 

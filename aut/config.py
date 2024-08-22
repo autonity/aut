@@ -17,11 +17,8 @@ CONFIG_FILE_NAME = "autrc"
 CONFIG_SECTION_NAME = "aut"
 ENV_VAR_PREFIX = "AUT_"
 OPTION_ALIASES = {
-    "abi": "contract_abi_path",
-    "address": "contract_address_str",
-    "from": "from_str",
+    "from": "from_",
     "rpc_endpoint": "w3",
-    "validator": "validator_addr_str",
 }
 
 _config: Optional[Dict[str, Any]] = None

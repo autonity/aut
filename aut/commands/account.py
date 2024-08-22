@@ -23,6 +23,7 @@ from autonity.utils.tx import sign_tx
 from click import ClickException, Path, argument, command, group, option
 from eth_account import Account
 from eth_account.messages import encode_defunct
+from eth_typing import ChecksumAddress
 from hexbytes import HexBytes
 from web3 import Web3
 from web3.types import BlockIdentifier
@@ -38,6 +39,7 @@ from ..options import (
     newton_or_token_option,
     rpc_endpoint_option,
 )
+from ..param_types import ChecksumAddressType
 from ..user import get_account_stats
 from ..utils import (
     address_keyfile_dict,
@@ -119,14 +121,14 @@ account_group.add_command(info)
 @argument("account_str", metavar="ACCOUNT", default="")
 def balance(
     w3: Web3,
-    account_str: Optional[str],
+    account: Optional[ChecksumAddress],
     keyfile: Optional[str],
     ntn: bool,
-    token: Optional[str],
+    token: Optional[ChecksumAddress],
 ) -> None:
     """Print the current balance of the given account."""
 
-    account_addr = from_address_from_argument_optional(account_str, keyfile)
+    account_addr = from_address_from_argument_optional(account, keyfile)
     if not account_addr:
         raise ClickException(
             "Could not determine account address from argument or keyfile"
@@ -158,11 +160,13 @@ account_group.add_command(balance)
 @config_option
 @rpc_endpoint_option
 @keyfile_option()
-@argument("account_str", metavar="ACCOUNT", default="")
-def lntn_balances(w3: Web3, account_str: Optional[str], keyfile: Optional[str]) -> None:
+@argument("account", type=ChecksumAddressType(), required=False)
+def lntn_balances(
+    w3: Web3, account: Optional[ChecksumAddress], keyfile: Optional[str]
+) -> None:
     """Print all Liquid Newton balances of the given account."""
 
-    account_addr = from_address_from_argument_optional(account_str, keyfile)
+    account_addr = from_address_from_argument_optional(account, keyfile)
     if not account_addr:
         raise ClickException(
             "Could not determine account address from argument or keyfile"
@@ -397,7 +401,7 @@ account_group.add_command(sign_message)
 )
 def verify_signature(
     keyfile: Optional[str],
-    from_str: Optional[str],
+    from_: Optional[ChecksumAddress],
     use_message_file: bool,
     message: str,
     signature_file: str,
@@ -417,7 +421,7 @@ def verify_signature(
         signature_hex = signature_f.read().rstrip()
         signature = HexBytes(signature_hex)
 
-    from_addr = from_address_from_argument_optional(from_str, keyfile)
+    from_addr = from_address_from_argument_optional(from_, keyfile)
 
     recovered_addr = Account().recover_message(
         encode_defunct(text=message), signature=signature
