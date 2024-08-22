@@ -9,6 +9,7 @@ from autonity.utils.denominations import format_quantity
 from click import ClickException, argument, command, group
 from eth_typing import ChecksumAddress
 from web3 import Web3
+from web3.types import Wei
 
 from ..options import (
     config_option,
@@ -18,7 +19,7 @@ from ..options import (
     rpc_endpoint_option,
     tx_aux_options,
 )
-from ..param_types import ChecksumAddressType
+from ..param_types import ChecksumAddressType, TokenValueType
 from ..utils import (
     create_contract_tx_from_args,
     from_address_from_argument,
@@ -182,10 +183,10 @@ def transfer(
     token: Optional[ChecksumAddress],
     keyfile: Optional[str],
     from_: Optional[ChecksumAddress],
-    gas: Optional[str],
-    gas_price: Optional[str],
-    max_priority_fee_per_gas: Optional[str],
-    max_fee_per_gas: Optional[str],
+    gas: Optional[int],
+    gas_price: Optional[Wei],
+    max_priority_fee_per_gas: Optional[Wei],
+    max_fee_per_gas: Optional[Wei],
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
@@ -198,10 +199,10 @@ def transfer(
     AMOUNT may be fractional if the token supports it.
     """
 
-    token_addresss = newton_or_token_to_address_require(ntn, token)
+    token_address = newton_or_token_to_address_require(ntn, token)
     from_addr = from_address_from_argument(from_, keyfile)
 
-    erc = ERC20(w3, token_addresss)
+    erc = ERC20(w3, token_address)
 
     token_decimals = erc.decimals()
     amount = parse_token_value_representation(amount_str, token_decimals)
@@ -240,10 +241,10 @@ def approve(
     token: Optional[ChecksumAddress],
     keyfile: Optional[str],
     from_: Optional[ChecksumAddress],
-    gas: Optional[str],
-    gas_price: Optional[str],
-    max_priority_fee_per_gas: Optional[str],
-    max_fee_per_gas: Optional[str],
+    gas: Optional[int],
+    gas_price: Optional[Wei],
+    max_priority_fee_per_gas: Optional[Wei],
+    max_fee_per_gas: Optional[Wei],
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],
@@ -299,10 +300,10 @@ def transfer_from(
     token: Optional[ChecksumAddress],
     keyfile: Optional[str],
     from_: Optional[ChecksumAddress],
-    gas: Optional[str],
-    gas_price: Optional[str],
-    max_priority_fee_per_gas: Optional[str],
-    max_fee_per_gas: Optional[str],
+    gas: Optional[int],
+    gas_price: Optional[Wei],
+    max_priority_fee_per_gas: Optional[Wei],
+    max_fee_per_gas: Optional[Wei],
     fee_factor: Optional[float],
     nonce: Optional[int],
     chain_id: Optional[int],

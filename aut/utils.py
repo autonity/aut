@@ -7,10 +7,9 @@ import os
 import sys
 from datetime import datetime, timezone
 from decimal import Decimal
-from typing import Any, Dict, Mapping, Optional, Sequence, Tuple, TypeVar, Union, cast
+from typing import Any, Dict, Mapping, Optional, Sequence, TypeVar, Union, cast
 
 from autonity import Autonity
-from autonity.utils.denominations import NEWTON_DECIMALS
 from autonity.utils.keyfile import get_address_from_keyfile, load_keyfile
 from autonity.utils.tx import (
     create_contract_function_transaction,
@@ -77,11 +76,11 @@ def create_tx_from_args(
     from_addr: Optional[ChecksumAddress] = None,
     to_addr: Optional[ChecksumAddress] = None,
     value: Optional[str] = None,
-    data: Optional[str] = None,
-    gas: Optional[str] = None,
-    gas_price: Optional[str] = None,
-    max_fee_per_gas: Optional[str] = None,
-    max_priority_fee_per_gas: Optional[str] = None,
+    data: Optional[HexBytes] = None,
+    gas: Optional[int] = None,
+    gas_price: Optional[Wei] = None,
+    max_fee_per_gas: Optional[Wei] = None,
+    max_priority_fee_per_gas: Optional[Wei] = None,
     fee_factor: Optional[float] = None,
     nonce: Optional[int] = None,
     chain_id: Optional[int] = None,
@@ -94,25 +93,19 @@ def create_tx_from_args(
     if fee_factor:
         block_number = w3.eth.block_number
         block_data = w3.eth.get_block(block_number)
-        max_fee_per_gas = str(Wei(int(float(block_data["baseFeePerGas"]) * fee_factor)))
+        max_fee_per_gas = Wei(int(float(block_data["baseFeePerGas"]) * fee_factor))
 
     try:
         return create_transaction(
             from_addr=from_addr,
             to_addr=to_addr,
             value=parse_wei_representation(value) if value else None,
-            data=HexBytes(data) if data else None,
-            gas=parse_wei_representation(gas) if gas else None,
-            gas_price=parse_wei_representation(gas_price) if gas_price else None,
-            max_fee_per_gas=(
-                parse_wei_representation(max_fee_per_gas) if max_fee_per_gas else None
-            ),
-            max_priority_fee_per_gas=(
-                parse_wei_representation(max_priority_fee_per_gas)
-                if max_priority_fee_per_gas
-                else None
-            ),
-            nonce=Nonce(nonce) if nonce else None,
+            data=data,
+            gas=cast(Wei, gas),
+            gas_price=gas_price,
+            max_fee_per_gas=max_fee_per_gas,
+            max_priority_fee_per_gas=max_priority_fee_per_gas,
+            nonce=cast(Nonce, nonce),
             chain_id=chain_id,
         )
     except ValueError as err:
@@ -134,11 +127,11 @@ def finalize_tx_from_args(
 def create_contract_tx_from_args(
     function: ContractFunction,
     from_addr: ChecksumAddress,
-    value: Optional[str] = None,
-    gas: Optional[str] = None,
-    gas_price: Optional[str] = None,
-    max_fee_per_gas: Optional[str] = None,
-    max_priority_fee_per_gas: Optional[str] = None,
+    value: Optional[Wei] = None,
+    gas: Optional[int] = None,
+    gas_price: Optional[Wei] = None,
+    max_fee_per_gas: Optional[Wei] = None,
+    max_priority_fee_per_gas: Optional[Wei] = None,
     fee_factor: Optional[float] = None,
     nonce: Optional[int] = None,
     chain_id: Optional[int] = None,
@@ -155,30 +148,20 @@ def create_contract_tx_from_args(
         w3 = function.w3
         block_number = w3.eth.block_number
         block_data = w3.eth.get_block(block_number)
-        # Note, keep this in units of whole Auton.  It will be
-        # converted to Wei below.
-        max_fee_per_gas = str(
-            Decimal(block_data["baseFeePerGas"])
-            * Decimal(fee_factor)
-            / Decimal(pow(10, 18))
+        max_fee_per_gas = Wei(
+            int(Decimal(block_data["baseFeePerGas"]) * Decimal(fee_factor))
         )
 
     try:
         tx = create_contract_function_transaction(
             function=function,
             from_addr=from_addr,
-            value=parse_wei_representation(value) if value else None,
-            gas=parse_wei_representation(gas) if gas else None,
-            gas_price=parse_wei_representation(gas_price) if gas_price else None,
-            max_fee_per_gas=(
-                parse_wei_representation(max_fee_per_gas) if max_fee_per_gas else None
-            ),
-            max_priority_fee_per_gas=(
-                parse_wei_representation(max_priority_fee_per_gas)
-                if max_priority_fee_per_gas
-                else None
-            ),
-            nonce=Nonce(nonce) if nonce else None,
+            value=value,
+            gas=cast(Wei, gas),
+            gas_price=gas_price,
+            max_fee_per_gas=max_fee_per_gas,
+            max_priority_fee_per_gas=max_priority_fee_per_gas,
+            nonce=cast(Nonce, nonce),
             chain_id=chain_id,
         )
         return finalize_transaction(lambda: function.w3, tx, from_addr)
@@ -193,8 +176,8 @@ def parse_wei_representation(wei_str: str) -> Wei:
     denomination suffix (eg '2gwei' represents 2000000000
     wei). Returns an integer representing the value in wei.
 
-    If no suffix is provided, just coerce the string into an
-    integer. If integer coercion fails, throw an exception.
+    If no suffix is provided, it is assumed that the value
+    is provided in whole tokens (ATN/NTN).
     """
 
     def _parse_numerical_part(numerical_part: str, denomination: int) -> int:
@@ -212,10 +195,6 @@ def parse_wei_representation(wei_str: str) -> Wei:
             wei = _parse_numerical_part(wei_str[:-5], AutonDenoms.SZABO_VALUE_IN_WEI)
         elif wei_str.endswith("finney"):
             wei = _parse_numerical_part(wei_str[:-6], AutonDenoms.FINNEY_VALUE_IN_WEI)
-        elif wei_str.endswith("auton"):
-            wei = _parse_numerical_part(wei_str[:-5], AutonDenoms.AUTON_VALUE_IN_WEI)
-        elif wei_str.endswith("aut"):
-            wei = _parse_numerical_part(wei_str[:-3], AutonDenoms.AUTON_VALUE_IN_WEI)
         elif wei_str.endswith("wei") or wei_str.endswith("attoton"):
             wei = _parse_numerical_part(wei_str[:-3], 1)
         else:
@@ -234,13 +213,6 @@ def parse_token_value_representation(value_str: str, decimals: int) -> int:
     tokens.
     """
     return int(Decimal(value_str) * Decimal(pow(10, decimals)))
-
-
-def parse_newton_value_representation(newton_value_str: str) -> int:
-    """
-    Parse a value in NTN into Newton units.
-    """
-    return parse_token_value_representation(newton_value_str, NEWTON_DECIMALS)
 
 
 def address_keyfile_dict(keystore_dir: str) -> Dict[ChecksumAddress, str]:

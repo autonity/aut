@@ -8,7 +8,7 @@ from typing import Any, Callable, TypeVar
 from click import Path, option
 
 from .config import config_file, read_defaults_from_config
-from .param_types import ChecksumAddressType, RPCEndpointType
+from .param_types import ChecksumAddressType, RPCEndpointType, TokenValueType
 
 Func = TypeVar("Func", bound=Callable[..., Any])
 
@@ -152,11 +152,9 @@ def tx_value_option(required: bool = False) -> Decorator:
         return option(
             "--value",
             "-v",
+            type=TokenValueType(),
             required=required,
-            help=(
-                "Value in ATN or whole tokens with units "
-                "(e.g. '0.000000007' and '7gwei' are identical)."
-            ),
+            help="Value in ATN or token units.",
         )(fn)
 
     return decorator
@@ -174,25 +172,31 @@ def tx_aux_options(fn: Callable) -> Callable:
       --chain-id
     """
     fn = option(
-        "--gas", "-g", help="Maximum gas units that can be consumed by the tx."
+        "--gas",
+        "-g",
+        type=int,
+        help="Maximum gas units that can be consumed by the tx.",
     )(fn)
     fn = option(
         "--gas-price",
         "-p",
+        type=TokenValueType(),
         help=(
-            "Value per gas in ATN "
+            "Value per gas in ATN or token units"
             "(legacy, use --max-fee-per-gas and --max-priority-fee-per-gas instead)."
         ),
     )(fn)
     fn = option(
         "--max-fee-per-gas",
         "-F",
-        help="Maximum to pay (in ATN) per gas for the total fee of the tx.",
+        type=TokenValueType(),
+        help="Maximum to pay in ATN or token units per gas for the total fee of the tx.",
     )(fn)
     fn = option(
         "--max-priority-fee-per-gas",
         "-P",
-        help="Maximum to pay (in ATN) per gas as tip to block proposer.",
+        type=TokenValueType(),
+        help="Maximum to pay in ATN or token units per gas as tip to block proposer.",
     )(fn)
     fn = option(
         "--fee-factor",

@@ -359,8 +359,8 @@ protocol_group.add_command(operator)
 @command()
 @config_option
 @rpc_endpoint_option
-@argument("height", type=int, nargs=1)
-@argument("round_", metavar="ROUND", type=int, nargs=1)
+@argument("height", type=int)
+@argument("round_", metavar="ROUND", type=int)
 def proposer(w3: Web3, height: int, round_: int) -> None:
     """Proposer at the given height and round."""
 
@@ -374,7 +374,7 @@ protocol_group.add_command(proposer)
 # @command()
 # @config_option
 # @rpc_endpoint_option
-# @argument("unbonding_id", type=int, nargs=1)
+# @argument("unbonding_id", type=int)
 # def get_unbonding_release_state(w3: Web3, unbonding_id: int) -> None:
 #     """Get the release state of the unbonding request."""
 #     print(Autonity(w3).get_unbonding_release_state(unbonding_id))
@@ -386,7 +386,7 @@ protocol_group.add_command(proposer)
 @command()
 @config_option
 @rpc_endpoint_option
-@argument("unbonding_id", type=int, nargs=1)
+@argument("unbonding_id", type=int)
 def reverting_amount(w3: Web3, unbonding_id: int) -> None:
     """Get the amount of LNTN or NTN bonded when the released unbonding was reverted."""
 
@@ -399,7 +399,7 @@ protocol_group.add_command(reverting_amount)
 @command()
 @config_option
 @rpc_endpoint_option
-@argument("block", type=int, nargs=1)
+@argument("block", type=int)
 def epoch_from_block(w3: Web3, block: int) -> None:
     """Get the epoch of the given block."""
 

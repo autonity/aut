@@ -16,6 +16,7 @@ from click import ClickException, Path, argument, command, group, option
 from eth_typing import ChecksumAddress
 from web3 import Web3
 from web3.contract.contract import ContractFunction
+from web3.types import Wei
 
 from ..logging import log
 from ..options import (
@@ -96,13 +97,13 @@ def deploy_cmd(
     keyfile: Optional[str],
     from_: Optional[ChecksumAddress],
     contract_path: str,
-    gas: Optional[str],
-    gas_price: Optional[str],
-    max_priority_fee_per_gas: Optional[str],
-    max_fee_per_gas: Optional[str],
+    gas: Optional[int],
+    gas_price: Optional[Wei],
+    max_priority_fee_per_gas: Optional[Wei],
+    max_fee_per_gas: Optional[Wei],
     fee_factor: Optional[float],
     nonce: Optional[int],
-    value: Optional[str],
+    value: Optional[Wei],
     chain_id: Optional[int],
     parameters: List[str],
 ) -> None:
@@ -198,13 +199,13 @@ def tx_cmd(
     abi: str,
     method: str,
     parameters: List[str],
-    gas: Optional[str],
-    gas_price: Optional[str],
-    max_priority_fee_per_gas: Optional[str],
-    max_fee_per_gas: Optional[str],
+    gas: Optional[int],
+    gas_price: Optional[Wei],
+    max_priority_fee_per_gas: Optional[Wei],
+    max_fee_per_gas: Optional[Wei],
     fee_factor: Optional[float],
     nonce: Optional[int],
-    value: Optional[str],
+    value: Optional[Wei],
     chain_id: Optional[int],
 ) -> None:
     """Create a transaction which calls the given contract method, passing any

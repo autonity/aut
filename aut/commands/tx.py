@@ -13,6 +13,7 @@ from eth_account.account import SignedTransaction
 from eth_typing import ChecksumAddress, HexStr
 from hexbytes import HexBytes
 from web3 import Web3
+from web3.types import Wei
 
 from ..commands.account import signtx
 from ..logging import log
@@ -25,7 +26,7 @@ from ..options import (
     tx_aux_options,
     tx_value_option,
 )
-from ..param_types import ChecksumAddressType
+from ..param_types import ChecksumAddressType, HexBytesType
 from ..utils import (
     create_contract_tx_from_args,
     create_tx_from_args,
@@ -63,7 +64,10 @@ tx_group.add_command(signtx, name="sign")
 @tx_value_option(required=True)
 @tx_aux_options
 @option(
-    "--data", "-d", help="Compiled contract code OR method signature and parameters."
+    "--data",
+    "-d",
+    type=HexBytesType(),
+    help="Compiled contract code OR method signature and parameters.",
 )
 @option(
     "--legacy",
@@ -77,14 +81,14 @@ def make(
     keyfile: Optional[str],
     from_: Optional[ChecksumAddress],
     to: Optional[ChecksumAddress],
-    gas: Optional[str],
-    gas_price: Optional[str],
-    max_priority_fee_per_gas: Optional[str],
-    max_fee_per_gas: Optional[str],
+    gas: Optional[int],
+    gas_price: Optional[Wei],
+    max_priority_fee_per_gas: Optional[Wei],
+    max_fee_per_gas: Optional[Wei],
     fee_factor: Optional[float],
     nonce: Optional[int],
     value: str,
-    data: Optional[str],
+    data: Optional[HexBytes],
     chain_id: Optional[int],
     legacy: bool,
 ) -> None:
