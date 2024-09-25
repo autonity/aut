@@ -5,3 +5,7 @@ __pycache__/
 /autonity.py
 /dist/
 /_test_*_cli/
+
+# Devenv
+.devenv*
+.direnv/
