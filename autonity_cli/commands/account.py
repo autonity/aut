@@ -404,7 +404,7 @@ account_group.add_command(sign_message)
 @from_option
 @option(
     "--use-message-file",
-    "-f",
+    "-m",
     is_flag=True,
     help="Interpret MESSAGE as a filename where - means stdin",
 )
