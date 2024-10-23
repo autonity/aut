@@ -7,7 +7,7 @@ from typing import Any, Optional, Sequence
 # from autonity import Autonity
 from click import argument, command, echo, group
 
-from aut.options import rpc_endpoint_option
+from ..options import rpc_endpoint_option
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -30,7 +30,7 @@ def _show_sequence(value: Sequence[Any]) -> str:
 
 
 def _show_json(value: Any) -> str:
-    from aut.utils import to_json
+    from ..utils import to_json
 
     return to_json(value, pretty=True)
 
@@ -41,7 +41,7 @@ def commission_rate_precision(rpc_endpoint: Optional[str]) -> None:
     """
     Precision of validator commission rate values
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).commission_rate_precision())
 
@@ -55,7 +55,7 @@ def max_bond_applied_gas(rpc_endpoint: Optional[str]) -> None:
     """
     Max allowed gas for notifying delegator about bonding
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_bond_applied_gas())
 
@@ -69,7 +69,7 @@ def max_unbond_applied_gas(rpc_endpoint: Optional[str]) -> None:
     """
     Max allowed gas for notifying delegator about unbonding
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_unbond_applied_gas())
 
@@ -83,7 +83,7 @@ def max_unbond_released_gas(rpc_endpoint: Optional[str]) -> None:
     """
     Max allowed gas for notifying delegator about bond being released
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_unbond_released_gas())
 
@@ -97,7 +97,7 @@ def max_rewards_distribution_gas(rpc_endpoint: Optional[str]) -> None:
     """
     Max allowed gas for notifying delegator about rewards being distributed
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).max_rewards_distribution_gas())
 
@@ -111,7 +111,7 @@ def config(rpc_endpoint: Optional[str]) -> None:
     """
     Print the Autonity contract config
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).config()))
 
@@ -125,7 +125,7 @@ def epoch_id(rpc_endpoint: Optional[str]) -> None:
     """
     ID of current epoch
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_id())
 
@@ -139,7 +139,7 @@ def last_epoch_time(rpc_endpoint: Optional[str]) -> None:
     """
     Timestamp of the last epoch
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).last_epoch_time())
 
@@ -153,7 +153,7 @@ def epoch_total_bonded_stake(rpc_endpoint: Optional[str]) -> None:
     """
     Total stake bonded this epoch
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_total_bonded_stake())
 
@@ -167,7 +167,7 @@ def atn_total_redistributed(rpc_endpoint: Optional[str]) -> None:
     """
     Total fees redistributed
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).atn_total_redistributed())
 
@@ -181,7 +181,7 @@ def epoch_reward(rpc_endpoint: Optional[str]) -> None:
     """
     Reward for this epoch
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).epoch_reward())
 
@@ -195,7 +195,7 @@ def staking_gas_price(rpc_endpoint: Optional[str]) -> None:
     """
     The gas price to notify the delegator about the staking operation at epoch end
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).staking_gas_price())
 
@@ -209,7 +209,7 @@ def inflation_reserve(rpc_endpoint: Optional[str]) -> None:
     """
     The inflation reserve
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).inflation_reserve())
 
@@ -223,7 +223,7 @@ def deployer(rpc_endpoint: Optional[str]) -> None:
     """
     Contract deployer
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).deployer())
 
@@ -235,7 +235,7 @@ protocol_group.add_command(deployer)
 @rpc_endpoint_option
 def epoch_period(rpc_endpoint: Optional[str]) -> None:
     """Epoch period in blocks"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_epoch_period())
 
@@ -247,7 +247,7 @@ protocol_group.add_command(epoch_period)
 @rpc_endpoint_option
 def block_period(rpc_endpoint: Optional[str]) -> None:
     """Block period in seconds"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_block_period())
 
@@ -259,7 +259,7 @@ protocol_group.add_command(block_period)
 @rpc_endpoint_option
 def unbonding_period(rpc_endpoint: Optional[str]) -> None:
     """Unbonding period in blocks"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_unbonding_period())
 
@@ -273,7 +273,7 @@ def last_epoch_block(rpc_endpoint: Optional[str]) -> None:
     """
     Block number of the last epoch
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_last_epoch_block())
 
@@ -285,7 +285,7 @@ protocol_group.add_command(last_epoch_block)
 @rpc_endpoint_option
 def version(rpc_endpoint: Optional[str]) -> None:
     """Contract version"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_version())
 
@@ -299,7 +299,7 @@ def committee(rpc_endpoint: Optional[str]) -> None:
     """
     Get current committee
     """
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(_show_json(autonity_from_endpoint_arg(rpc_endpoint).get_committee()))
 
@@ -311,7 +311,7 @@ protocol_group.add_command(committee)
 @rpc_endpoint_option
 def validators(rpc_endpoint: Optional[str]) -> None:
     """Get current validators"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(_show_sequence(autonity_from_endpoint_arg(rpc_endpoint).get_validators()))
 
@@ -323,7 +323,7 @@ protocol_group.add_command(validators)
 @rpc_endpoint_option
 def treasury_account(rpc_endpoint: Optional[str]) -> None:
     """Treasury account address"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_account())
 
@@ -335,7 +335,7 @@ protocol_group.add_command(treasury_account)
 @rpc_endpoint_option
 def treasury_fee(rpc_endpoint: Optional[str]) -> None:
     """Treasury fee"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_treasury_fee())
 
@@ -347,7 +347,7 @@ protocol_group.add_command(treasury_fee)
 @rpc_endpoint_option
 def max_committee_size(rpc_endpoint: Optional[str]) -> None:
     """Maximum committee size"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_max_committee_size())
 
@@ -359,7 +359,7 @@ protocol_group.add_command(max_committee_size)
 @rpc_endpoint_option
 def committee_enodes(rpc_endpoint: Optional[str]) -> None:
     """Enodes in current committee"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_committee_enodes())
 
@@ -371,7 +371,7 @@ protocol_group.add_command(committee_enodes)
 @rpc_endpoint_option
 def minimum_base_fee(rpc_endpoint: Optional[str]) -> None:
     """Minimum base fee"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_minimum_base_fee())
 
@@ -383,7 +383,7 @@ protocol_group.add_command(minimum_base_fee)
 @rpc_endpoint_option
 def operator(rpc_endpoint: Optional[str]) -> None:
     """The governance operator"""
-    from aut.utils import autonity_from_endpoint_arg
+    from ..utils import autonity_from_endpoint_arg
 
     print(autonity_from_endpoint_arg(rpc_endpoint).get_operator())
 
@@ -401,7 +401,7 @@ def proposer(rpc_endpoint: Optional[str], height: int, round_: int) -> None:
     """
     from autonity import Autonity
 
-    from aut.utils import web3_from_endpoint_arg
+    from ..utils import web3_from_endpoint_arg
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(aut.get_proposer(height, round_))
@@ -418,7 +418,7 @@ protocol_group.add_command(proposer)
 #     """Get the release state of the unbonding request"""
 #     from autonity import Autonity
 
-#     from aut.utils import web3_from_endpoint_arg
+#     from ..utils import web3_from_endpoint_arg
 
 #     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
 #     print(aut.get_unbonding_release_state(unbonding_id))
@@ -436,7 +436,7 @@ def reverting_amount(rpc_endpoint: Optional[str], unbonding_id: int) -> None:
     """
     from autonity import Autonity
 
-    from aut.utils import web3_from_endpoint_arg
+    from ..utils import web3_from_endpoint_arg
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(aut.get_reverting_amount(unbonding_id))
@@ -452,7 +452,7 @@ def epoch_from_block(rpc_endpoint: Optional[str], block: int) -> None:
     """Get the epoch of the given block"""
     from autonity import Autonity
 
-    from aut.utils import web3_from_endpoint_arg
+    from ..utils import web3_from_endpoint_arg
 
     aut = Autonity(web3_from_endpoint_arg(None, rpc_endpoint))
     print(aut.get_epoch_from_block(block))

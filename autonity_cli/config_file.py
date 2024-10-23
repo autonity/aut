@@ -9,7 +9,7 @@ import os.path
 from configparser import ConfigParser
 from typing import Any, Mapping, Optional
 
-from aut.logging import log
+from .logging import log
 
 # pylint: disable=global-statement
 

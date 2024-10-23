@@ -7,7 +7,7 @@ from typing import Dict, List, Optional
 from click import ClickException, Path, argument, command, group, option
 from web3.types import BlockIdentifier
 
-from aut.options import (
+from ..options import (
     from_option,
     keyfile_and_password_options,
     keyfile_option,
@@ -38,8 +38,8 @@ def list_cmd(keystore: Optional[str], with_files: bool) -> None:
     List the accounts for files in the keystore directory.
     """
 
-    from aut import config
-    from aut.utils import address_keyfile_dict
+    from .. import config
+    from ..utils import address_keyfile_dict
 
     keystore = config.get_keystore_directory(keystore)
     keyfiles = address_keyfile_dict(keystore)
@@ -74,8 +74,8 @@ def info(
 
     from web3 import Web3
 
-    from aut.user import get_account_stats
-    from aut.utils import (
+    from ..user import get_account_stats
+    from ..utils import (
         from_address_from_argument_optional,
         to_json,
         web3_from_endpoint_arg,
@@ -121,7 +121,7 @@ def balance(
         format_quantity,
     )
 
-    from aut.utils import (
+    from ..utils import (
         from_address_from_argument_optional,
         newton_or_token_to_address,
         web3_from_endpoint_arg,
@@ -172,8 +172,8 @@ def lntn_balances(
     from autonity.erc20 import ERC20
     from autonity.utils.denominations import format_newton_quantity
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         from_address_from_argument_optional,
         to_json,
         web3_from_endpoint_arg,
@@ -237,8 +237,8 @@ def new(
         get_address_from_keyfile,
     )
 
-    from aut.logging import log
-    from aut.utils import new_keyfile_from_options, prompt_for_new_password
+    from ..logging import log
+    from ..utils import new_keyfile_from_options, prompt_for_new_password
 
     # Ask for extra entropy, if requested.
 
@@ -309,8 +309,8 @@ def import_private_key(
     )
     from hexbytes import HexBytes
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         load_from_file_or_stdin_line,
         new_keyfile_from_options,
         prompt_for_new_password,
@@ -358,9 +358,9 @@ def signtx(keyfile: Optional[str], password: Optional[str], tx_file: str) -> Non
 
     from autonity.utils.tx import sign_tx
 
-    from aut import config
-    from aut.logging import log
-    from aut.utils import load_from_file_or_stdin, to_json
+    from .. import config
+    from ..logging import log
+    from ..utils import load_from_file_or_stdin, to_json
 
     # Read tx
     tx = json.loads(load_from_file_or_stdin(tx_file))
@@ -416,9 +416,9 @@ def sign_message(
     from eth_account import Account
     from eth_account.messages import encode_defunct
 
-    from aut import config
-    from aut.logging import log
-    from aut.utils import load_from_file_or_stdin
+    from .. import config
+    from ..logging import log
+    from ..utils import load_from_file_or_stdin
 
     # Read message
     if use_message_file:
@@ -487,8 +487,8 @@ def verify_signature(
     from eth_account.messages import encode_defunct
     from hexbytes import HexBytes
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         from_address_from_argument_optional,
         load_from_file_or_stdin,
     )

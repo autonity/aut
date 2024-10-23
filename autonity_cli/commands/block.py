@@ -6,7 +6,7 @@ from typing import Optional
 
 from click import argument, command, group
 
-from aut.options import rpc_endpoint_option
+from ..options import rpc_endpoint_option
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -30,8 +30,8 @@ def get(rpc_endpoint: Optional[str], identifier: str) -> None:
     or hash.  If no argument is given, "latest" is used.
     """
 
-    from aut.user import get_block
-    from aut.utils import to_json, validate_block_identifier, web3_from_endpoint_arg
+    from ..user import get_block
+    from ..utils import to_json, validate_block_identifier, web3_from_endpoint_arg
 
     block_id = validate_block_identifier(identifier)
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -49,7 +49,7 @@ def height(rpc_endpoint: Optional[str]) -> None:
     Print the current block height for the chain.
     """
 
-    from aut.utils import web3_from_endpoint_arg
+    from ..utils import web3_from_endpoint_arg
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     print(w3.eth.block_number)
