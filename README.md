@@ -30,13 +30,7 @@ Requirements:
 To install Autonity CLI as a pipx package, isolated in its own environment, run:
 
 ```console
-pipx install git+https://github.com/autonity/autonity-cli.git
-```
-
-To upgrade from an earlier `pipx` installation of Autonity CLI, run:
-
-```console
-pipx upgrade aut
+pipx install autonity-cli
 ```
 
 Once successfully installed, the tool will be available in the shell as the
