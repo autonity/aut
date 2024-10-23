@@ -25,8 +25,7 @@ from .logging import enable_logging
 @version_option()
 def aut(verbose: bool) -> None:
     """
-    Autonity Utility Tool.  RPC client and general toolbox for
-    interacting with Autonity nodes.
+    Command line interface to interact with Autonity.
     """
 
     if verbose:
