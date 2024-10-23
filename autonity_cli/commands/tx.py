@@ -6,8 +6,8 @@ from typing import Optional
 
 from click import ClickException, Path, argument, command, group, option
 
-from aut.commands.account import signtx
-from aut.options import (
+from .account import signtx
+from ..options import (
     from_option,
     keyfile_option,
     newton_or_token_option,
@@ -77,8 +77,8 @@ def make(
     from web3 import Web3
     from web3.types import HexStr
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         create_contract_tx_from_args,
         create_tx_from_args,
         finalize_tx_from_args,
@@ -192,7 +192,7 @@ def send(rpc_endpoint: Optional[str], tx_file: str) -> None:
     from eth_account.account import SignedTransaction
     from web3 import Web3
 
-    from aut.utils import load_from_file_or_stdin, web3_from_endpoint_arg
+    from ..utils import load_from_file_or_stdin, web3_from_endpoint_arg
 
     signed_tx = SignedTransaction(**json.loads(load_from_file_or_stdin(tx_file)))
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
@@ -229,7 +229,7 @@ def wait(
     from autonity.utils.tx import wait_for_tx
     from web3.types import HexBytes
 
-    from aut.utils import (
+    from ..utils import (
         to_json,
         validate_32byte_hash_string,
         web3_from_endpoint_arg,

@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple, cast
 
 from click import ClickException, Path, argument, command, group, option
 
-from aut.options import (
+from ..options import (
     contract_options,
     from_option,
     keyfile_option,
@@ -43,8 +43,8 @@ def function_call_from_args(
 
     from autonity.abi_parser import find_abi_function, parse_arguments
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         contract_address_and_abi_from_args,
         web3_from_endpoint_arg,
     )
@@ -109,8 +109,8 @@ def deploy_cmd(
     from autonity.abi_parser import find_abi_constructor, parse_arguments
     from web3.contract.contract import ContractFunction
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         create_contract_tx_from_args,
         finalize_tx_from_args,
         from_address_from_argument,
@@ -175,7 +175,7 @@ def call_cmd(
 
     from autonity.abi_parser import parse_return_value
 
-    from aut.utils import to_json
+    from ..utils import to_json
 
     function, abi_fn, _ = function_call_from_args(
         rpc_endpoint,
@@ -225,8 +225,8 @@ def tx_cmd(
     by the contract.
     """
 
-    from aut.logging import log
-    from aut.utils import (
+    from ..logging import log
+    from ..utils import (
         create_contract_tx_from_args,
         finalize_tx_from_args,
         from_address_from_argument,

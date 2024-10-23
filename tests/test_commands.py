@@ -1,6 +1,6 @@
-# import aut
-# from aut import main
-# from aut.commands import get
+# import autonity_cli
+# from autonity_cli import main
+# from autonity_cli.commands import get
 # from unittest import TestCase
 
 # class TestAutNoRPCModule(TestCase):

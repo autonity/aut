@@ -5,9 +5,9 @@ Implementation of `node` subcommands
 from typing import Optional, Union
 
 from click import command, group
-
-from aut.options import rpc_endpoint_option
 from web3.exceptions import MethodUnavailable
+
+from ..options import rpc_endpoint_option
 
 # Disable pylint warning about imports outside top-level.  We do this
 # intentionally to try and keep startup times of the CLI low.
@@ -34,7 +34,7 @@ def info(rpc_endpoint: Optional[str]) -> None:
     from web3.datastructures import AttributeDict
     from web3.types import SyncStatus
 
-    from aut.utils import to_json, web3_from_endpoint_arg
+    from ..utils import to_json, web3_from_endpoint_arg
 
     w3 = web3_from_endpoint_arg(None, rpc_endpoint)
     try:

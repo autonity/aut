@@ -24,7 +24,7 @@ from web3.types import (
     TxParams,
 )
 
-from aut.utils import w3_provider
+from .utils import w3_provider
 
 
 class AccountStats(TypedDict):

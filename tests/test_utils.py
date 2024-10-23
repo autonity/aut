@@ -8,8 +8,8 @@ from unittest import TestCase
 from click import ClickException
 from web3 import Web3
 
-from aut.constants import AutonDenoms
-from aut.utils import (
+from autonity_cli.constants import AutonDenoms
+from autonity_cli.utils import (
     geth_keyfile_name,
     parse_commission_rate,
     parse_token_value_representation,

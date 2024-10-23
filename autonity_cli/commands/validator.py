@@ -8,9 +8,9 @@ from typing import Optional
 from autonity.validator import OracleAddress
 from click import argument, command, echo, group, option
 
-from aut.commands.protocol import protocol_group
-from aut.constants import UnixExitStatus
-from aut.options import (
+from .protocol import protocol_group
+from ..constants import UnixExitStatus
+from ..options import (
     from_option,
     keyfile_option,
     rpc_endpoint_option,
@@ -48,8 +48,8 @@ def info(rpc_endpoint: Optional[str], validator_addr_str: str) -> None:
     """
     Get information about a validator.
     """
-    from aut.config import get_node_address
-    from aut.utils import autonity_from_endpoint_arg, to_json
+    from ..config import get_node_address
+    from ..utils import autonity_from_endpoint_arg, to_json
 
     validator_addr = get_node_address(validator_addr_str)
     aut = autonity_from_endpoint_arg(rpc_endpoint)
@@ -115,8 +115,8 @@ def bond(
     """
     Create transaction to bond Newton to a validator.
     """
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -171,8 +171,8 @@ def unbond(
     """
     Create transaction to unbond Newton from a validator.
     """
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -233,7 +233,7 @@ def register(
     """
     from web3.types import HexBytes
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -289,8 +289,8 @@ def pause(
     Create transaction to pause the given validator.  See
     `pauseValidator` on the Autonity contract.
     """
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -342,8 +342,8 @@ def activate(
     Create transaction to activate a paused validator.  See
     `activateValidator` on the Autonity contract.
     """
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -398,8 +398,8 @@ def change_commission_rate(
     Validator.  The rate is given as a decimal, and must be no greater
     than 1 e.g. 3% would be 0.03.
     """
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -454,8 +454,8 @@ def unclaimed_rewards(
     )
     from autonity.validator import Validator
 
-    from aut.config import get_node_address
-    from aut.utils import autonity_from_endpoint_arg, from_address_from_argument
+    from ..config import get_node_address
+    from ..utils import autonity_from_endpoint_arg, from_address_from_argument
 
     validator_addr = get_node_address(validator_addr_str)
     account = from_address_from_argument(account, keyfile)
@@ -499,8 +499,8 @@ def claim_rewards(
     from autonity.autonity import Autonity
     from autonity.validator import Validator
 
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         create_contract_tx_from_args,
         from_address_from_argument,
         to_json,
@@ -560,8 +560,8 @@ def update_enode(
     of a registered validator. You cannot change the validator's address
     (pubkey part of the enode).
     """
-    from aut.config import get_node_address
-    from aut.utils import (
+    from ..config import get_node_address
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,

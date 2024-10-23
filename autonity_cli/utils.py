@@ -33,9 +33,9 @@ from web3.types import (
     Wei,
 )
 
-from aut import config
-from aut.constants import AutonDenoms
-from aut.logging import log
+from . import config
+from .constants import AutonDenoms
+from .logging import log
 
 # pylint: disable=too-many-arguments
 # pylint: disable=too-many-locals

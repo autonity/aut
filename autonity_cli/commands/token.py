@@ -6,7 +6,7 @@ from typing import Optional
 
 from click import ClickException, argument, command, group
 
-from aut.options import (
+from ..options import (
     from_option,
     keyfile_option,
     newton_or_token_option,
@@ -39,7 +39,7 @@ def name(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None:
 
     from autonity.erc20 import ERC20
 
-    from aut.utils import (
+    from ..utils import (
         newton_or_token_to_address_require,
         web3_from_endpoint_arg,
     )
@@ -66,7 +66,7 @@ def symbol(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> None
 
     from autonity.erc20 import ERC20
 
-    from aut.utils import (
+    from ..utils import (
         newton_or_token_to_address_require,
         web3_from_endpoint_arg,
     )
@@ -93,7 +93,7 @@ def decimals(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -> No
 
     from autonity.erc20 import ERC20
 
-    from aut.utils import (
+    from ..utils import (
         newton_or_token_to_address_require,
         web3_from_endpoint_arg,
     )
@@ -117,7 +117,7 @@ def total_supply(rpc_endpoint: Optional[str], ntn: bool, token: Optional[str]) -
     from autonity.erc20 import ERC20
     from autonity.utils.denominations import format_quantity
 
-    from aut.utils import (
+    from ..utils import (
         newton_or_token_to_address_require,
         web3_from_endpoint_arg,
     )
@@ -153,7 +153,7 @@ def balance_of(
     from autonity.erc20 import ERC20
     from autonity.utils.denominations import format_quantity
 
-    from aut.utils import (
+    from ..utils import (
         from_address_from_argument,
         newton_or_token_to_address_require,
         web3_from_endpoint_arg,
@@ -194,7 +194,7 @@ def allowance(
     from autonity.utils.denominations import format_quantity
     from web3 import Web3
 
-    from aut.utils import (
+    from ..utils import (
         from_address_from_argument,
         newton_or_token_to_address_require,
         web3_from_endpoint_arg,
@@ -246,7 +246,7 @@ def transfer(
     from autonity.erc20 import ERC20
     from web3 import Web3
 
-    from aut.utils import (
+    from ..utils import (
         create_contract_tx_from_args,
         from_address_from_argument,
         newton_or_token_to_address_require,
@@ -317,7 +317,7 @@ def approve(
     from autonity.erc20 import ERC20
     from web3 import Web3
 
-    from aut.utils import (
+    from ..utils import (
         create_contract_tx_from_args,
         from_address_from_argument,
         newton_or_token_to_address_require,
@@ -391,7 +391,7 @@ def transfer_from(
     from autonity.erc20 import ERC20
     from web3 import Web3
 
-    from aut.utils import (
+    from ..utils import (
         create_contract_tx_from_args,
         from_address_from_argument,
         newton_or_token_to_address_require,

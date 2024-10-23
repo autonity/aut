@@ -6,7 +6,7 @@ import sys
 
 from click import group, option, version_option
 
-from aut.commands import (
+from .commands import (
     account,
     block,
     contract,
@@ -17,7 +17,7 @@ from aut.commands import (
     tx,
     validator,
 )
-from aut.logging import enable_logging
+from .logging import enable_logging
 
 
 @group(context_settings=dict(help_option_names=["-h", "--help"]))

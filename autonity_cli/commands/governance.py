@@ -6,7 +6,7 @@ from typing import Optional
 
 from click import argument, command, group
 
-from aut.options import (
+from ..options import (
     from_option,
     keyfile_option,
     rpc_endpoint_option,
@@ -44,7 +44,7 @@ def set_max_bond_applied_gas(
     Set the maximum bond applied gas. Restricted to the operator account.
     See `setMaxBondAppliedGas` on the Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -96,7 +96,7 @@ def set_max_unbond_applied_gas(
     Set the maximum unbond applied gas. Restricted to the operator account.
     See `setMaxBondAppliedGas` on the Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -148,7 +148,7 @@ def set_max_unbond_released_gas(
     Set the maximum unbond released gas. Restricted to the operator account.
     See `setMaxBondAppliedGas` on the Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -200,7 +200,7 @@ def set_max_rewards_distribution_gas(
     Set the maximum rewards distribution gas. Restricted to the operator account.
     See `setMaxBondAppliedGas` on the Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -252,7 +252,7 @@ def set_staking_gas_price(
     Set the gas price for notification on staking operation. Restricted to the
     operator account. See `setStakingGasPrice` on the Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -304,7 +304,7 @@ def set_minimum_base_fee(
     Set the minimum gas price. Restricted to the operator account.
     See `setMinimumBaseFee` on the Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -356,7 +356,7 @@ def set_committee_size(
     Set the maximum size of the consensus committee. Restricted to the
     Operator account.  See `setCommitteeSize` on Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -406,7 +406,7 @@ def set_unbonding_period(
     Set the unbonding period. Restricted to the Operator account.  See
     `setUnbondingPeriod` on Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -456,7 +456,7 @@ def set_epoch_period(
     Set the epoch period. Restricted to the Operator account.  See
     `setEpochPeriod` on Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -508,7 +508,7 @@ def set_operator_account(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -561,7 +561,7 @@ def set_treasury_account(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -612,7 +612,7 @@ def set_treasury_fee(
     Set the treasury fee. Restricted to the Operator account.  See
     `setTreasuryFee` on Autonity contract.
     """
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -666,7 +666,7 @@ def set_accountability_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -719,7 +719,7 @@ def set_oracle_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -772,7 +772,7 @@ def set_acu_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -825,7 +825,7 @@ def set_supply_control_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -878,7 +878,7 @@ def set_stabilization_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -931,7 +931,7 @@ def set_inflation_controller_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -984,7 +984,7 @@ def set_upgrade_manager_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -1037,7 +1037,7 @@ def set_non_stakable_vesting_contract(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -1094,7 +1094,7 @@ def mint(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
@@ -1154,7 +1154,7 @@ def burn(
     """
     from eth_utils import to_checksum_address
 
-    from aut.utils import (
+    from ..utils import (
         autonity_from_endpoint_arg,
         create_contract_tx_from_args,
         from_address_from_argument,
