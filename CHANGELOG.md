@@ -1,5 +1,11 @@
 # Changelog
 
+## [v0.6.0] - 2024-10-23
+
+### Changed
+
+- Rename the package to `autonity-cli` ([#172](https://github.com/autonity/autonity-cli/pull/172))
+
 ## [v0.5.0] - 2024-07-03
 
 ### Changed
@@ -41,6 +47,7 @@
 - Fix potential crash when listing accounts ([`1886121`](https://github.com/autonity/autonity-cli/commit/1886121))
 - Fix startup crash due to `ModuleNotFoundError` from eth_rlp ([#137](https://github.com/autonity/autonity-cli/issues/137))
 
+[v0.6.0]: https://github.com/autonity/autonity-cli/releases/tag/v0.6.0
 [v0.5.0]: https://github.com/autonity/autonity-cli/releases/tag/v0.5.0
 [v0.4.0]: https://github.com/autonity/autonity-cli/releases/tag/v0.4.0
 [v0.3.0]: https://github.com/autonity/autonity-cli/releases/tag/v0.3.0
