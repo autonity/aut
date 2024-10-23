@@ -1,7 +1,20 @@
-# Autonity Utility Tool (`aut`)
+# Autonity CLI
 
-A command-line RPC client for Autonity. Run `aut --help` for the list of all
-commands and options.
+A command-line tool that exposes all the functionality of Autonity from the
+convenience of the command-line. It can be used interactively or executed from a
+shell script. Connecting directly to the Autonity JSON-RPC endpoint of your
+choice, it allows you to:
+
+- create new ATN and NTN accounts or import keys
+- list balances for any native asset or ERC-20 token
+- transfer assets to different account
+- sign or verify messages using private/public keys
+- make smart contract calls from the command-line
+- query block information or protocol state
+- manage the your validator node state
+- delegate stake and claim staking rewards
+
+After installing, run `aut --help` for a list of all commands and options.
 
 ## Quick Start
 
@@ -14,21 +27,21 @@ Requirements:
 - **The** [pipx](https://pypa.github.io/pipx/) **tool** (Install a recent
   version with `pip install pipx`)
 
-To install the `aut` tool as a pipx package, isolated in its own environment, run:
+To install Autonity CLI as a pipx package, isolated in its own environment, run:
 
 ```console
-pipx install git+https://github.com/autonity/aut.git
+pipx install git+https://github.com/autonity/autonity-cli.git
 ```
 
-To upgrade from an earlier `pipx` installation of `aut`, run:
+To upgrade from an earlier `pipx` installation of Autonity CLI, run:
 
 ```console
 pipx upgrade aut
 ```
 
-Once successfully installed, the `aut` command should be available in the
-`PATH`. All commands are discoverable from the help text. Type `aut --help`,
-`aut <command> --help` etc. for details.
+Once successfully installed, the tool will be available in the shell as the
+`aut` command. All commands are discoverable from the help text. Type
+`aut --help`, `aut <command> --help` etc. for details.
 
 **Note:**
 
@@ -41,8 +54,9 @@ Once successfully installed, the `aut` command should be available in the
 
   See the `pipx install` help text for details.
 
-- If the `aut` command is not available, ensure that `~/.local/bin` appears in
-  your `PATH`. Run `pipx ensurepath` to verify.
+- If the `aut` command is not available after installation, and you are on
+  Ubuntu, try running `aut` in a new terminal window. Otherwise, ensure that
+  `~/.local/bin` appears in your `PATH`. Run `pipx ensurepath` to verify.
 
 ## (Optional) Enable command completion (bash and zsh)
 
@@ -62,7 +76,7 @@ to activate it in the current shell instance.)
 
 If the `aut` command finds this file, it reads configuration parameters from it.
 See the [sample file](.autrc.sample) in this repo. This avoids the need to enter
-certain values on the command line. These parameters can be overridden by
+certain values on the command-line. These parameters can be overridden by
 environment variables and command-line parameters where necessary.
 
 If `.autrc` is not found in the current directory, all parent directories are
