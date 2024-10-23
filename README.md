@@ -37,13 +37,21 @@ Once successfully installed, the tool will be available in the shell as the
 `aut` command. All commands are discoverable from the help text. Type
 `aut --help`, `aut <command> --help` etc. for details.
 
+⚠️ If upgrading from "aut" `v0.5.0` or earlier, you will need to uninstall the
+`aut` package before reinstalling `autonity-cli`:
+
+```console
+$ pipx uninstall aut
+$ pipx install autonity-cli
+```
+
 **Note:**
 
 - If `pipx` selects an incompatible version of Python, you may need to specify a
   specific one. Use the `--python` flag:
 
   ```console
-  pipx install --python $(which python3.9) git+ssh://git@github.com/autonity/aut.git
+  pipx install --python /usr/bin/pythonX.Y autonity-cli
   ```
 
   See the `pipx install` help text for details.
